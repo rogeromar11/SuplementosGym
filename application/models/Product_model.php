@@ -76,9 +76,9 @@ class Product_model extends CI_Model
 	{
 		$products = $this->active_by_country($country_id);
 
-		$search = isset($filters['search']) ? mb_strtolower(trim($filters['search']), 'UTF-8') : '';
-		$category = isset($filters['category']) ? $filters['category'] : '';
-		$laboratory = isset($filters['laboratory']) ? $filters['laboratory'] : '';
+		$search = isset($filters['search']) ? mb_strtolower(trim((string) $filters['search']), 'UTF-8') : '';
+		$category = isset($filters['category']) ? (string) $filters['category'] : '';
+		$laboratory = isset($filters['laboratory']) ? (string) $filters['laboratory'] : '';
 		$min = isset($filters['min_price']) && $filters['min_price'] !== '' ? (float) $filters['min_price'] : NULL;
 		$max = isset($filters['max_price']) && $filters['max_price'] !== '' ? (float) $filters['max_price'] : NULL;
 		$available_only = ! empty($filters['available_only']);

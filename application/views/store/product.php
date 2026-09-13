@@ -48,7 +48,7 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
           <?php if ( ! empty($product->sku)): ?><div class="pd-spec"><strong>Codigo</strong><?php echo html_escape($product->sku); ?></div><?php endif; ?>
         </div>
 
-        <p><?php echo nl2br(html_escape($product->store_description ?: $product->description)); ?></p>
+        <p><?php echo nl2br(html_escape((string) ($product->store_description ?: $product->description))); ?></p>
 
         <?php if ($available): ?>
           <div class="pd-actions">

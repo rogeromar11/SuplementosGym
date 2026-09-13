@@ -71,6 +71,17 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - Secciones con fondo alterno, tarjetas blancas y sombras suaves.
 - Se mantienen todos los `data-*` del JS (carrito, pais, busqueda, acordeon).
 
+### Changed — Hero oscuro restaurado
+- La seccion "Entrena duro. Recupera mejor." vuelve a fondo negro, manteniendo
+  el resto del estilo corporativo.
+
+### Added — Carga de imagenes de producto (2026-09-12)
+- 54/54 productos con imagen. 20 combinaciones (marca+producto) descargadas
+  desde Open Food Facts; 2 (creatina y CLA de Nutrex) con placeholder SVG.
+- Imagenes guardadas en `uploads/products/` y referenciadas en `products.image`.
+- **Nota:** imagenes solo para maqueta/pruebas; validar licencia o sustituir por
+  fotos propias antes de produccion.
+
 ### Changed
 - `application/config/database.php` apunta a `suplementosgym`.
 - `ion_auth` config: `site_title` = "SG Tienda", `default_group` = `customer`.
@@ -84,6 +95,10 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - Carpetas `uploads/products/` protegidas contra ejecucion.
 
 ### Fixed
+- Deprecaciones PHP 8.1 por pasar `null` a funciones que esperan string:
+  `nl2br()` en `store/product.php` y `store/account/order.php`, y
+  `strcasecmp()` en el filtro de laboratorio (`store/products.php`).
+  Se fuerzan tipos string en `Store::products()` y `Product_model::catalog()`.
 - `inventory_applied` se marca a `1` al aplicar inventario; `apply_for_order`
   es idempotente (evita doble descuento).
 - `Store_cart::add()` rechaza cantidades que superan el stock (no recorta).

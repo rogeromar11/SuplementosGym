@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $meta = isset($meta) ? $meta : array();
 $active = uri_string();
 $is_home = ($active === '' || $active === 'store' || $active === 'store/index');
-$top_email = store_setting('contact_email', '');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,39 +33,6 @@ $top_email = store_setting('contact_email', '');
 <a class="skip-link" href="#main-content">Saltar al contenido</a>
 
 <header class="site-header">
-  <div class="top-bar">
-    <div class="container-x top-bar-inner">
-      <div class="top-bar-left">
-        <?php if ( ! empty($whatsapp_url)): ?>
-          <a href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
-        <?php endif; ?>
-        <?php if ( ! empty($top_email)): ?>
-          <a href="mailto:<?php echo html_escape($top_email); ?>"><i class="bi bi-envelope" aria-hidden="true"></i> <?php echo html_escape($top_email); ?></a>
-        <?php endif; ?>
-        <span class="top-bar-note">Suplementacion deportiva en <?php echo html_escape($current_country->name); ?></span>
-      </div>
-      <div class="top-bar-right">
-        <div class="dropdown country-dropdown" data-country-select>
-          <button class="country-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-country-current="<?php echo (int) $current_country->id; ?>" aria-label="Seleccionar pais">
-            <img src="<?php echo base_url('assets/img/flags/' . strtolower($current_country->code) . '.svg'); ?>" alt="" class="flag-icon" data-country-flag aria-hidden="true">
-            <span data-country-code><?php echo html_escape($current_country->name); ?></span>
-            <i class="bi bi-chevron-down" aria-hidden="true"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end country-menu">
-            <?php foreach ($countries as $country): ?>
-              <li>
-                <button type="button" class="dropdown-item" data-country-option data-country-id="<?php echo (int) $country->id; ?>">
-                  <img src="<?php echo base_url('assets/img/flags/' . strtolower($country->code) . '.svg'); ?>" alt="" class="flag-icon" aria-hidden="true">
-                  <span><?php echo html_escape($country->name); ?></span>
-                </button>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="site-navbar">
     <div class="container-x">
       <a class="brand" href="<?php echo base_url(); ?>">
@@ -86,6 +52,24 @@ $top_email = store_setting('contact_email', '');
       </nav>
 
       <div class="nav-actions">
+        <div class="dropdown country-dropdown" data-country-select>
+          <button class="country-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-country-current="<?php echo (int) $current_country->id; ?>" aria-label="Seleccionar pais">
+            <img src="<?php echo base_url('assets/img/flags/' . strtolower($current_country->code) . '.svg'); ?>" alt="" class="flag-icon" data-country-flag aria-hidden="true">
+            <span data-country-code><?php echo html_escape($current_country->code); ?></span>
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end country-menu">
+            <?php foreach ($countries as $country): ?>
+              <li>
+                <button type="button" class="dropdown-item" data-country-option data-country-id="<?php echo (int) $country->id; ?>">
+                  <img src="<?php echo base_url('assets/img/flags/' . strtolower($country->code) . '.svg'); ?>" alt="" class="flag-icon" aria-hidden="true">
+                  <span><?php echo html_escape($country->name); ?></span>
+                </button>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+
         <a class="icon-link" href="<?php echo base_url('carrito'); ?>" aria-label="Carrito de compras">
           <i class="bi bi-cart3" aria-hidden="true"></i>
           <span class="cart-badge<?php echo $cart_count < 1 ? ' d-none' : ''; ?>" data-cart-count><?php echo (int) $cart_count; ?></span>

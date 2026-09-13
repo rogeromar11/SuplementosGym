@@ -38,7 +38,7 @@ $status_labels = array(
         <p class="mb-0">
           <strong><?php echo html_escape($order->customer_name); ?></strong><br>
           <?php echo html_escape($order->customer_phone); ?><?php echo ! empty($order->customer_phone2) ? ' / ' . html_escape($order->customer_phone2) : ''; ?><br>
-          <?php echo html_escape($order->delivery_zone); ?> — <?php echo nl2br(html_escape($order->delivery_address)); ?>
+          <?php echo html_escape($order->delivery_zone); ?> — <?php echo nl2br(html_escape((string) $order->delivery_address)); ?>
         </p>
       </div>
 

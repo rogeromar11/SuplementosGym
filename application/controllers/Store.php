@@ -24,13 +24,13 @@ class Store extends MY_Controller
 	{
 		$country = current_store_country();
 		$filters = array(
-			'search'         => $this->input->get('q', TRUE),
-			'category'       => $this->input->get('categoria', TRUE),
-			'laboratory'     => $this->input->get('laboratorio', TRUE),
-			'min_price'      => $this->input->get('min', TRUE),
-			'max_price'      => $this->input->get('max', TRUE),
+			'search'         => (string) $this->input->get('q', TRUE),
+			'category'       => (string) $this->input->get('categoria', TRUE),
+			'laboratory'     => (string) $this->input->get('laboratorio', TRUE),
+			'min_price'      => (string) $this->input->get('min', TRUE),
+			'max_price'      => (string) $this->input->get('max', TRUE),
 			'available_only' => (bool) $this->input->get('disponible'),
-			'sort'           => $this->input->get('orden', TRUE) ?: 'relevance',
+			'sort'           => (string) $this->input->get('orden', TRUE) ?: 'relevance',
 		);
 
 		$products = $this->Product_model->catalog($country->id, $filters);

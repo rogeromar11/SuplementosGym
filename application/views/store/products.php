@@ -97,7 +97,7 @@ $is_category = ! empty($filters['category']);
               <select class="form-control" name="laboratorio" aria-label="Laboratorio">
                 <option value="">Todos</option>
                 <?php foreach ($laboratories as $lab): ?>
-                  <option value="<?php echo html_escape($lab); ?>"<?php echo strcasecmp($filters['laboratory'], $lab) === 0 ? ' selected' : ''; ?>><?php echo html_escape($lab); ?></option>
+                  <option value="<?php echo html_escape($lab); ?>"<?php echo strcasecmp((string) $filters['laboratory'], (string) $lab) === 0 ? ' selected' : ''; ?>><?php echo html_escape($lab); ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
