@@ -49,6 +49,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'store';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+/* SG Tienda */
+$route['productos'] = 'store/products';
+$route['producto/(:num)'] = 'store/product/$1';
+$route['nosotros'] = 'store/about';
+$route['formas-de-pago'] = 'store/payments';
+$route['contacto'] = 'store/contact';
+$route['pais'] = 'store/set_country';
+
+$route['carrito'] = 'cart/index';
+$route['carrito/agregar'] = 'cart/add';
+$route['carrito/actualizar'] = 'cart/update';
+$route['carrito/eliminar'] = 'cart/remove';
+$route['carrito/vaciar'] = 'cart/clear';
+$route['carrito/mini'] = 'cart/mini';
+
+$route['checkout'] = 'checkout/index';
+$route['checkout/confirmar'] = 'checkout/place';
+
+$route['cuenta'] = 'account/index';
+$route['cuenta/actualizar'] = 'account/update';
+$route['cuenta/password'] = 'account/password';
+$route['cuenta/pedidos'] = 'account/orders';
+$route['cuenta/pedido/(:num)'] = 'account/order/$1';
+
+$route['ingresar'] = 'store_auth/login';
+$route['registro'] = 'store_auth/register';
+$route['salir'] = 'store_auth/logout';
+$route['recuperar'] = 'store_auth/forgot_password';
+$route['restablecer/(:any)'] = 'store_auth/reset_password/$1';

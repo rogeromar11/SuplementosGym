@@ -1,0 +1,5 @@
+# Bloquea la ejecucion de scripts en la carpeta de imagenes de producto.
+php_flag engine off
+<FilesMatch "\.(php|phtml|php[0-9]|phar|cgi|pl|py|sh|asp|aspx)$">
+    Require all denied
+</FilesMatch>

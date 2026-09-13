@@ -40,6 +40,16 @@ created_at, updated_at, created_by, updated_by
 Base destino: **`suplementosgym`** (localhost, usuario `root`, sin password).
 Configurada en `application/config/database.php`.
 
+> **Estado (Fases 2-3, 2026-09-12):** base creada, esquema importado y datos migrados.
+> Tablas presentes: `countries`, `groups`, `users`, `users_groups`, `login_attempts`,
+> `products` (54 de El Salvador), `payment_methods` (8), `store_orders`,
+> `store_order_items`, `inventory_movements`, `store_settings` (10).
+> Base en estado limpio: 0 pedidos, 0 movimientos, 1 usuario (admin de desarrollo).
+>
+> Scripts: `database/database.sql` (esquema base),
+> `database/upgrade_add_store_schema_20260912.sql` (esquema incremental),
+> `database/upgrade_migrate_initial_data_20260912.sql` (copia inicial de datos).
+
 ### Tablas IonAuth (base existente de `database/database.sql`)
 
 `groups`, `users`, `users_groups`, `login_attempts`.

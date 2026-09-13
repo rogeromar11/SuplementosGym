@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180" role="img" aria-label="Producto sin imagen">
+  <rect width="240" height="180" fill="#F4F4F5"/>
+  <rect x="1" y="1" width="238" height="178" fill="none" stroke="#E4E4E7" stroke-width="2" rx="12"/>
+  <g fill="none" stroke="#DC2626" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M84 60h72v66H84z"/>
+    <path d="M84 78h72"/>
+    <path d="M102 60v-8a18 18 0 0 1 36 0v8"/>
+  </g>
+  <text x="120" y="152" text-anchor="middle" font-family="Fira Sans, Arial, sans-serif" font-size="12" fill="#52525B">SG Tienda</text>
+</svg>

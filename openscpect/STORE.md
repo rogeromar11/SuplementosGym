@@ -1,5 +1,17 @@
 # STORE · Catalogo y experiencia de tienda
 
+## Implementacion (2026-09-12)
+
+| Pieza | Ubicacion |
+|---|---|
+| Controladores | `application/controllers/Store.php`, `Cart.php`, `Checkout.php`, `Account.php`, `Store_auth.php` |
+| Modelos | `application/models/Country_model.php`, `Product_model.php`, `Store_order_model.php`, `Inventory_model.php` |
+| Libreria | `application/libraries/Store_cart.php` |
+| Helper | `application/helpers/store_helper.php` |
+| Vistas | `application/views/store/` (+ `partials/`) |
+| Assets | `assets/css/store.css`, `assets/js/store.js` |
+| Rutas | `productos`, `producto/{id}`, `carrito/*`, `checkout`, `cuenta/*`, `ingresar`, `registro`, `pais` |
+
 ## Secciones
 
 1. Inicio
