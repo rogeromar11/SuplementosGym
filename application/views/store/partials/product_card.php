@@ -32,14 +32,14 @@ $wa = store_product_whatsapp_url($product);
       <span class="product-price"><?php echo store_price($product->unit_price); ?></span>
       <div class="product-actions">
         <?php if ($available): ?>
-          <button type="button" class="btn-brand btn-sm" data-add-to-cart data-product-id="<?php echo (int) $product->id; ?>" aria-label="Agregar <?php echo html_escape($product->name); ?> al carrito">
+          <button type="button" class="add-btn" data-add-to-cart data-product-id="<?php echo (int) $product->id; ?>" aria-label="Agregar <?php echo html_escape($product->name); ?> al carrito">
             <i class="bi bi-cart-plus" aria-hidden="true"></i>
           </button>
         <?php else: ?>
           <button type="button" class="btn-ghost btn-sm" disabled>Agotado</button>
         <?php endif; ?>
         <?php if ( ! empty($wa)): ?>
-          <a class="btn-ghost btn-sm" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+          <a class="wa-btn" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
             <i class="bi bi-whatsapp" aria-hidden="true"></i>
           </a>
         <?php endif; ?>

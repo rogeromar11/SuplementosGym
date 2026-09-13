@@ -6,9 +6,9 @@
     <p class="section-subtitle">Administra tus datos de contacto y entrega.</p>
 
     <div class="account-nav mt-3">
-      <a class="pill active" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
-      <a class="pill" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
-      <a class="pill" href="<?php echo base_url('salir'); ?>">Cerrar sesion</a>
+      <a class="account-pill active" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
+      <a class="account-pill" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
+      <a class="account-pill" href="<?php echo base_url('salir'); ?>">Cerrar sesion</a>
     </div>
 
     <div class="checkout-layout">

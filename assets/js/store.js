@@ -151,13 +151,15 @@
   }
 
   function bindCountrySelector() {
-    var select = document.querySelector('[data-country-select]');
-    if (!select) { return; }
+    var container = document.querySelector('[data-country-select]');
+    if (!container) { return; }
 
+    var currentBtn = container.querySelector('[data-country-current]');
     var modal = document.querySelector('[data-country-modal]');
+    var pendingId = null;
 
-    function change(confirmCart) {
-      post('pais', { country_id: select.value, confirm_cart: confirmCart ? 1 : '' }).then(function (res) {
+    function doChange(countryId, confirmCart) {
+      post('pais', { country_id: countryId, confirm_cart: confirmCart ? 1 : '' }).then(function (res) {
         if (res.require_confirmation) {
           if (modal) { modal.classList.add('open'); }
           return;
@@ -170,8 +172,15 @@
       });
     }
 
-    select.addEventListener('change', function () {
-      change(false);
+    container.querySelectorAll('[data-country-option]').forEach(function (option) {
+      option.addEventListener('click', function (event) {
+        event.preventDefault();
+        var id = option.getAttribute('data-country-id');
+        var current = currentBtn ? currentBtn.getAttribute('data-country-current') : null;
+        if (String(id) === String(current)) { return; }
+        pendingId = id;
+        doChange(id, false);
+      });
     });
 
     if (modal) {
@@ -180,7 +189,7 @@
       if (confirm) {
         confirm.addEventListener('click', function () {
           modal.classList.remove('open');
-          change(true);
+          if (pendingId) { doChange(pendingId, true); }
         });
       }
       if (cancel) {
@@ -251,6 +260,27 @@
     });
   }
 
+  function bindAccordion() {
+    document.querySelectorAll('[data-accordion]').forEach(function (item) {
+      var btn = item.querySelector('[data-accordion-btn]');
+      var panel = item.querySelector('[data-accordion-panel]');
+      if (!btn || !panel) { return; }
+      btn.addEventListener('click', function () {
+        var open = btn.getAttribute('aria-expanded') === 'true';
+        document.querySelectorAll('[data-accordion] [data-accordion-btn]').forEach(function (other) {
+          other.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('[data-accordion] [data-accordion-panel]').forEach(function (otherPanel) {
+          otherPanel.style.maxHeight = null;
+        });
+        if (!open) {
+          btn.setAttribute('aria-expanded', 'true');
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        }
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     bindAddToCart();
     bindCartPage();
@@ -259,6 +289,7 @@
     bindMobileNav();
     bindReveal();
     bindQtyInputs();
+    bindAccordion();
   });
 
   window.storeToast = toast;

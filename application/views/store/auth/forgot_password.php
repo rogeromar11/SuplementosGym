@@ -2,6 +2,7 @@
 <div class="auth-wrap">
   <div class="auth-card">
     <div class="auth-head">
+      <div class="bicon"><i class="bi bi-key" aria-hidden="true"></i></div>
       <h1>Recuperar acceso</h1>
       <p>Escribe tu correo y te enviaremos las instrucciones.</p>
     </div>

@@ -2,6 +2,7 @@
 <div class="auth-wrap">
   <div class="auth-card">
     <div class="auth-head">
+      <div class="bicon"><i class="bi bi-shield-lock" aria-hidden="true"></i></div>
       <h1>Restablecer acceso</h1>
       <p>Define una contrasena nueva para tu cuenta.</p>
     </div>

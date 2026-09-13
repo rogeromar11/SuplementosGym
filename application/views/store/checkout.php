@@ -5,6 +5,7 @@ $u = $store_user;
 
 <section class="section">
   <div class="container-x">
+    <span class="section-eyebrow">Checkout</span>
     <h1 class="section-title">Finalizar compra</h1>
     <p class="section-subtitle">Confirma tus datos de entrega y metodo de pago.</p>
 

@@ -2,6 +2,7 @@
 
 <section class="section">
   <div class="container-x">
+    <span class="section-eyebrow">Carrito</span>
     <h1 class="section-title">Tu carrito</h1>
     <p class="section-subtitle">Revisa los productos antes de continuar.</p>
 

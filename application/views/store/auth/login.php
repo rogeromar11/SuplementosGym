@@ -2,6 +2,7 @@
 <div class="auth-wrap">
   <div class="auth-card">
     <div class="auth-head">
+      <div class="bicon"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i></div>
       <h1>Iniciar sesion</h1>
       <p>Ingresa para completar tu compra y ver tus pedidos.</p>
     </div>

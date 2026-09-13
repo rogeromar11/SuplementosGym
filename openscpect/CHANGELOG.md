@@ -39,6 +39,38 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 ### Added — Fase 17
 - SEO (title/description/canonical/Open Graph), accesibilidad y responsive.
 
+### Added — Contenido y profesionalizacion (2026-09-12)
+- Logo de la tienda igual al de SGMensajeria (`assets/img/logo.png`).
+- Guia de suplementos en el home y pagina `/guia` (contenido por categoria:
+  proteina, creatina, preentreno, quemador, ganador y otros; beneficio y uso).
+- Seccion "¿Cual es tu objetivo?" con recomendaciones segun meta.
+- Preguntas frecuentes (acordeon) en home y contacto.
+- Paginas `nosotros`, `formas-de-pago` y `contacto` redisenadas con tono
+  profesional (proceso, valores, descripcion por metodo de pago).
+- Funciones de contenido en `store_helper`: `store_supplement_guides()`,
+  `store_goals()`, `store_faqs()`.
+
+### Changed — Rediseño total del sistema de diseño (v2)
+- `assets/css/store.css` reescrito por completo: estetica deportiva/premium.
+- Hero renovado (fondo con rejilla y glow rojo, eyebrow animado, visual con
+  badges flotantes) y marquee/ticker de categorias.
+- Botones pill con gradiente rojo, sombras y hover con elevacion.
+- Navbar con blur, subrayado animado y contador de carrito redisenado.
+- Tarjetas de producto, categorias (tiles con icono), objetivos (dark cards),
+  guia, beneficios, proceso, FAQ y footer redisenados.
+- Marcado de vistas actualizado para el nuevo sistema (bicon, section-eyebrow,
+  add-btn/wa-btn, category-tile, account-pill).
+
+### Changed — Rediseño corporativo (v3, estilo tipo BAC Credomatic)
+- `assets/css/store.css` reescrito a un tema limpio/corporativo: header blanco,
+  fondo claro, tarjetas planas con bordes sutiles, boton rojo solido y
+  tipografia sobria.
+- Header reestructurado con **barra utilitaria superior** (contacto + selector
+  de pais con banderas) y **navbar blanco**.
+- Hero claro (se elimino el fondo oscuro, el glow y el marquee).
+- Secciones con fondo alterno, tarjetas blancas y sombras suaves.
+- Se mantienen todos los `data-*` del JS (carrito, pais, busqueda, acordeon).
+
 ### Changed
 - `application/config/database.php` apunta a `suplementosgym`.
 - `ion_auth` config: `site_title` = "SG Tienda", `default_group` = `customer`.

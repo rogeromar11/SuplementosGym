@@ -138,6 +138,17 @@ class Store extends MY_Controller
 		));
 	}
 
+	public function guide()
+	{
+		$this->render_store('store/guide', array(
+			'guides' => store_supplement_guides(),
+			'goals'  => store_goals(),
+		), array(
+			'title'       => 'Guia de suplementos · SG Tienda',
+			'description' => 'Aprende que hace cada suplemento, sus beneficios y como elegirlo segun tu objetivo.',
+		));
+	}
+
 	public function payments()
 	{
 		$country = current_store_country();

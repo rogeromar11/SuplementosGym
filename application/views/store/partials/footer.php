@@ -7,12 +7,27 @@ $hours = store_setting('business_hours', '');
 </main>
 
 <footer class="site-footer">
+  <div class="footer-cta">
+    <div class="container-x footer-cta-inner">
+      <div>
+        <h3>¿Listo para rendir mas?</h3>
+        <p>Haz tu pedido por WhatsApp o completa tu compra en linea.</p>
+      </div>
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
+        <a class="btn-brand" href="<?php echo base_url('productos'); ?>">Comprar ahora</a>
+        <?php if ( ! empty($wa)): ?>
+          <a class="btn-wa" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+
   <div class="container-x">
     <div class="footer-grid">
       <div>
         <div class="footer-brand">
           <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda">
-          <span>SG Tienda</span>
+          <span>SG <span style="color:var(--brand)">Tienda</span></span>
         </div>
         <p>Suplementos deportivos originales para fuerza, rendimiento y recuperacion. Entrega en <?php echo html_escape($current_country->name); ?>.</p>
       </div>
@@ -22,6 +37,7 @@ $hours = store_setting('business_hours', '');
         <ul class="footer-list">
           <li><a href="<?php echo base_url(); ?>">Inicio</a></li>
           <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
+          <li><a href="<?php echo base_url('guia'); ?>">Guia de suplementos</a></li>
           <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
           <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
           <li><a href="<?php echo base_url('contacto'); ?>">Contacto</a></li>
@@ -41,16 +57,16 @@ $hours = store_setting('business_hours', '');
         <h4>Contacto</h4>
         <ul class="footer-list">
           <?php if ( ! empty($wa)): ?>
-            <li><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a></li>
+            <li><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i>WhatsApp</a></li>
           <?php endif; ?>
           <?php if ( ! empty($email)): ?>
-            <li><a href="mailto:<?php echo html_escape($email); ?>"><i class="bi bi-envelope" aria-hidden="true"></i> <?php echo html_escape($email); ?></a></li>
+            <li><a href="mailto:<?php echo html_escape($email); ?>"><i class="bi bi-envelope"></i><?php echo html_escape($email); ?></a></li>
           <?php endif; ?>
           <?php if ( ! empty($hours)): ?>
-            <li><i class="bi bi-clock" aria-hidden="true"></i> <?php echo html_escape($hours); ?></li>
+            <li><i class="bi bi-clock"></i><?php echo html_escape($hours); ?></li>
           <?php endif; ?>
           <?php if (empty($wa) && empty($email) && empty($hours)): ?>
-            <li class="muted">Datos de contacto por definir.</li>
+            <li>Datos de contacto por definir.</li>
           <?php endif; ?>
         </ul>
       </div>

@@ -57,6 +57,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['productos'] = 'store/products';
 $route['producto/(:num)'] = 'store/product/$1';
 $route['nosotros'] = 'store/about';
+$route['guia'] = 'store/guide';
 $route['formas-de-pago'] = 'store/payments';
 $route['contacto'] = 'store/contact';
 $route['pais'] = 'store/set_country';

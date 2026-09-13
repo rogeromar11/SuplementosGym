@@ -287,3 +287,130 @@ if ( ! function_exists('store_flash'))
 		);
 	}
 }
+
+if ( ! function_exists('store_supplement_guides'))
+{
+	function store_supplement_guides()
+	{
+		return array(
+			'proteinas' => array(
+				'name'        => 'Proteinas',
+				'icon'        => 'bi-cup-hot',
+				'tagline'     => 'Whey, aisladas e hidrolizadas',
+				'description' => 'Favorecen la sintesis proteica y ayudan a cubrir el requerimiento diario de proteina, clave para la recuperacion y el desarrollo muscular.',
+				'benefit'     => 'Recuperacion y construccion muscular.',
+				'usage'       => 'Ideal despues del entrenamiento o como complemento entre comidas.',
+			),
+			'creatinas' => array(
+				'name'        => 'Creatina',
+				'icon'        => 'bi-lightning-charge',
+				'tagline'     => 'El suplemento mas estudiado',
+				'description' => 'Mejora la potencia y el rendimiento en esfuerzos cortos e intensos, favoreciendo la fuerza y la recuperacion entre series.',
+				'benefit'     => 'Fuerza, potencia y rendimiento.',
+				'usage'       => 'Consumo diario constante. No requiere ciclado.',
+			),
+			'preentrenos' => array(
+				'name'        => 'Preentrenos',
+				'icon'        => 'bi-activity',
+				'tagline'     => 'Energia y enfoque',
+				'description' => 'Aportan energia, concentracion y resistencia para afrontar entrenamientos exigentes con mayor intensidad.',
+				'benefit'     => 'Energia, enfoque y resistencia.',
+				'usage'       => 'Tomar 20-30 minutos antes de entrenar.',
+			),
+			'quemadores' => array(
+				'name'        => 'Quemadores de grasa',
+				'icon'        => 'bi-fire',
+				'tagline'     => 'Apoyo a la definicion',
+				'description' => 'Apoyan el metabolismo y el gasto energetico como complemento de una alimentacion y rutina adecuadas.',
+				'benefit'     => 'Apoyo en la etapa de definicion.',
+				'usage'       => 'Segun indicacion del producto, junto a dieta y entrenamiento.',
+			),
+			'ganadores' => array(
+				'name'        => 'Ganadores de peso',
+				'icon'        => 'bi-bar-chart-fill',
+				'tagline'     => 'Mass Gainers',
+				'description' => 'Aportan calorias, carbohidratos y proteina para quienes buscan aumentar peso y masa muscular.',
+				'benefit'     => 'Aumento de masa y peso.',
+				'usage'       => 'Despues del entrenamiento o entre comidas.',
+			),
+			'otros' => array(
+				'name'        => 'Otros',
+				'icon'        => 'bi-capsule',
+				'tagline'     => 'BCAA, vitaminas y mas',
+				'description' => 'Complementos para necesidades especificas: aminoacidos, vitaminas, omega-3 y salud general.',
+				'benefit'     => 'Apoyo integral al rendimiento.',
+				'usage'       => 'Segun tu objetivo y la indicacion del producto.',
+			),
+		);
+	}
+}
+
+if ( ! function_exists('store_goals'))
+{
+	function store_goals()
+	{
+		return array(
+			array(
+				'icon'        => 'bi-graph-up-arrow',
+				'title'       => 'Ganar masa muscular',
+				'description' => 'Necesitas un aporte suficiente de proteina y calorias para construir tejido muscular.',
+				'recommended' => 'Proteinas, ganadores de peso y creatina.',
+				'link'        => 'proteinas',
+			),
+			array(
+				'icon'        => 'bi-fire',
+				'title'       => 'Definir y reducir grasa',
+				'description' => 'Mantener la masa magra mientras se reduce el porcentaje de grasa.',
+				'recommended' => 'Quemadores de grasa y proteinas.',
+				'link'        => 'quemadores',
+			),
+			array(
+				'icon'        => 'bi-lightning-charge-fill',
+				'title'       => 'Energia y rendimiento',
+				'description' => 'Rendir mas en cada sesion con mayor fuerza y concentracion.',
+				'recommended' => 'Preentrenos y creatina.',
+				'link'        => 'preentrenos',
+			),
+			array(
+				'icon'        => 'bi-heart-pulse',
+				'title'       => 'Recuperacion',
+				'description' => 'Acelerar la recuperacion muscular despues del entrenamiento.',
+				'recommended' => 'Proteinas y BCAA.',
+				'link'        => 'proteinas',
+			),
+		);
+	}
+}
+
+if ( ! function_exists('store_faqs'))
+{
+	function store_faqs()
+	{
+		return array(
+			array(
+				'q' => '¿Los productos son originales?',
+				'a' => 'Si. Trabajamos unicamente con marcas reconocidas y verificamos la procedencia de cada producto antes de ofrecerlo.',
+			),
+			array(
+				'q' => '¿Como elijo el suplemento adecuado?',
+				'a' => 'Depende de tu objetivo (masa, definicion, energia o recuperacion). Puedes guiarte por nuestra guia de suplementos o escribirnos por WhatsApp para recibir asesoria personalizada.',
+			),
+			array(
+				'q' => '¿Realizan envios a todo el pais?',
+				'a' => 'Cubrimos las principales zonas del pais activo. Al confirmar tu pedido te indicamos la informacion de entrega.',
+			),
+			array(
+				'q' => '¿Como puedo pagar?',
+				'a' => 'Segun tu pais ofrecemos efectivo, transferencia, SINPE Movil u otras opciones. Consulta la seccion de formas de pago.',
+			),
+			array(
+				'q' => '¿Que pasa si un producto esta agotado?',
+				'a' => 'Lo marcamos como "Agotado" y deshabilitamos la compra. Puedes consultarnos por WhatsApp la disponibilidad y fecha de reposicion.',
+			),
+			array(
+				'q' => '¿Debo consultar a un profesional?',
+				'a' => 'Recomendamos consultar a un medico o nutricionista antes de iniciar cualquier suplementacion, especialmente si tienes alguna condicion de salud.',
+			),
+		);
+	}
+}

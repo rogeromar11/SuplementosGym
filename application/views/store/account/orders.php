@@ -17,8 +17,8 @@ $status_labels = array(
     <p class="section-subtitle">Historial de tus compras.</p>
 
     <div class="account-nav mt-3">
-      <a class="pill" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
-      <a class="pill active" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
+      <a class="account-pill" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
+      <a class="account-pill active" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
     </div>
 
     <?php if (empty($orders)): ?>

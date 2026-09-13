@@ -2,6 +2,7 @@
 <div class="auth-wrap">
   <div class="auth-card auth-card-wide">
     <div class="auth-head">
+      <div class="bicon"><i class="bi bi-person-plus" aria-hidden="true"></i></div>
       <h1>Crear cuenta</h1>
       <p>Completa tus datos para comprar en SG Tienda.</p>
     </div>
