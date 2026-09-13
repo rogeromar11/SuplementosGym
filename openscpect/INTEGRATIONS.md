@@ -1,0 +1,58 @@
+# INTEGRATIONS · Integraciones y assets
+
+## WhatsApp
+
+- Numero centralizado por pais en `store_settings`:
+  - `whatsapp_number` (CR y SV).
+- Mensajes:
+  - Producto: `Hola, estoy interesado en el producto: [PRODUCTO].`
+  - Pedido: `Hola, acabo de realizar el pedido #[NUMERO].`
+- El numero se adapta segun el pais activo.
+- Placeholder hasta contar con el numero real.
+
+## Correo
+
+- PHPMailer 6.9 via `application/libraries/MY_Email.php`.
+- Configuracion SMTP en `application/config/email.php`.
+- Usar para recuperacion de contrasena y notificaciones de pedido.
+- No inventar direccion de correo: configurable (`store_settings.contact_email`).
+
+## Assets locales
+
+| Recurso | Ruta |
+|---|---|
+| Bootstrap 5 | `assets/vendor/bootstrap` |
+| Bootstrap Icons | `assets/vendor/bootstrap-icons` |
+| Logo | `assets/img/logo.png` |
+| Imagenes de producto | `uploads/products/` (a crear) |
+
+> Copiar `bootstrap` y `bootstrap-icons` desde SGMensajeria (`assets/vendor/`) o
+> usar los disponibles. No instalar frameworks innecesarios.
+
+## Google Fonts
+
+- **Fira Code**: titulos, botones, precios, destacados.
+- **Fira Sans**: parrafos, formularios, descripciones.
+- Cargar via Google Fonts `<link>` o fuentes locales.
+
+## REST server
+
+- `chriskacerguis/codeigniter-restserver` ya presente.
+- Endpoints de tienda (si se requieren) como metodos `<resource>_<verb>`.
+
+## Env / configuracion
+
+- No hay carga nativa de variables de entorno en el esqueleto base; usar
+  `application/config/*` y `store_settings` para datos de contacto.
+- Nunca poner credenciales reales en archivos versionados.
+
+## Contacto publico (placeholders)
+
+| Dato | Fuente |
+|---|---|
+| WhatsApp | `store_settings.whatsapp_number` |
+| Correo | `store_settings.contact_email` |
+| Horario | `store_settings.business_hours` |
+| Envio | `store_settings.shipping_cost`, `free_shipping_from` |
+
+> Estos valores se cargan con placeholders y se editan cuando el negocio los confirme.
