@@ -60,8 +60,8 @@ No marcar como completado algo que no haya sido probado.
 
 ### Fase 6 — Frontend  `[x]`
 - [x] Bootstrap 5 + Bootstrap Icons locales en `assets/vendor`.
-- [x] Identidad visual (`assets/css/store.css`) con la paleta de marca.
-- [x] Tipografias Fira Code / Fira Sans.
+- [x] Identidad visual (`assets/css/store.css`) — libre/evolutiva (ver `DESIGN.md`).
+- [x] Tipografias autocontenidas (Space Grotesk / Inter en `assets/fonts/`).
 - [x] Navbar sticky, hero, footer, responsive mobile-first.
 - [x] `assets/js/store.js` en JavaScript vanilla.
 

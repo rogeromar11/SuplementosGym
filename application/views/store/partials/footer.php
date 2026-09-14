@@ -7,80 +7,65 @@ $hours = store_setting('business_hours', '');
 </main>
 
 <footer class="site-footer">
-  <div class="footer-cta">
-    <div class="container-x footer-cta-inner">
-      <div>
-        <h3>¿Listo para rendir mas?</h3>
-        <p>Haz tu pedido por WhatsApp o completa tu compra en linea.</p>
+  <div class="container-x footer-grid">
+    <div class="f-brand">
+      <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda" width="110" height="44">
+      <p>Suplementos originales para gente que entrena en serio. <?php echo html_escape($current_country->name); ?>.</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+        <a href="#" aria-label="TikTok"><i class="bi bi-tiktok" aria-hidden="true"></i></a>
       </div>
-      <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
-        <a class="btn-brand" href="<?php echo base_url('productos'); ?>">Comprar ahora</a>
-        <?php if ( ! empty($wa)): ?>
-          <a class="btn-wa" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+    </div>
+
+    <nav class="f-col" aria-label="Tienda">
+      <h3>Tienda</h3>
+      <ul>
+        <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
+        <li><a href="<?php echo base_url('guia'); ?>">Guia de suplementos</a></li>
+        <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
+      </ul>
+    </nav>
+
+    <nav class="f-col" aria-label="Ayuda">
+      <h3>Ayuda</h3>
+      <ul>
+        <li><a href="<?php echo base_url('contacto'); ?>">Envios y entregas</a></li>
+        <li><a href="<?php echo base_url('contacto'); ?>">Cambios y devoluciones</a></li>
+        <li><a href="<?php echo base_url('contacto'); ?>">Preguntas frecuentes</a></li>
+      </ul>
+    </nav>
+
+    <div class="f-col f-contact">
+      <h3>Contacto</h3>
+      <ul>
+        <?php if ( ! empty($hours)): ?>
+          <li><i class="bi bi-clock" aria-hidden="true"></i><span><?php echo html_escape($hours); ?></span></li>
         <?php endif; ?>
-      </div>
+        <?php if ( ! empty($email)): ?>
+          <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:<?php echo html_escape($email); ?>"><?php echo html_escape($email); ?></a></li>
+        <?php endif; ?>
+        <?php if ( ! empty($wa)): ?>
+          <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener">Escribenos por WhatsApp</a></li>
+        <?php endif; ?>
+        <?php if (empty($hours) && empty($email) && empty($wa)): ?>
+          <li><i class="bi bi-info-circle" aria-hidden="true"></i><span>Datos de contacto por definir.</span></li>
+        <?php endif; ?>
+      </ul>
     </div>
   </div>
 
-  <div class="container-x">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-brand">
-          <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda">
-          <span>SG <span style="color:var(--brand)">Tienda</span></span>
-        </div>
-        <p>Suplementos deportivos originales para fuerza, rendimiento y recuperacion. Entrega en <?php echo html_escape($current_country->name); ?>.</p>
-      </div>
-
-      <div>
-        <h4>Navegacion</h4>
-        <ul class="footer-list">
-          <li><a href="<?php echo base_url(); ?>">Inicio</a></li>
-          <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
-          <li><a href="<?php echo base_url('guia'); ?>">Guia de suplementos</a></li>
-          <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
-          <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
-          <li><a href="<?php echo base_url('contacto'); ?>">Contacto</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4>Categorias</h4>
-        <ul class="footer-list">
-          <?php foreach (store_categories() as $key => $label): ?>
-            <li><a href="<?php echo base_url('productos?categoria=' . $key); ?>"><?php echo html_escape($label); ?></a></li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-
-      <div>
-        <h4>Contacto</h4>
-        <ul class="footer-list">
-          <?php if ( ! empty($wa)): ?>
-            <li><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i>WhatsApp</a></li>
-          <?php endif; ?>
-          <?php if ( ! empty($email)): ?>
-            <li><a href="mailto:<?php echo html_escape($email); ?>"><i class="bi bi-envelope"></i><?php echo html_escape($email); ?></a></li>
-          <?php endif; ?>
-          <?php if ( ! empty($hours)): ?>
-            <li><i class="bi bi-clock"></i><?php echo html_escape($hours); ?></li>
-          <?php endif; ?>
-          <?php if (empty($wa) && empty($email) && empty($hours)): ?>
-            <li>Datos de contacto por definir.</li>
-          <?php endif; ?>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <span>&copy; <?php echo date('Y'); ?> SG Tienda. Todos los derechos reservados.</span>
-      <span>
-        <a href="<?php echo base_url('nosotros'); ?>">Politicas</a> ·
-        <a href="<?php echo base_url('nosotros'); ?>">Terminos</a>
-      </span>
-    </div>
+  <div class="container-x footer-bottom">
+    <p>Precios y disponibilidad segun el pais seleccionado (<?php echo html_escape($current_country->name); ?>).</p>
+    <p>&copy; <?php echo date('Y'); ?> SG Tienda &middot; Costa Rica &amp; El Salvador</p>
   </div>
 </footer>
+
+<?php if ( ! empty($wa)): ?>
+  <a class="fab-wa" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+    <i class="bi bi-whatsapp" aria-hidden="true"></i>
+  </a>
+<?php endif; ?>
 
 <div class="store-modal" data-country-modal role="dialog" aria-modal="true" aria-labelledby="countryModalTitle">
   <div class="store-modal-card">
@@ -93,7 +78,6 @@ $hours = store_setting('business_hours', '');
   </div>
 </div>
 
-<script src="<?php echo base_url('assets/vendor/bootstrap/bootstrap.bundle.min.js'); ?>"></script>
 <script>
 window.STORE_CONFIG = {
   base: <?php echo json_encode(base_url()); ?>,
@@ -101,6 +85,9 @@ window.STORE_CONFIG = {
   csrfHash: <?php echo json_encode($this->security->get_csrf_hash()); ?>
 };
 </script>
-<script src="<?php echo base_url('assets/js/store.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendor/gsap/gsap.min.js'); ?>" defer></script>
+<script src="<?php echo base_url('assets/vendor/gsap/ScrollTrigger.min.js'); ?>" defer></script>
+<script src="<?php echo base_url('assets/js/store.js'); ?>" defer></script>
+<script src="<?php echo base_url('assets/js/landing.js'); ?>" defer></script>
 </body>
 </html>

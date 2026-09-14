@@ -22,6 +22,8 @@ de suplementos deportivos construida sobre el proyecto `SuplementosGym`.
 | [AI_CONTEXT.md](AI_CONTEXT.md) | Contexto maestro + protocolo obligatorio para futuras IAs. |
 | [AUDIT.md](AUDIT.md) | Auditoria de SGMensajeria realizada en Fase 1. |
 | [PROJECT.md](PROJECT.md) | Vision, objetivos y alcance de SG Tienda. |
+| [DESIGN.md](DESIGN.md) | Sistema de diseno (tipografia, color, movimiento). |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Publicacion en cPanel (assets autocontenidos). |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitectura e independencia de datos. |
 | [DATABASE.md](DATABASE.md) | Esquema de SGMensajeria (referencia) y de SuplementosGym (destino). |
 | [STORE.md](STORE.md) | Catalogo, categorias, filtros, busqueda, carrito, checkout, WhatsApp. |

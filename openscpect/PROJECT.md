@@ -39,6 +39,15 @@ e-commerce que replique visual y funcionalmente el estilo del ecosistema SG, per
 
 ## Identidad visual
 
+> **La identidad visual es libre y evolutiva.** SGMensajeria es la referencia
+> **funcional** (flujos, datos, logica), pero **no** es una camisa de fuerza para
+> el diseno. La paleta, tipografias, iconografia, layout y animaciones de SG Tienda
+> pueden cambiar por completo si el resultado se ve mas moderno y profesional.
+> Lo unico obligatorio es la **paridad funcional**: catalogo, carrito, checkout,
+> pedidos, inventario, multipais y seguridad.
+
+Referencia inicial (opcional, no obligatoria):
+
 ```css
 :root {
   --brand: #DC2626;
@@ -56,12 +65,11 @@ e-commerce que replique visual y funcionalmente el estilo del ecosistema SG, per
 }
 ```
 
-Estetica: profesional, premium, deportiva, moderna, minimalista, orientada a conversion.
-**Sin** gradientes morados o azules.
+Estetica buscada: profesional, moderna, con personalidad (no generica), orientada a
+conversion y deportiva. Se permiten gradientes de marca, animaciones y microinteracciones.
 
-Tipografias:
-- **Fira Code**: titulos, botones, precios, elementos destacados.
-- **Fira Sans**: parrafos, formularios, descripciones, contenido general.
+Tipografias: ver `DESIGN.md`. Deben ser **autocontenidas** (servidas localmente),
+no depender de CDN.
 
 ## Prioridades
 

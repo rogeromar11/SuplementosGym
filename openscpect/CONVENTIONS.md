@@ -35,9 +35,12 @@
 
 ## CSS
 
-- Variables de marca en `:root` (ver `PROJECT.md`).
+- Sistema de diseno en `assets/css/store.css`; fuentes en `assets/css/fonts.css`.
+- **La identidad visual es libre**: la paleta/tipografias pueden evolucionar
+  (ver `DESIGN.md`). SGMensajeria no impone colores.
+- Todo autocontenido (sin CDN) para servir en cPanel: fuentes, CSS, JS e imagenes
+  locales en `assets/`.
 - Mobile-first; grid Bootstrap (`row`, `col-6`, `col-md-4`, `col-lg-3`).
-- No modificar CSS global de forma innecesaria.
 
 ## Composer
 

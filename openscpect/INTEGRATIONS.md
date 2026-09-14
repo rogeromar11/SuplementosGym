@@ -24,16 +24,25 @@
 | Bootstrap 5 | `assets/vendor/bootstrap` |
 | Bootstrap Icons | `assets/vendor/bootstrap-icons` |
 | Logo | `assets/img/logo.png` |
-| Imagenes de producto | `uploads/products/` (a crear) |
+| Imagenes de producto | `assets/img/products/` |
 
 > Copiar `bootstrap` y `bootstrap-icons` desde SGMensajeria (`assets/vendor/`) o
 > usar los disponibles. No instalar frameworks innecesarios.
 
 ## Google Fonts
 
-- **Fira Code**: titulos, botones, precios, destacados.
-- **Fira Sans**: parrafos, formularios, descripciones.
-- Cargar via Google Fonts `<link>` o fuentes locales.
+> **Unificado:** las fuentes se sirven **localmente** desde `assets/fonts/`
+> con `@font-face` en `assets/css/fonts.css`. Actualmente **Anton** (display) y
+> **Manrope** (texto). No se usa CDN en runtime. Ver `DESIGN.md`.
+
+## Diseno y animaciones
+
+| Recurso | Ruta |
+|---|---|
+| Tema base (carpeta `Diseño`) | `assets/css/design.css` |
+| Capa funcional SG Tienda | `assets/css/store.css` |
+| Animaciones (GSAP/ScrollTrigger) | `assets/vendor/gsap/` + `assets/js/landing.js` |
+| Hero video + poster | `assets/video/hero-web.mp4`, `assets/img/hero-poster.jpg` |
 
 ## REST server
 

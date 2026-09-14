@@ -4,6 +4,15 @@ $has_products = ! empty($products);
 $country_total = isset($country_total) ? (int) $country_total : 0;
 $is_search = ! empty($filters['search']);
 $is_category = ! empty($filters['category']);
+$filtered_total = isset($filtered_total) ? (int) $filtered_total : 0;
+$per_page = isset($per_page) ? (int) $per_page : 25;
+$page = isset($page) ? (int) $page : 1;
+$pages = isset($pages) ? (int) $pages : 1;
+$from = $filtered_total > 0 ? (($page - 1) * $per_page) + 1 : 0;
+$to = min($page * $per_page, $filtered_total);
+$per_options = array(10, 25, 50, 100);
+$win_start = max(1, $page - 2);
+$win_end = min($pages, $page + 2);
 ?>
 
 <section class="section" style="padding-bottom:1.5rem;">
@@ -13,7 +22,7 @@ $is_category = ! empty($filters['category']);
     </nav>
     <div class="section-head" style="margin-top:.75rem; margin-bottom:0;">
       <div>
-        <span class="section-eyebrow">Catalogo</span>
+        <p class="eyebrow" style="margin-bottom:8px;">Catalogo</p>
         <h1 class="section-title">Productos</h1>
         <p class="section-subtitle">Catalogo disponible en <?php echo html_escape($current_country->name); ?>.</p>
       </div>
@@ -34,16 +43,26 @@ $is_category = ! empty($filters['category']);
       <div class="catalog-layout catalog-layout--right">
         <div class="catalog-main">
           <div class="catalog-toolbar">
-            <span class="muted"><strong><?php echo count($products); ?></strong> producto(s)</span>
-            <label class="muted" style="display:flex; align-items:center; gap:.5rem;">
-              Ordenar por
-              <select class="toolbar-select" onchange="var f=document.getElementById('catalogFilters'); f.orden.value=this.value; f.submit();" aria-label="Ordenar productos">
-                <option value="relevance"<?php echo $filters['sort'] === 'relevance' ? ' selected' : ''; ?>>Relevancia</option>
-                <option value="name"<?php echo $filters['sort'] === 'name' ? ' selected' : ''; ?>>Nombre</option>
-                <option value="price_asc"<?php echo $filters['sort'] === 'price_asc' ? ' selected' : ''; ?>>Precio: menor a mayor</option>
-                <option value="price_desc"<?php echo $filters['sort'] === 'price_desc' ? ' selected' : ''; ?>>Precio: mayor a menor</option>
-              </select>
-            </label>
+            <span class="muted"><strong><?php echo $filtered_total; ?></strong> producto(s)<?php echo $filtered_total > 0 ? ' · mostrando ' . $from . '–' . $to : ''; ?></span>
+            <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <label class="perpage">
+                Mostrar
+                <select onchange="var f=document.getElementById('catalogFilters'); f.por_pagina.value=this.value; f.submit();" aria-label="Productos por pagina">
+                  <?php foreach ($per_options as $opt): ?>
+                    <option value="<?php echo $opt; ?>"<?php echo $opt === $per_page ? ' selected' : ''; ?>><?php echo $opt; ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </label>
+              <label class="muted" style="display:flex; align-items:center; gap:.5rem;">
+                Ordenar por
+                <select class="toolbar-select" onchange="var f=document.getElementById('catalogFilters'); f.orden.value=this.value; f.submit();" aria-label="Ordenar productos">
+                  <option value="relevance"<?php echo $filters['sort'] === 'relevance' ? ' selected' : ''; ?>>Relevancia</option>
+                  <option value="name"<?php echo $filters['sort'] === 'name' ? ' selected' : ''; ?>>Nombre</option>
+                  <option value="price_asc"<?php echo $filters['sort'] === 'price_asc' ? ' selected' : ''; ?>>Precio: menor a mayor</option>
+                  <option value="price_desc"<?php echo $filters['sort'] === 'price_desc' ? ' selected' : ''; ?>>Precio: mayor a menor</option>
+                </select>
+              </label>
+            </div>
           </div>
 
           <?php if ($has_products): ?>
@@ -57,6 +76,40 @@ $is_category = ! empty($filters['category']);
               <h3>No encontramos productos que coincidan con tu busqueda.</h3>
               <p>Prueba con otro nombre, categoria o laboratorio.</p>
             </div>
+
+            <?php if ($pages > 1): ?>
+              <nav class="pagination" aria-label="Paginacion de productos">
+                <?php if ($page > 1): ?>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => $page - 1)); ?>" aria-label="Pagina anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>
+                <?php else: ?>
+                  <span class="is-disabled" aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                <?php endif; ?>
+
+                <?php if ($win_start > 1): ?>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => 1)); ?>">1</a>
+                  <?php if ($win_start > 2): ?><span class="ellipsis">…</span><?php endif; ?>
+                <?php endif; ?>
+
+                <?php for ($p = $win_start; $p <= $win_end; $p++): ?>
+                  <?php if ($p === $page): ?>
+                    <span class="is-active" aria-current="page"><?php echo $p; ?></span>
+                  <?php else: ?>
+                    <a href="<?php echo store_products_url($filters, array('pagina' => $p)); ?>"><?php echo $p; ?></a>
+                  <?php endif; ?>
+                <?php endfor; ?>
+
+                <?php if ($win_end < $pages): ?>
+                  <?php if ($win_end < $pages - 1): ?><span class="ellipsis">…</span><?php endif; ?>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => $pages)); ?>"><?php echo $pages; ?></a>
+                <?php endif; ?>
+
+                <?php if ($page < $pages): ?>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => $page + 1)); ?>" aria-label="Pagina siguiente"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                <?php else: ?>
+                  <span class="is-disabled" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                <?php endif; ?>
+              </nav>
+            <?php endif; ?>
           <?php else: ?>
             <div class="empty-state">
               <i class="bi bi-search" aria-hidden="true"></i>
@@ -115,6 +168,7 @@ $is_category = ! empty($filters['category']);
               </label>
             </div>
             <input type="hidden" name="orden" value="<?php echo html_escape($filters['sort']); ?>">
+            <input type="hidden" name="por_pagina" value="<?php echo (int) $per_page; ?>">
             <button type="submit" class="btn-brand btn-block">Aplicar filtros</button>
           </form>
         </aside>

@@ -1,4 +1,5 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 $cat_icons = array(
 	'proteinas'   => 'bi-droplet-half',
 	'creatinas'   => 'bi-lightning-charge',
@@ -7,97 +8,120 @@ $cat_icons = array(
 	'ganadores'   => 'bi-bar-chart-fill',
 	'otros'       => 'bi-capsule',
 );
+$testimonios = array(
+	'CR' => array(
+		array('nombre' => 'Andres M.', 'ciudad' => 'San Jose', 'texto' => 'Pedi whey y creatina un martes y el miercoles ya estaba entrenando. Todo sellado y original.'),
+		array('nombre' => 'Karla V.', 'ciudad' => 'Heredia', 'texto' => 'Llevo dos anos comprando aqui. Nunca me han vendido una imitacion y los precios se mantienen.'),
+		array('nombre' => 'Diego R.', 'ciudad' => 'Cartago', 'texto' => 'La asesoria por WhatsApp es real: me armaron el combo segun mi presupuesto, sin venderme de mas.'),
+	),
+	'SV' => array(
+		array('nombre' => 'Sofia A.', 'ciudad' => 'San Salvador', 'texto' => 'Pedi un viernes y el lunes ya tenia mi proteina en la puerta. Excelente servicio.'),
+		array('nombre' => 'Mauricio L.', 'ciudad' => 'Santa Tecla', 'texto' => 'Precios justos y todo llega sellado. Es mi tienda fija para suplementos.'),
+		array('nombre' => 'Andrea P.', 'ciudad' => 'Soyapango', 'texto' => 'Me ayudaron a elegir mi primer pre-entreno y me explicaron como tomarlo. 100% recomendados.'),
+	),
+);
+$resenas = isset($testimonios[$current_country->code]) ? $testimonios[$current_country->code] : $testimonios['CR'];
+$marquee_items = array('Envio 24-48 h', '100% originales', 'Asesoria por WhatsApp', 'Costa Rica y El Salvador', 'Proteina · Creatina · Preentrenos');
+$wa_pedido = $whatsapp_url ?: base_url('contacto');
 ?>
 
 <section class="hero">
-  <div class="container-x hero-inner">
-    <div class="hero-copy">
-      <span class="hero-eyebrow">Suplementacion profesional</span>
-      <h1 class="hero-title">Entrena duro.<br>Recupera <span>mejor</span>.</h1>
-      <p class="hero-text">Suplementos deportivos originales para fuerza, rendimiento y recuperacion. Seleccionamos cada producto para que alcances tus objetivos, con entrega en <?php echo html_escape($current_country->name); ?>.</p>
-      <div class="hero-actions">
-        <a class="btn-brand btn-lg" href="<?php echo base_url('productos'); ?>"><i class="bi bi-grid" aria-hidden="true"></i> Ver productos</a>
-        <a class="btn-outline btn-lg" href="<?php echo base_url('guia'); ?>"><i class="bi bi-journal-text" aria-hidden="true"></i> Guia de suplementos</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><strong><?php echo (int) $total_products; ?>+</strong><span>Productos disponibles</span></div>
-        <div class="hero-stat"><strong>100%</strong><span>Originales</span></div>
-        <div class="hero-stat"><strong><?php echo html_escape($current_country->code); ?></strong><span>Cobertura nacional</span></div>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="hero-visual-card">
-        <img src="<?php echo base_url('assets/img/product-placeholder.svg'); ?>" alt="Suplementos deportivos SG Tienda">
-        <div class="hero-float f1"><i class="bi bi-patch-check-fill" aria-hidden="true"></i><span><b>Originales</b><br>garantizados</span></div>
-        <div class="hero-float f2"><i class="bi bi-truck" aria-hidden="true"></i><span><b>Entrega</b><br><?php echo html_escape($current_country->name); ?></span></div>
-      </div>
-    </div>
+  <div class="hero-media">
+    <video class="hero-video" autoplay muted loop playsinline poster="<?php echo base_url('assets/img/hero-poster.jpg'); ?>" preload="metadata" aria-hidden="true">
+      <source src="<?php echo base_url('assets/video/hero-web.mp4'); ?>" type="video/mp4">
+    </video>
+    <div class="hero-veil"></div>
   </div>
+
+  <div class="container-x hero-content">
+    <p class="eyebrow hero-kicker">Tienda oficial en <?php echo html_escape($current_country->name); ?> · Envios a todo el pais</p>
+
+    <h1 class="hero-title">
+      <span class="line"><span>DISCIPLINA HOY,</span></span>
+      <span class="line"><span>RESULTADOS <em>SIEMPRE.</em></span></span>
+    </h1>
+
+    <p class="hero-sub">Proteina, creatina y pre-entrenos 100% originales. Asesoria de gente que entrena, entrega en 24-48 horas y pago contra entrega.</p>
+
+    <div class="hero-ctas">
+      <a class="btn btn-brand" href="#productos">Ver mas vendidos
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a class="btn btn-ghost" href="<?php echo html_escape($wa_pedido); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Asesoria por WhatsApp</a>
+    </div>
+
+    <ul class="hero-stats">
+      <li class="stat"><span class="stat-num">24-48 h</span><span class="stat-label">Entrega</span></li>
+      <li class="stat"><span class="stat-num">100%</span><span class="stat-label">Originales</span></li>
+      <li class="stat"><span class="stat-num"><?php echo (int) $brand_count; ?>+</span><span class="stat-label">Marcas</span></li>
+      <li class="stat"><span class="stat-num">CR + SV</span><span class="stat-label">Dos paises</span></li>
+    </ul>
+  </div>
+
+  <button class="video-toggle" type="button" aria-label="Pausar video de fondo">
+    <i class="bi bi-pause-fill i-pause" aria-hidden="true"></i>
+    <i class="bi bi-play-fill i-play" aria-hidden="true"></i>
+  </button>
 </section>
 
-<section class="section">
-  <div class="container-x">
-    <div class="benefit-strip reveal">
-      <div class="benefit-strip-inner">
-        <div class="benefit-item">
-          <div class="bicon"><i class="bi bi-patch-check-fill" aria-hidden="true"></i></div>
-          <div><h3>Productos originales</h3><p>Trabajamos solo con marcas reconocidas y verificamos su procedencia.</p></div>
-        </div>
-        <div class="benefit-item">
-          <div class="bicon"><i class="bi bi-person-check-fill" aria-hidden="true"></i></div>
-          <div><h3>Asesoria experta</h3><p>Te orientamos para elegir el suplemento ideal segun tu objetivo.</p></div>
-        </div>
-        <div class="benefit-item">
-          <div class="bicon"><i class="bi bi-truck" aria-hidden="true"></i></div>
-          <div><h3>Entrega rapida</h3><p>Coordinamos tu entrega de forma agil y segura.</p></div>
-        </div>
-        <div class="benefit-item">
-          <div class="bicon"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></div>
-          <div><h3>Cobertura nacional</h3><p>Envios a las principales zonas de <?php echo html_escape($current_country->name); ?>.</p></div>
-        </div>
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <?php for ($r = 0; $r < 2; $r++): ?>
+      <div class="marquee-set">
+        <?php foreach ($marquee_items as $item): ?>
+          <span class="m-item"><?php echo html_escape($item); ?></span><span class="m-sep"></span>
+        <?php endforeach; ?>
       </div>
-    </div>
+    <?php endfor; ?>
   </div>
-</section>
+</div>
 
-<section class="section" style="padding-top:0;">
+<section class="section" id="categorias">
   <div class="container-x">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <div>
-        <span class="section-eyebrow">Categorias</span>
-        <h2 class="section-title">Compra por categoria</h2>
-        <p class="section-subtitle">Encuentra lo que tu entrenamiento necesita.</p>
+        <p class="eyebrow">Categorias</p>
+        <h2 class="section-title">TODO PARA TU <em>ENTRENO</em></h2>
+        <p class="section-subtitle">Elegi por objetivo. Cada producto original, con garantia de cambio y respaldo de tienda.</p>
       </div>
-      <a class="btn-ghost btn-sm" href="<?php echo base_url('productos'); ?>">Ver todo <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
     </div>
-    <div class="category-grid">
+    <div class="cat-grid">
       <?php foreach (store_categories() as $key => $label): ?>
-        <a class="category-tile reveal" href="<?php echo base_url('productos?categoria=' . $key); ?>">
-          <span class="ticon"><i class="bi <?php echo html_escape(isset($cat_icons[$key]) ? $cat_icons[$key] : 'bi-box-seam'); ?>" aria-hidden="true"></i></span>
-          <b><?php echo html_escape($label); ?></b>
-          <small><?php echo (int) (isset($category_counts[$key]) ? $category_counts[$key] : 0); ?> productos</small>
+        <a class="card cat-card spot" href="<?php echo base_url('productos?categoria=' . $key); ?>" data-reveal>
+          <span class="cat-icon"><i class="bi <?php echo html_escape($cat_icons[$key]); ?>" aria-hidden="true"></i></span>
+          <h3 class="cat-name"><?php echo html_escape($label); ?></h3>
+          <p class="cat-desc">Productos originales seleccionados.</p>
+          <span class="cat-count"><?php echo (int) (isset($category_counts[$key]) ? $category_counts[$key] : 0); ?> productos</span>
+          <span class="cat-arrow"><i class="bi bi-arrow-right" aria-hidden="true"></i></span>
         </a>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
 
-<section class="section" style="padding-top:0;">
+<section class="section" id="productos" style="padding-top:0;">
   <div class="container-x">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <div>
-        <span class="section-eyebrow">Seleccion</span>
-        <h2 class="section-title">Destacados</h2>
-        <p class="section-subtitle">Los favoritos de nuestros clientes.</p>
+        <p class="eyebrow">Catalogo</p>
+        <h2 class="section-title">MAS <em>VENDIDOS</em></h2>
+        <p class="section-subtitle">Lo que mas sale del mostrador. <span id="pcount"><?php echo count($featured); ?> productos</span> disponibles.</p>
       </div>
+      <a class="btn btn-ghost btn-sm" href="<?php echo base_url('productos'); ?>">Ver todo <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="chips" role="group" aria-label="Filtrar por categoria" data-reveal>
+      <a class="chip active" href="<?php echo base_url('productos'); ?>">Todos</a>
+      <?php foreach (store_categories() as $key => $label): ?>
+        <a class="chip" href="<?php echo base_url('productos?categoria=' . $key); ?>"><?php echo html_escape($label); ?></a>
+      <?php endforeach; ?>
     </div>
 
     <?php if (empty($featured)): ?>
       <div class="empty-state">
         <i class="bi bi-box-seam" aria-hidden="true"></i>
-        <h3>Actualmente no hay productos disponibles para este pais.</h3>
-        <p>Estamos trabajando para ampliar nuestro catalogo. Vuelve pronto.</p>
-        <a class="btn-ghost mt-3" href="<?php echo base_url('contacto'); ?>">Contactar</a>
+        <h3>Actualmente no hay productos para este pais.</h3>
+        <p>Estamos ampliando el catalogo. Vuelve pronto.</p>
       </div>
     <?php else: ?>
       <div class="product-grid">
@@ -106,29 +130,98 @@ $cat_icons = array(
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+
+    <p class="catalog-note" data-reveal>
+      <span>Precios en <?php echo ($current_country->currency === 'USD') ? 'dolares (US$)' : 'colones costarricenses (₡)';?>. Envio en 24-48 h.</span>
+      <a class="link" href="<?php echo base_url('productos'); ?>">¿No encontras lo que buscas? Escribinos</a>
+    </p>
   </div>
 </section>
 
 <section class="section" style="padding-top:0;">
   <div class="container-x">
-    <div class="section-head">
-      <div>
-        <span class="section-eyebrow">Aprende</span>
-        <h2 class="section-title">Conoce los suplementos</h2>
-        <p class="section-subtitle">Que hace cada suplemento y para que sirve.</p>
+    <div class="promo card spot" data-reveal>
+      <div class="promo-left">
+        <p class="eyebrow">Primera compra</p>
+        <h2 class="promo-title">10% OFF EN TU <em>PRIMER PEDIDO</em></h2>
+        <p class="promo-sub">Valido en tu primer pedido con envio a cualquier parte del pais.</p>
       </div>
-      <a class="btn-ghost btn-sm" href="<?php echo base_url('guia'); ?>">Guia completa <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+      <div class="promo-right">
+        <a class="btn btn-dark" href="<?php echo html_escape($wa_pedido); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Reclamar descuento</a>
+        <p class="promo-small">Sin codigo: solo decisnos que es tu primera compra.</p>
+      </div>
     </div>
-    <div class="guide-grid">
-      <?php foreach (store_supplement_guides() as $key => $guide): ?>
-        <article class="guide-card reveal">
-          <div class="guide-icon"><i class="bi <?php echo html_escape($guide['icon']); ?>" aria-hidden="true"></i></div>
-          <span class="guide-tagline"><?php echo html_escape($guide['tagline']); ?></span>
-          <h3><?php echo html_escape($guide['name']); ?></h3>
-          <p><?php echo html_escape($guide['description']); ?></p>
-          <div class="guide-meta">
-            <div><strong>Beneficio</strong><br><?php echo html_escape($guide['benefit']); ?></div>
-            <div><strong>Uso</strong><br><?php echo html_escape($guide['usage']); ?></div>
+  </div>
+</section>
+
+<section class="section" id="beneficios" style="padding-top:0;">
+  <div class="container-x">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Por que comprarnos</p>
+        <h2 class="section-title">HECHO PARA GENTE <em>SERIA</em></h2>
+        <p class="section-subtitle">Mas que una tienda: un equipo que entrena y te responde cuando tienes dudas.</p>
+      </div>
+    </div>
+    <div class="benefits-grid">
+      <div class="card benefit spot" data-reveal>
+        <span class="b-icon"><i class="bi bi-grid" aria-hidden="true"></i></span>
+        <p class="b-num"><span class="count" data-target="<?php echo (int) $total_products; ?>" data-sufijo="+">0</span></p>
+        <p class="b-label">Productos disponibles</p>
+        <p class="b-desc">Catalogo activo en <?php echo html_escape($current_country->name); ?>.</p>
+      </div>
+      <div class="card benefit spot" data-reveal>
+        <span class="b-icon"><i class="bi bi-award" aria-hidden="true"></i></span>
+        <p class="b-num"><span class="count" data-target="<?php echo (int) $brand_count; ?>" data-sufijo="+">0</span></p>
+        <p class="b-label">Marcas</p>
+        <p class="b-desc">Laboratorios reconocidos a nivel mundial.</p>
+      </div>
+      <div class="card benefit spot" data-reveal>
+        <span class="b-icon"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+        <p class="b-num"><span class="count" data-target="2">0</span></p>
+        <p class="b-label">Paises</p>
+        <p class="b-desc">Costa Rica y El Salvador con envios nacionales.</p>
+      </div>
+      <div class="card benefit spot" data-reveal>
+        <span class="b-icon"><i class="bi bi-patch-check" aria-hidden="true"></i></span>
+        <p class="b-num"><span class="count" data-target="100" data-sufijo="%">0</span></p>
+        <p class="b-label">Originales</p>
+        <p class="b-desc">Productos verificados o te devolvemos tu dinero.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tiendas" style="padding-top:0;">
+  <div class="container-x">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Tiendas</p>
+        <h2 class="section-title">DOS PAISES, UN MISMO <em>ESTANDAR</em></h2>
+        <p class="section-subtitle">Compra donde estes: retiro en tienda o envio a todo el pais.</p>
+      </div>
+    </div>
+    <div class="stores-grid">
+      <?php foreach ($countries as $index => $country): ?>
+        <?php $activa = ((int) $country->id === (int) $current_country->id); ?>
+        <article class="card store-card spot<?php echo $activa ? ' active' : ''; ?>" data-reveal>
+          <div class="store-head">
+            <span class="store-num">0<?php echo $index + 1; ?></span>
+            <span class="store-tag">Tu tienda</span>
+          </div>
+          <h3 class="store-name"><?php echo html_escape($country->name); ?></h3>
+          <p class="store-country">Atencion en <?php echo html_escape($country->currency); ?></p>
+          <ul class="store-rows">
+            <li><i class="bi bi-clock" aria-hidden="true"></i><span><?php echo html_escape(store_setting('business_hours', 'Horario por confirmar', $country->id)); ?></span></li>
+            <li><i class="bi bi-envelope" aria-hidden="true"></i><span><?php echo html_escape(store_setting('contact_email', 'Correo por confirmar', $country->id)); ?></span></li>
+            <li><i class="bi bi-whatsapp" aria-hidden="true"></i><span><?php echo html_escape(store_setting('whatsapp_number', 'WhatsApp por confirmar', $country->id)); ?></span></li>
+          </ul>
+          <div class="store-actions">
+            <?php $wa_country = store_whatsapp_url('Hola, quiero informacion sobre suplementos (' . $country->name . ').', $country->id); ?>
+            <?php if ( ! empty($wa_country)): ?>
+              <a class="btn btn-wa btn-sm" href="<?php echo html_escape($wa_country); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+            <?php endif; ?>
+            <a class="btn btn-ghost btn-sm" href="<?php echo base_url('contacto'); ?>">Contacto</a>
           </div>
         </article>
       <?php endforeach; ?>
@@ -136,67 +229,44 @@ $cat_icons = array(
   </div>
 </section>
 
-<section class="section" style="padding-top:0;">
+<section class="section" id="resenas" style="padding-top:0;">
   <div class="container-x">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <div>
-        <span class="section-eyebrow">Tu objetivo</span>
-        <h2 class="section-title">¿Cual es tu meta?</h2>
-        <p class="section-subtitle">Te ayudamos a elegir segun lo que quieres lograr.</p>
+        <p class="eyebrow">Resenas</p>
+        <h2 class="section-title">LO QUE DICEN LOS QUE <em>ENTRENAN</em></h2>
+        <p class="section-subtitle">Opiniones de clientes en Costa Rica y El Salvador.</p>
       </div>
     </div>
-    <div class="goal-grid">
-      <?php foreach (store_goals() as $goal): ?>
-        <div class="goal-card reveal">
-          <div class="gicon"><i class="bi <?php echo html_escape($goal['icon']); ?>" aria-hidden="true"></i></div>
-          <h3><?php echo html_escape($goal['title']); ?></h3>
-          <p><?php echo html_escape($goal['description']); ?></p>
-          <div class="goal-rec"><strong>Recomendado:</strong> <?php echo html_escape($goal['recommended']); ?></div>
-          <a class="btn-ghost btn-sm mt-2" href="<?php echo base_url('productos?categoria=' . $goal['link']); ?>">Explorar</a>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0;">
-  <div class="container-x">
-    <div class="section-head">
-      <div>
-        <span class="section-eyebrow">Dudas</span>
-        <h2 class="section-title">Preguntas frecuentes</h2>
-        <p class="section-subtitle">Resolvemos las dudas mas comunes.</p>
-      </div>
-    </div>
-    <div class="store-accordion reveal" style="max-width:820px;">
-      <?php foreach (store_faqs() as $index => $faq): ?>
-        <div class="store-accordion-item" data-accordion>
-          <button type="button" class="store-accordion-btn" data-accordion-btn aria-expanded="<?php echo $index === 0 ? 'true' : 'false'; ?>">
-            <span><?php echo html_escape($faq['q']); ?></span>
-            <i class="bi bi-chevron-down" aria-hidden="true"></i>
-          </button>
-          <div class="store-accordion-panel" data-accordion-panel<?php echo $index === 0 ? ' style="max-height: 200px;"' : ''; ?>>
-            <div class="store-accordion-panel-inner"><?php echo html_escape($faq['a']); ?></div>
+    <div class="t-grid">
+      <?php foreach ($resenas as $t): ?>
+        <?php $ini = mb_substr($t['nombre'], 0, 1, 'UTF-8'); ?>
+        <article class="card tcard spot" data-reveal>
+          <div class="t-top">
+            <span class="t-avatar"><?php echo html_escape($ini); ?></span>
+            <div>
+              <p class="t-name"><?php echo html_escape($t['nombre']); ?></p>
+              <p class="t-city"><?php echo html_escape($t['ciudad']); ?></p>
+            </div>
+            <span class="t-quote">&ldquo;</span>
           </div>
-        </div>
+          <div class="t-stars"><span class="stars"><i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i></span></div>
+          <p class="t-text"><?php echo html_escape($t['texto']); ?></p>
+        </article>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
 
-<section class="section" style="padding-top:0;">
-  <div class="container-x">
-    <div class="reveal" style="background: var(--brand); color:#fff; border-radius: var(--radius); padding: 2.6rem; display:flex; align-items:center; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;">
-      <div>
-        <h2 class="section-title" style="color:#fff; font-size:1.6rem;">¿Listo para tu proximo pedido?</h2>
-        <p class="mb-0" style="color:rgba(255,255,255,.9);">Haz tu pedido por WhatsApp o completa tu compra en linea.</p>
-      </div>
-      <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
-        <a class="btn-dark" href="<?php echo base_url('productos'); ?>">Comprar ahora</a>
-        <?php if ( ! empty($whatsapp_url)): ?>
-          <a class="btn-wa" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp</a>
-        <?php endif; ?>
-      </div>
+<section class="section final" id="contacto">
+  <span class="final-ghost" aria-hidden="true">SG TIENDA</span>
+  <div class="container-x final-inner" data-reveal>
+    <h2 class="final-title">¿LISTO PARA <em>ENTRENAR EN SERIO?</em></h2>
+    <p class="final-sub">Escribinos y te armamos el combo segun tu objetivo y presupuesto. Te responde una persona del equipo, no un bot.</p>
+    <div class="final-ctas">
+      <a class="btn btn-brand btn-lg" href="<?php echo html_escape($wa_pedido); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Escribir por WhatsApp</a>
+      <a class="btn btn-ghost btn-lg" href="<?php echo base_url('productos'); ?>">Ver catalogo</a>
     </div>
+    <p class="final-note"><?php echo html_escape(store_setting('business_hours', 'Respuesta en minutos', $current_country->id)); ?></p>
   </div>
 </section>

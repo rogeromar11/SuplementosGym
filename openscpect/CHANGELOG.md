@@ -78,9 +78,35 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 ### Added — Carga de imagenes de producto (2026-09-12)
 - 54/54 productos con imagen. 20 combinaciones (marca+producto) descargadas
   desde Open Food Facts; 2 (creatina y CLA de Nutrex) con placeholder SVG.
-- Imagenes guardadas en `uploads/products/` y referenciadas en `products.image`.
+- Imagenes guardadas en `assets/img/products/` y referenciadas en `products.image`.
 - **Nota:** imagenes solo para maqueta/pruebas; validar licencia o sustituir por
   fotos propias antes de produccion.
+
+### Changed — Rediseno moderno v4 "Kinetic" + cPanel ready (2026-09-12)
+- **Identidad visual liberada**: SGMensajeria ya no impone colores; ver `DESIGN.md`.
+- `assets/css/store.css` reescrito por completo: tipografia Space Grotesk + Inter,
+  paleta redisenada, radios 20px, sombras en capas y gradientes de marca.
+- **Animaciones**: reveal con stagger al hacer scroll, contadores animados,
+  navbar con blur que reacciona al scroll, parallax del hero, marquee de marcas,
+  hovers con elevacion/zoom y modal/toast animados.
+- **Fuentes autocontenidas**: descargadas a `assets/fonts/` + `assets/css/fonts.css`;
+  se elimino Google Fonts del runtime (sin CDN).
+- Imagenes de producto movidas a `assets/img/products/` (parte del tema).
+- Header vuelve a navbar negro con selector de pais (banderas).
+- Nuevos documentos `DESIGN.md` y `DEPLOYMENT.md` (publicacion en cPanel).
+
+### Changed — Adaptacion del diseno "Suplementos Gym" (carpeta `Diseño`)
+- Se adopta el storefront de `C:/xampp/htdocs/Diseño` manteniendo la
+  funcionalidad actual (carrito, checkout, pedidos, inventario, cuentas).
+- Tema base `assets/css/design.css` (copiado de `Diseño/css/style.css`) +
+  capa funcional `assets/css/store.css`.
+- Tipografia **Anton + Manrope** autocontenida en `assets/fonts/`.
+- Hero con video (`assets/video/hero-web.mp4`), marquee, catalogo, promo,
+  beneficios con contadores, tiendas, resenas y CTA final.
+- Animaciones con **GSAP + ScrollTrigger** locales (`assets/vendor/gsap/`) y
+  `assets/js/landing.js`; `store.js` conserva carrito/pais/busqueda.
+- Selector de pais CR/SV en el header conectado a la sesion y a la base
+  (`/pais`), con confirmacion si hay carrito.
 
 ### Changed
 - `application/config/database.php` apunta a `suplementosgym`.
@@ -102,6 +128,18 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - `inventory_applied` se marca a `1` al aplicar inventario; `apply_for_order`
   es idempotente (evita doble descuento).
 - `Store_cart::add()` rechaza cantidades que superan el stock (no recorta).
+
+### Added / Changed — Mejoras de catalogo (2026-09-12)
+- **Dropdowns legibles**: `color-scheme: dark`, color de `option`, flecha
+  personalizada y hover en los selects de categoria, laboratorio, orden y
+  "mostrar" (`store.css`).
+- **Carga de imagenes mas rapida**: miniaturas **WebP** (20 imagenes, ~31%
+  mas livianas) servidas con `<picture>` + fallback JPG, `loading="lazy"`,
+  `decoding="async"`, dimensiones explicitas y efecto *shimmer* con fade-in
+  (`store_helper` `store_product_webp`, `product_card`, `store.js`).
+- **Paginacion en productos**: 10 / 25 / 50 / 100 por pagina (default 25),
+  con navegacion numerada, "mostrando X–Y de Z" y preservacion de filtros
+  (`Store::products`, `store_products_url`, `products.php`).
 
 ## Notas
 - No se modifico SGMensajeria.

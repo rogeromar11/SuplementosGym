@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $available = store_product_available($product);
 $search_blob = implode(' ', array($product->name, $product->laboratory, $product->product_type, $product->flavor, $product->sku));
 $wa = store_product_whatsapp_url($product);
+$img = store_product_image($product);
+$webp = store_product_webp($product);
 ?>
 <article class="product-card reveal" data-search-item="<?php echo html_escape($search_blob); ?>">
   <div class="product-media">
@@ -14,7 +16,14 @@ $wa = store_product_whatsapp_url($product);
       <span class="product-badge badge-low">Pocas unidades</span>
     <?php endif; ?>
     <a href="<?php echo store_product_url($product); ?>" aria-label="<?php echo html_escape($product->name); ?>">
-      <img src="<?php echo store_product_image($product); ?>" alt="<?php echo html_escape($product->name); ?>" loading="lazy" width="240" height="180">
+      <?php if ( ! empty($webp)): ?>
+        <picture>
+          <source srcset="<?php echo $webp; ?>" type="image/webp">
+          <img src="<?php echo $img; ?>" alt="<?php echo html_escape($product->name); ?>" loading="lazy" decoding="async" width="240" height="180">
+        </picture>
+      <?php else: ?>
+        <img src="<?php echo $img; ?>" alt="<?php echo html_escape($product->name); ?>" loading="lazy" decoding="async" width="240" height="180">
+      <?php endif; ?>
     </a>
   </div>
   <div class="product-body">

@@ -111,5 +111,5 @@ inventory_applied=1 ; stock 26 -> 24 ; inventory_movements: salida x2
 
 - [ ] Configurar correo real (SMTP) y habilitar `use_ci_email` para recuperacion.
 - [ ] Cargar WhatsApp, correo y horario reales en `store_settings`.
-- [ ] Cargar imagenes de producto en `uploads/products/`.
+- [x] Cargar imagenes de producto en `assets/img/products/` (54/54, con placeholders).
 - [ ] Definir precios/productos para Costa Rica.

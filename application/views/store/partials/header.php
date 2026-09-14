@@ -3,15 +3,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $meta = isset($meta) ? $meta : array();
 $active = uri_string();
 $is_home = ($active === '' || $active === 'store' || $active === 'store/index');
+$flags = array('CR' => 'cr', 'SV' => 'sv');
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo html_escape(isset($meta['title']) ? $meta['title'] : 'SG Tienda'); ?></title>
 <meta name="description" content="<?php echo html_escape(isset($meta['description']) ? $meta['description'] : ''); ?>">
 <meta name="robots" content="<?php echo html_escape(isset($meta['robots']) ? $meta['robots'] : 'index,follow'); ?>">
+<meta name="theme-color" content="#0A0A0B">
 <link rel="canonical" href="<?php echo html_escape(isset($meta['canonical']) ? $meta['canonical'] : current_url()); ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SG Tienda">
@@ -22,87 +24,93 @@ $is_home = ($active === '' || $active === 'store' || $active === 'store/index');
 <meta name="csrf-token-name" content="<?php echo $this->security->get_csrf_token_name(); ?>">
 <meta name="csrf-token-hash" content="<?php echo $this->security->get_csrf_hash(); ?>">
 <link rel="icon" href="<?php echo base_url('assets/img/logo.png'); ?>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?php echo base_url('assets/vendor/bootstrap/bootstrap.min.css'); ?>">
+<link rel="preload" href="<?php echo base_url('assets/fonts/anton-400-latin.woff2'); ?>" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<?php echo base_url('assets/fonts/manrope-400-latin.woff2'); ?>" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="<?php echo base_url('assets/css/fonts.css'); ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/vendor/bootstrap-icons/bootstrap-icons.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/css/design.css'); ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/css/store.css'); ?>">
 </head>
 <body>
-<a class="skip-link" href="#main-content">Saltar al contenido</a>
+<div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+
+<div class="topbar">
+  <div class="container-x topbar-inner">
+    <span class="tb-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="14" height="12" rx="1"/><path d="M15 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg>
+    </span>
+    <p class="tb-text">Suplementos originales · Entrega en <?php echo html_escape($current_country->name); ?></p>
+  </div>
+</div>
 
 <header class="site-header">
-  <div class="site-navbar">
-    <div class="container-x">
-      <a class="brand" href="<?php echo base_url(); ?>">
-        <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda">
-        <span>SG <b>Tienda</b></span>
+  <div class="container-x header-inner">
+    <a class="brand" href="<?php echo base_url(); ?>" aria-label="SG Tienda — inicio">
+      <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda" width="120" height="46">
+    </a>
+
+    <nav class="nav" aria-label="Principal">
+      <ul class="nav-list">
+        <li><a href="<?php echo base_url(); ?>">Inicio</a></li>
+        <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
+        <li><a href="<?php echo base_url('guia'); ?>">Guia</a></li>
+        <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
+        <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
+        <li><a href="<?php echo base_url('contacto'); ?>">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <div class="country-switch" role="group" aria-label="Elegir pais de compra">
+        <?php foreach ($countries as $country): ?>
+          <?php $iso = strtolower($country->code); ?>
+          <button class="country-btn<?php echo ((int) $country->id === (int) $current_country->id) ? ' active' : ''; ?>" type="button" data-country-choice data-country-id="<?php echo (int) $country->id; ?>" aria-pressed="<?php echo ((int) $country->id === (int) $current_country->id) ? 'true' : 'false'; ?>" title="Comprar en <?php echo html_escape($country->name); ?>">
+            <img src="<?php echo base_url('assets/img/flags/' . $iso . '.svg'); ?>" alt="" aria-hidden="true">
+            <span class="cb-label"><?php echo html_escape($country->name); ?></span>
+          </button>
+        <?php endforeach; ?>
+      </div>
+
+      <a class="icon-link" href="<?php echo base_url('carrito'); ?>" aria-label="Carrito de compras">
+        <i class="bi bi-cart3" aria-hidden="true"></i>
+        <span class="cart-badge<?php echo $cart_count < 1 ? ' d-none' : ''; ?>" data-cart-count><?php echo (int) $cart_count; ?></span>
       </a>
 
-      <nav aria-label="Principal">
-        <ul class="nav-links" data-nav-links>
-          <li><a href="<?php echo base_url(); ?>"<?php echo $is_home ? ' class="active" aria-current="page"' : ''; ?>>Inicio</a></li>
-          <li><a href="<?php echo base_url('productos'); ?>"<?php echo strpos($active, 'productos') === 0 ? ' class="active" aria-current="page"' : ''; ?>>Productos</a></li>
-          <li><a href="<?php echo base_url('guia'); ?>"<?php echo strpos($active, 'guia') === 0 ? ' class="active" aria-current="page"' : ''; ?>>Guia</a></li>
-          <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
-          <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
-          <li><a href="<?php echo base_url('contacto'); ?>">Contacto</a></li>
-        </ul>
-      </nav>
+      <?php if ($store_logged_in): ?>
+        <a class="icon-link" href="<?php echo base_url('cuenta'); ?>" aria-label="Mi cuenta"><i class="bi bi-person-circle" aria-hidden="true"></i></a>
+      <?php else: ?>
+        <a class="icon-link" href="<?php echo base_url('ingresar'); ?>" aria-label="Iniciar sesion"><i class="bi bi-person" aria-hidden="true"></i></a>
+      <?php endif; ?>
 
-      <div class="nav-actions">
-        <div class="dropdown country-dropdown" data-country-select>
-          <button class="country-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-country-current="<?php echo (int) $current_country->id; ?>" aria-label="Seleccionar pais">
-            <img src="<?php echo base_url('assets/img/flags/' . strtolower($current_country->code) . '.svg'); ?>" alt="" class="flag-icon" data-country-flag aria-hidden="true">
-            <span data-country-code><?php echo html_escape($current_country->code); ?></span>
-            <i class="bi bi-chevron-down" aria-hidden="true"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end country-menu">
-            <?php foreach ($countries as $country): ?>
-              <li>
-                <button type="button" class="dropdown-item" data-country-option data-country-id="<?php echo (int) $country->id; ?>">
-                  <img src="<?php echo base_url('assets/img/flags/' . strtolower($country->code) . '.svg'); ?>" alt="" class="flag-icon" aria-hidden="true">
-                  <span><?php echo html_escape($country->name); ?></span>
-                </button>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
+      <?php if ( ! empty($whatsapp_url)): ?>
+        <a class="btn-brand btn-sm header-cta" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir</a>
+      <?php else: ?>
+        <a class="btn-brand btn-sm header-cta" href="<?php echo base_url('contacto'); ?>"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir</a>
+      <?php endif; ?>
 
-        <a class="icon-link" href="<?php echo base_url('carrito'); ?>" aria-label="Carrito de compras">
-          <i class="bi bi-cart3" aria-hidden="true"></i>
-          <span class="cart-badge<?php echo $cart_count < 1 ? ' d-none' : ''; ?>" data-cart-count><?php echo (int) $cart_count; ?></span>
-        </a>
-
-        <?php if ($store_logged_in): ?>
-          <div class="dropdown">
-            <button class="icon-link" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Mi cuenta">
-              <i class="bi bi-person-circle" aria-hidden="true"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a></li>
-              <li><a class="dropdown-item" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="<?php echo base_url('salir'); ?>">Cerrar sesion</a></li>
-            </ul>
-          </div>
-        <?php else: ?>
-          <a class="btn-outline btn-sm d-none d-lg-inline-flex" href="<?php echo base_url('ingresar'); ?>">Iniciar sesion</a>
-        <?php endif; ?>
-
-        <?php if ( ! empty($whatsapp_url)): ?>
-          <a class="btn-brand btn-sm d-none d-xl-inline-flex" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener">
-            <i class="bi bi-whatsapp" aria-hidden="true"></i> Haz tu pedido
-          </a>
-        <?php endif; ?>
-
-        <button class="nav-toggle" type="button" data-nav-toggle aria-label="Abrir menu">
-          <i class="bi bi-list" aria-hidden="true"></i>
-        </button>
-      </div>
+      <button class="menu-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </div>
+
+  <nav class="menu-panel" aria-label="Menu movil">
+    <a class="menu-link" href="<?php echo base_url(); ?>">Inicio</a>
+    <a class="menu-link" href="<?php echo base_url('productos'); ?>">Productos</a>
+    <a class="menu-link" href="<?php echo base_url('guia'); ?>">Guia</a>
+    <a class="menu-link" href="<?php echo base_url('nosotros'); ?>">Nosotros</a>
+    <a class="menu-link" href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a>
+    <a class="menu-link" href="<?php echo base_url('contacto'); ?>">Contacto</a>
+    <?php if ($store_logged_in): ?>
+      <a class="menu-link" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
+      <a class="menu-link" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
+      <a class="menu-link" href="<?php echo base_url('salir'); ?>">Cerrar sesion</a>
+    <?php else: ?>
+      <a class="menu-link" href="<?php echo base_url('ingresar'); ?>">Iniciar sesion</a>
+      <a class="menu-link" href="<?php echo base_url('registro'); ?>">Crear cuenta</a>
+    <?php endif; ?>
+    <a class="btn btn-brand header-cta<?php echo empty($whatsapp_url) ? ' d-none' : ''; ?>" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir por WhatsApp</a>
+  </nav>
 </header>
 
 <main id="main-content">

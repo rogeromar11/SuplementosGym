@@ -205,9 +205,9 @@ if ( ! function_exists('store_setting'))
 
 if ( ! function_exists('store_whatsapp_number'))
 {
-	function store_whatsapp_number()
+	function store_whatsapp_number($country_id = NULL)
 	{
-		$number = preg_replace('/[^0-9]/', '', (string) store_setting('whatsapp_number', ''));
+		$number = preg_replace('/[^0-9]/', '', (string) store_setting('whatsapp_number', '', $country_id));
 		if ($number === '')
 		{
 			return '';
@@ -218,9 +218,9 @@ if ( ! function_exists('store_whatsapp_number'))
 
 if ( ! function_exists('store_whatsapp_url'))
 {
-	function store_whatsapp_url($message = '')
+	function store_whatsapp_url($message = '', $country_id = NULL)
 	{
-		$number = store_whatsapp_number();
+		$number = store_whatsapp_number($country_id);
 		if ($number === '')
 		{
 			return '';
@@ -249,9 +249,50 @@ if ( ! function_exists('store_product_image'))
 	{
 		if ($product && ! empty($product->image))
 		{
-			return base_url('uploads/products/' . rawurlencode($product->image));
+			return base_url('assets/img/products/' . rawurlencode($product->image));
 		}
 		return base_url('assets/img/product-placeholder.svg');
+	}
+}
+
+if ( ! function_exists('store_product_webp'))
+{
+	function store_product_webp($product)
+	{
+		if ( ! $product || empty($product->image))
+		{
+			return '';
+		}
+		$webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $product->image);
+		if ($webp === $product->image)
+		{
+			return '';
+		}
+		$path = FCPATH . 'assets/img/products/' . $webp;
+		if ( ! file_exists($path))
+		{
+			return '';
+		}
+		return base_url('assets/img/products/' . rawurlencode($webp));
+	}
+}
+
+if ( ! function_exists('store_products_url'))
+{
+	function store_products_url($filters, $extra = array())
+	{
+		$params = array();
+		if ( ! empty($filters['search'])) { $params['q'] = $filters['search']; }
+		if ( ! empty($filters['category'])) { $params['categoria'] = $filters['category']; }
+		if ( ! empty($filters['laboratory'])) { $params['laboratorio'] = $filters['laboratory']; }
+		if (isset($filters['min_price']) && $filters['min_price'] !== '') { $params['min'] = $filters['min_price']; }
+		if (isset($filters['max_price']) && $filters['max_price'] !== '') { $params['max'] = $filters['max_price']; }
+		if ( ! empty($filters['available_only'])) { $params['disponible'] = 1; }
+		if ( ! empty($filters['sort']) && $filters['sort'] !== 'relevance') { $params['orden'] = $filters['sort']; }
+		if ( ! empty($filters['per_page']) && (int) $filters['per_page'] !== 25) { $params['por_pagina'] = (int) $filters['per_page']; }
+		$params = array_merge($params, $extra);
+		$qs = http_build_query($params);
+		return base_url('productos' . ($qs ? '?' . $qs : ''));
 	}
 }
 

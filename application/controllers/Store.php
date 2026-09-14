@@ -14,6 +14,7 @@ class Store extends MY_Controller
 			'featured'        => $featured,
 			'category_counts' => $counts,
 			'total_products'  => $total,
+			'brand_count'     => count($this->Product_model->laboratories($country->id)),
 		), array(
 			'title'       => 'SG Tienda · Suplementos deportivos',
 			'description' => 'Proteina, creatina, preentrenos y mas. Suplementos originales con entrega en ' . $country->name . '.',
@@ -33,7 +34,28 @@ class Store extends MY_Controller
 			'sort'           => (string) $this->input->get('orden', TRUE) ?: 'relevance',
 		);
 
-		$products = $this->Product_model->catalog($country->id, $filters);
+		$per_page = (int) $this->input->get('por_pagina');
+		if ( ! in_array($per_page, array(10, 25, 50, 100), TRUE))
+		{
+			$per_page = 25;
+		}
+		$page = (int) $this->input->get('pagina');
+		if ($page < 1)
+		{
+			$page = 1;
+		}
+
+		$filters['per_page'] = $per_page;
+
+		$all = $this->Product_model->catalog($country->id, $filters);
+		$filtered_total = count($all);
+		$pages = max(1, (int) ceil($filtered_total / $per_page));
+		if ($page > $pages)
+		{
+			$page = $pages;
+		}
+		$products = array_slice($all, ($page - 1) * $per_page, $per_page);
+
 		$counts = $this->Product_model->category_counts($country->id);
 
 		$this->render_store('store/products', array(
@@ -44,6 +66,10 @@ class Store extends MY_Controller
 			'categories'     => store_categories(),
 			'category_counts' => $counts,
 			'country_total'  => array_sum($counts),
+			'filtered_total' => $filtered_total,
+			'per_page'       => $per_page,
+			'page'           => $page,
+			'pages'          => $pages,
 		), array(
 			'title'       => 'Productos · SG Tienda',
 			'description' => 'Catalogo de suplementos disponibles en ' . $country->name . '.',

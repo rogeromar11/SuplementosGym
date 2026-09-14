@@ -33,6 +33,8 @@
 | Alcance multipais | Copia **tal cual**: el catalogo queda solo para El Salvador. Costa Rica arranca sin productos (mensaje de catalogo vacio). |
 | Base destino | `suplementosgym` (localhost / root / sin password). |
 | Contacto/WhatsApp | Placeholders configurables por pais. **No inventar datos reales.** |
+| Identidad visual | **Libre y evolutiva.** SGMensajeria es referencia funcional, no de colores. Ver `DESIGN.md`. |
+| Entrega | HTML servido por Apache/PHP (cPanel), assets autocontenidos (sin CDN). Ver `DEPLOYMENT.md`. |
 
 ## 3. Base de datos (resumen)
 
