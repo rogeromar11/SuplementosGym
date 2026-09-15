@@ -163,6 +163,18 @@ class Auth extends CI_Controller
 					redirect('auth/login/' . $country->code, 'refresh');
 				}
 
+				// Solo el personal puede entrar al panel. Las cuentas de cliente
+				// de la tienda no tienen acceso al backoffice.
+				$loginGroups = array_column($this->ion_auth->get_users_groups()->result_array(), 'name');
+				$staffGroups = array('admin', 'vendedor', 'bodeguero', 'mensajero', 'auxiliar_admin');
+				if (empty(array_intersect($loginGroups, $staffGroups))) {
+					$this->ion_auth->logout();
+					$msg = 'Esta cuenta es de cliente. Inicia sesión en la tienda.';
+					if ($is_ajax) { echo json_encode(['success' => false, 'message' => $msg]); return; }
+					$this->session->set_flashdata('message', $msg);
+					redirect('auth/login/' . $country->code, 'refresh');
+				}
+
 				// País activo en sesion
 				$this->session->set_userdata('sgms_country', [
 					'id' => $country->id,
