@@ -98,6 +98,11 @@
                         <label class="form-label" for="business_hours">Horario de atención</label>
                         <input type="text" class="form-control" id="business_hours" name="business_hours" value="<?php echo html_escape($storeSettings['business_hours'] ?? ''); ?>" placeholder="Lun a Vie, 8:00 a 18:00">
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="availability_min_stock">Existencias mínimas para mostrar "Disponible"</label>
+                        <input type="number" min="1" class="form-control" id="availability_min_stock" name="availability_min_stock" value="<?php echo html_escape($storeSettings['availability_min_stock'] ?? '5'); ?>" style="max-width:180px;">
+                        <div class="form-text">Si un producto tiene menos existencias que este valor, la tienda muestra "Pocas unidades" en vez de "Disponible". No aplica a productos sin control de inventario.</div>
+                    </div>
                 </div>
                 <hr>
                 <h6 class="mb-3">Redes sociales</h6>

@@ -479,3 +479,14 @@ select.form-control:hover, .toolbar-select:hover { border-color: rgba(255,255,25
 .order-timeline { list-style: none; margin: 0; padding: 0; }
 .order-timeline-item { display: flex; gap: .6rem; padding: .35rem 0; }
 .order-timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: #e11d48; margin-top: .35rem; flex: none; }
+
+/* Zoom de imagen de producto */
+.pd-media.is-zoomable { cursor: zoom-in; }
+.pd-media.is-zoomable:focus-visible { outline: 3px solid #e11d48; outline-offset: 6px; }
+.pd-zoom-hint { position: absolute; bottom: 14px; right: 16px; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: rgba(0,0,0,.55); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; }
+.store-zoom-overlay { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 2.5rem; background: rgba(8,8,12,.94); }
+.store-zoom-overlay.is-open { display: flex; }
+.store-zoom-overlay img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.7); }
+.store-zoom-close { position: fixed; top: 16px; right: 20px; width: 46px; height: 46px; border: 0; border-radius: 50%; background: rgba(255,255,255,.16); color: #fff; font-size: 1.9rem; line-height: 1; cursor: pointer; }
+.store-zoom-close:hover { background: rgba(255,255,255,.3); }
+body.zoom-open { overflow: hidden; }

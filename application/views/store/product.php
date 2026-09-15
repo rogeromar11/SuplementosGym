@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $available = store_product_available($product);
 $stock = store_product_stock($product);
+$threshold = store_availability_min_stock();
 $wa = store_product_whatsapp_url($product);
 $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
 ?>
@@ -32,12 +33,10 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
         <p>
           <?php if ( ! $available): ?>
             <span class="status status-cancelado">Agotado</span>
-          <?php elseif ($stock !== NULL && $stock > 0 && $stock <= 5): ?>
-            <span class="status status-pendiente">Pocas unidades: <?php echo (int) $stock; ?></span>
-          <?php elseif ($stock !== NULL): ?>
-            <span class="status status-pagado">Disponible: <?php echo (int) $stock; ?></span>
-          <?php else: ?>
+          <?php elseif ($stock === NULL || $stock >= $threshold): ?>
             <span class="status status-pagado">Disponible</span>
+          <?php else: ?>
+            <span class="status status-pendiente">Pocas unidades: <?php echo (int) $stock; ?></span>
           <?php endif; ?>
         </p>
 

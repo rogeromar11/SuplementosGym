@@ -464,6 +464,62 @@
     });
   }
 
+  function bindProductZoom() {
+    var media = document.querySelector('.pd-media');
+    if (!media) { return; }
+    var img = media.querySelector('img');
+    if (!img) { return; }
+
+    media.classList.add('is-zoomable');
+    media.setAttribute('role', 'button');
+    media.setAttribute('tabindex', '0');
+    media.setAttribute('aria-label', 'Ampliar imagen del producto');
+
+    var hint = document.createElement('span');
+    hint.className = 'pd-zoom-hint';
+    hint.textContent = 'Clic para ampliar';
+    media.appendChild(hint);
+
+    var overlay = document.createElement('div');
+    overlay.className = 'store-zoom-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = '<button type="button" class="store-zoom-close" aria-label="Cerrar">&times;</button><img alt="">';
+    document.body.appendChild(overlay);
+    var big = overlay.querySelector('img');
+
+    function open() {
+      big.src = img.getAttribute('src');
+      big.alt = img.getAttribute('alt') || '';
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('zoom-open');
+    }
+
+    function close() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('zoom-open');
+    }
+
+    media.addEventListener('click', open);
+    media.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        open();
+      }
+    });
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay || event.target.classList.contains('store-zoom-close')) {
+        close();
+      }
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+        close();
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     bindAddToCart();
     bindCartPage();
@@ -478,6 +534,7 @@
     bindHeroParallax();
     bindCheckoutWhatsApp();
     bindDropdowns();
+    bindProductZoom();
   });
 
   window.storeToast = toast;

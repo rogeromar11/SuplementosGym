@@ -29,7 +29,7 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
 <link rel="stylesheet" href="<?php echo base_url('assets/css/fonts.css'); ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/vendor/bootstrap-icons/bootstrap-icons.min.css'); ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/css/design.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/css/store.css'); ?>">
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/store.css') . '?v=' . @filemtime(FCPATH . 'assets/css/store.css'); ?>">
 </head>
 <body>
 <div class="progress-bar" id="progressBar" aria-hidden="true"></div>

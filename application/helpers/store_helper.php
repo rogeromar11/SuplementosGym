@@ -181,6 +181,23 @@ if ( ! function_exists('store_product_stock'))
 	}
 }
 
+if ( ! function_exists('store_availability_min_stock'))
+{
+	/**
+	 * Existencias mínimas a partir de las cuales un producto se muestra
+	 * como "Disponible" en la tienda. Configurable en el admin
+	 * (Configuración → Tienda web). Por debajo se muestra "Pocas unidades".
+	 *
+	 * @param int|null $country_id
+	 * @return int
+	 */
+	function store_availability_min_stock($country_id = NULL)
+	{
+		$value = (int) store_setting('availability_min_stock', 5, $country_id);
+		return $value > 0 ? $value : 1;
+	}
+}
+
 if ( ! function_exists('store_setting'))
 {
 	function store_setting($key, $default = '', $country_id = NULL)

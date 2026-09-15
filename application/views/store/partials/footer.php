@@ -106,7 +106,7 @@ window.STORE_CONFIG = {
 </script>
 <script src="<?php echo base_url('assets/vendor/gsap/gsap.min.js'); ?>" defer></script>
 <script src="<?php echo base_url('assets/vendor/gsap/ScrollTrigger.min.js'); ?>" defer></script>
-<script src="<?php echo base_url('assets/js/store.js'); ?>" defer></script>
+<script src="<?php echo base_url('assets/js/store.js') . '?v=' . @filemtime(FCPATH . 'assets/js/store.js'); ?>" defer></script>
 <script src="<?php echo base_url('assets/js/landing.js'); ?>" defer></script>
 </body>
 </html>
