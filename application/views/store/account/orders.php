@@ -25,7 +25,7 @@ $status_labels = array(
       <div class="empty-state">
         <i class="bi bi-receipt" aria-hidden="true"></i>
         <h3>Aun no tienes pedidos.</h3>
-        <p>Cuando realices una compra aparecera aqui.</p>
+        <p>Cuando realices una compra aparecera aquí.</p>
         <a class="btn-brand mt-3" href="<?php echo base_url('productos'); ?>">Ver productos</a>
       </div>
     <?php else: ?>
@@ -44,7 +44,7 @@ $status_labels = array(
                 <span class="status status-<?php echo html_escape(store_order_status_class($order->payment_status)); ?>">Pago: <?php echo html_escape(store_order_status_label($order->payment_status)); ?></span>
               </div>
             </div>
-            <div class="summary-line mt-2"><span>Metodo de pago</span><strong><?php echo html_escape($order->payment_method_name ?: 'Por definir'); ?></strong></div>
+            <div class="summary-line mt-2"><span>Método de pago</span><strong><?php echo html_escape($order->payment_method_name ?: 'Por definir'); ?></strong></div>
             <div class="summary-line"><span>Total</span><strong><?php echo store_order_price($order, $order->total); ?></strong></div>
             <a class="btn-ghost btn-sm mt-2" href="<?php echo base_url('cuenta/pedido/' . (int) $order->id); ?>">Ver detalle</a>
           </div>

@@ -66,7 +66,7 @@ $wa_order = empty($contents) ? '' : store_cart_whatsapp_url($contents, $subtotal
         <aside class="summary">
           <h3>Resumen</h3>
           <div class="summary-line"><span>Subtotal</span><strong data-summary-subtotal><?php echo store_price($subtotal); ?></strong></div>
-          <div class="summary-line"><span>Envio</span><strong data-summary-shipping><?php echo store_price($shipping); ?></strong></div>
+          <div class="summary-line"><span>Envío</span><strong data-summary-shipping><?php echo store_price($shipping); ?></strong></div>
           <div class="summary-total"><span>Total</span><span data-summary-total><?php echo store_price($total); ?></span></div>
           <a class="btn-brand btn-block mt-3" href="<?php echo base_url('checkout'); ?>">Finalizar compra <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
           <?php if ( ! empty($wa_order)): ?>
@@ -74,7 +74,7 @@ $wa_order = empty($contents) ? '' : store_cart_whatsapp_url($contents, $subtotal
             <p class="muted mt-2 mb-0" style="font-size:.78rem;">Se abrira WhatsApp con el detalle de tu pedido escrito.</p>
           <?php endif; ?>
           <?php if ( ! $store_logged_in): ?>
-            <p class="muted mt-2 mb-0" style="font-size:.82rem;">Necesitaras iniciar sesion o crear una cuenta para completar la compra.</p>
+            <p class="muted mt-2 mb-0" style="font-size:.82rem;">Necesitaras iniciar sesión o crear una cuenta para completar la compra.</p>
           <?php endif; ?>
         </aside>
       </div>

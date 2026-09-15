@@ -4,7 +4,7 @@
     <div class="auth-head">
       <div class="bicon"><i class="bi bi-shield-lock" aria-hidden="true"></i></div>
       <h1>Restablecer acceso</h1>
-      <p>Define una contrasena nueva para tu cuenta.</p>
+      <p>Define una contraseña nueva para tu cuenta.</p>
     </div>
 
     <?php if ( ! empty($auth_error)): ?>
@@ -14,18 +14,18 @@
     <form method="post" action="<?php echo base_url('restablecer/' . html_escape($code)); ?>">
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
       <div class="form-group">
-        <label for="new">Nueva contrasena</label>
+        <label for="new">Nueva contraseña</label>
         <input class="form-control" type="password" id="new" name="new" autocomplete="new-password" required>
       </div>
       <div class="form-group">
-        <label for="new_confirm">Confirmar contrasena</label>
+        <label for="new_confirm">Confirmar contraseña</label>
         <input class="form-control" type="password" id="new_confirm" name="new_confirm" autocomplete="new-password" required>
       </div>
-      <button type="submit" class="btn-brand btn-block">Actualizar contrasena</button>
+      <button type="submit" class="btn-brand btn-block">Actualizar contraseña</button>
     </form>
 
     <div class="auth-links">
-      <a href="<?php echo base_url('ingresar'); ?>">Volver a iniciar sesion</a>
+      <a href="<?php echo base_url('ingresar'); ?>">Volver a iniciar sesión</a>
     </div>
   </div>
 </div>

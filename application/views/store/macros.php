@@ -4,7 +4,7 @@
   <div class="container-x">
     <p class="eyebrow">Herramienta</p>
     <h1>Calculadora de macronutrientes</h1>
-    <p>Ingresa tus datos y descubre cuantas calorias, proteinas, carbohidratos y grasas deberias consumir al dia para alcanzar tu objetivo fisico.</p>
+    <p>Ingresa tus datos y descubre cuantas calorías, proteinas, carbohidratos y grasas deberias consumir al día para alcanzar tu objetivo fisico.</p>
   </div>
 </section>
 
@@ -42,9 +42,9 @@
           <label for="actividad">Nivel de actividad</label>
           <select class="form-control" id="actividad">
             <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
-            <option value="1.375">Ligero (1-3 dias por semana)</option>
-            <option value="1.55" selected>Moderado (3-5 dias por semana)</option>
-            <option value="1.725">Activo (6-7 dias por semana)</option>
+            <option value="1.375">Ligero (1-3 días por semana)</option>
+            <option value="1.55" selected>Moderado (3-5 días por semana)</option>
+            <option value="1.725">Activo (6-7 días por semana)</option>
             <option value="1.9">Muy activo (atleta o trabajo fisico)</option>
           </select>
         </div>
@@ -59,12 +59,12 @@
         </div>
 
         <button type="submit" class="btn-brand btn-block">Calcular</button>
-        <p class="muted mt-2 mb-0" style="font-size:.8rem;">Resultado orientativo basado en la formula Mifflin-St Jeor. No sustituye la valoracion de un medico o nutricionista.</p>
+        <p class="muted mt-2 mb-0" style="font-size:.8rem;">Resultado orientativo basado en la formula Mifflin-St Jeor. No sustituye la valoracion de un médico o nutricionista.</p>
       </form>
 
       <div class="macro-result" id="macroResult" aria-live="polite">
         <div class="macro-kcal">
-          <span class="eyebrow">Calorias diarias</span>
+          <span class="eyebrow">Calorías diarias</span>
           <p class="macro-kcal-num"><span id="macroKcal">0</span> <small>kcal</small></p>
           <p class="muted mb-0">Gasto energetico estimado (TDEE): <strong id="macroTdee">0</strong> kcal</p>
           <p class="muted mb-0 mt-2" id="macroGoalNote"></p>
@@ -72,7 +72,7 @@
 
         <div class="macro-cards">
           <div class="macro-card">
-            <span class="macro-label">Proteinas</span>
+            <span class="macro-label">Proteínas</span>
             <p class="macro-val"><span id="macroProtein">0</span> g</p>
             <div class="macro-bar protein"><span id="barProtein"></span></div>
             <span class="macro-pct" id="pctProtein">0%</span>
@@ -103,46 +103,46 @@
       <div>
         <p class="eyebrow">Para principiantes</p>
         <h2 class="section-title">ENTIENDE TU <em>RESULTADO</em></h2>
-        <p class="section-subtitle">Si es tu primera vez calculando macronutrientes, aqui tienes lo esencial explicado en palabras simples.</p>
+        <p class="section-subtitle">Si es tu primera vez calculando macronutrientes, aquí tienes lo esencial explicado en palabras simples.</p>
       </div>
     </div>
 
     <div class="guide-grid">
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-fire" aria-hidden="true"></i></div>
-        <h3>¿Que son las calorias?</h3>
-        <p>Es la energia que tu cuerpo usa para vivir, pensar y entrenar. Si comes mas de lo que gastas, subes de peso; si comes menos, bajas. Tu resultado muestra cuantas calorias al dia te acercan a tu meta.</p>
+        <h3>¿Qué son las calorías?</h3>
+        <p>Es la energía que tu cuerpo usa para vivir, pensar y entrenar. Si comes más de lo que gastas, subes de peso; si comes menos, bajas. Tu resultado muestra cuantas calorías al día te acercan a tu meta.</p>
       </article>
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></div>
-        <h3>Proteinas</h3>
-        <p>Son los "ladrillos" de tus musculos: ayudan a recuperarte y a crecer. Estan en carnes, huevos, lacteos, legumbres y en suplementos como la proteina de suero (whey).</p>
+        <h3>Proteínas</h3>
+        <p>Son los "ladrillos" de tus músculos: ayudan a recuperarte y a crecer. Están en carnes, huevos, lácteos, legumbres y en suplementos como la proteína de suero (whey).</p>
       </article>
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-lightning-charge" aria-hidden="true"></i></div>
         <h3>Carbohidratos</h3>
-        <p>Son tu energia principal para entrenar fuerte. Estan en arroz, pasta, pan, avena, frutas y verduras. No son el enemigo: son tu combustible diario.</p>
+        <p>Son tu energía principal para entrenar fuerte. Están en arroz, pasta, pan, avena, frutas y verduras. No son el enemigo: son tu combustible diario.</p>
       </article>
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-moisture" aria-hidden="true"></i></div>
         <h3>Grasas</h3>
-        <p>Son necesarias para tus hormonas y tu salud. Elige fuentes buenas como aguacate, frutos secos, aceite de oliva y pescado. Aportan mucha energia por cada gramo.</p>
+        <p>Son necesarias para tus hormonas y tu salud. Elige fuentes buenas como aguacate, frutos secos, aceite de oliva y pescado. Aportan mucha energía por cada gramo.</p>
       </article>
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-clipboard-check" aria-hidden="true"></i></div>
-        <h3>¿Como usar tu resultado?</h3>
+        <h3>¿Cómo usar tu resultado?</h3>
         <p>Usa esas cantidades como meta diaria. Reparte los macros en 3 a 5 comidas con alimentos que disfrutes y revisa tu progreso cada 2 o 3 semanas para ajustar.</p>
       </article>
       <article class="guide-card">
         <div class="guide-icon"><i class="bi bi-lightbulb" aria-hidden="true"></i></div>
         <h3>Consejos rapidos</h3>
-        <p>No busques la perfeccion: la constancia gana. Incluye proteina en cada comida, hidratate, duerme bien y cambia las calorias poco a poco, no de golpe.</p>
+        <p>No busques la perfección: la constancia gana. Incluye proteína en cada comida, hidrátate, duerme bien y cambia las calorías poco a poco, no de golpe.</p>
       </article>
     </div>
 
     <div class="form-card mt-4">
       <p class="eyebrow">Importante</p>
-      <p class="mb-0 muted">Esta calculadora es una estimacion orientativa, no una receta medica. Cada persona es distinta: si tienes una condicion de salud, estas embarazada o quieres un plan detallado, consulta a un medico o nutricionista. Recuerda que los suplementos son un complemento de tu alimentacion, no un reemplazo.</p>
+      <p class="mb-0 muted">Esta calculadora es una estimación orientativa, no una receta medica. Cada persona es distinta: si tienes una condición de salud, estás embarazada o quieres un plan detallado, consulta a un médico o nutricionista. Recuerda que los suplementos son un complemento de tu alimentación, no un reemplazo.</p>
     </div>
   </div>
 </section>

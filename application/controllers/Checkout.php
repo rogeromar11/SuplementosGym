@@ -56,10 +56,10 @@ class Checkout extends MY_Controller
 		}
 
 		$this->form_validation->set_rules('customer_name', 'Nombre', 'trim|required|max_length[150]');
-		$this->form_validation->set_rules('customer_phone', 'Numero celular', 'trim|required|max_length[30]');
+		$this->form_validation->set_rules('customer_phone', 'Número celular', 'trim|required|max_length[30]');
 		$this->form_validation->set_rules('delivery_zone', 'Zona de entrega', 'trim|required|max_length[100]');
-		$this->form_validation->set_rules('delivery_address', 'Direccion', 'trim|required');
-		$this->form_validation->set_rules('payment_method_id', 'Metodo de pago', 'trim|required|integer');
+		$this->form_validation->set_rules('delivery_address', 'Dirección', 'trim|required');
+		$this->form_validation->set_rules('payment_method_id', 'Método de pago', 'trim|required|integer');
 
 		if ($this->form_validation->run() === FALSE)
 		{
@@ -74,7 +74,7 @@ class Checkout extends MY_Controller
 
 		if ( ! $payment_method)
 		{
-			$this->session->set_flashdata('store_error', 'El metodo de pago seleccionado no es valido para tu pais.');
+			$this->session->set_flashdata('store_error', 'El método de pago seleccionado no es válido para tu país.');
 			redirect('checkout');
 		}
 

@@ -29,7 +29,7 @@ $hours = store_setting('business_hours', '');
       <h3>Tienda</h3>
       <ul>
         <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
-        <li><a href="<?php echo base_url('guia'); ?>">Guia de suplementos</a></li>
+        <li><a href="<?php echo base_url('guia'); ?>">Guía de suplementos</a></li>
         <li><a href="<?php echo base_url('calculadora'); ?>">Calculadora de macros</a></li>
         <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
       </ul>
@@ -38,7 +38,7 @@ $hours = store_setting('business_hours', '');
     <nav class="f-col" aria-label="Ayuda">
       <h3>Ayuda</h3>
       <ul>
-        <li><a href="<?php echo base_url('contacto'); ?>">Envios y entregas</a></li>
+        <li><a href="<?php echo base_url('contacto'); ?>">Envíos y entregas</a></li>
         <li><a href="<?php echo base_url('contacto'); ?>">Cambios y devoluciones</a></li>
         <li><a href="<?php echo base_url('contacto'); ?>">Preguntas frecuentes</a></li>
       </ul>
@@ -54,7 +54,7 @@ $hours = store_setting('business_hours', '');
           <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:<?php echo html_escape($email); ?>"><?php echo html_escape($email); ?></a></li>
         <?php endif; ?>
         <?php if ( ! empty($wa)): ?>
-          <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener">Escribenos por WhatsApp</a></li>
+          <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></li>
         <?php endif; ?>
         <?php if (empty($hours) && empty($email) && empty($wa)): ?>
           <li><i class="bi bi-info-circle" aria-hidden="true"></i><span>Datos de contacto por definir.</span></li>
@@ -64,7 +64,7 @@ $hours = store_setting('business_hours', '');
   </div>
 
   <div class="container-x footer-bottom">
-    <p>Precios y disponibilidad segun el pais seleccionado (<?php echo html_escape($current_country->name); ?>).</p>
+    <p>Precios y disponibilidad según el país seleccionado (<?php echo html_escape($current_country->name); ?>).</p>
     <p>&copy; <?php echo date('Y'); ?> SG Tienda &middot; Costa Rica &amp; El Salvador</p>
   </div>
 </footer>
@@ -76,8 +76,8 @@ $hours = store_setting('business_hours', '');
 
 <div class="store-modal" data-country-modal role="dialog" aria-modal="true" aria-labelledby="countryModalTitle">
   <div class="store-modal-card">
-    <h3 id="countryModalTitle">Cambiar de pais</h3>
-    <p>Al cambiar de pais, los productos actuales del carrito podrian dejar de estar disponibles. ¿Deseas continuar?</p>
+    <h3 id="countryModalTitle">Cambiar de país</h3>
+    <p>Al cambiar de país, los productos actuales del carrito podrian dejar de estar disponibles. ¿Deseas continuar?</p>
     <div class="mt-3" style="display:flex; gap:.6rem; justify-content:flex-end;">
       <button type="button" class="btn-ghost" data-country-cancel>Cancelar</button>
       <button type="button" class="btn-brand" data-country-confirm>Continuar</button>

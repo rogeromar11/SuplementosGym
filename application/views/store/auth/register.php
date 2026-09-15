@@ -19,17 +19,17 @@
           <input class="form-control" type="text" id="first_name" name="first_name" value="<?php echo html_escape(set_value('first_name')); ?>" required>
         </div>
         <div class="form-group">
-          <label for="email">Correo electronico</label>
+          <label for="email">Correo electrónico</label>
           <input class="form-control" type="email" id="email" name="email" value="<?php echo html_escape(set_value('email')); ?>" autocomplete="email" required>
         </div>
       </div>
       <div class="form-grid-2">
         <div class="form-group">
-          <label for="phone">Numero celular</label>
+          <label for="phone">Número celular</label>
           <input class="form-control" type="tel" id="phone" name="phone" value="<?php echo html_escape(set_value('phone')); ?>" required>
         </div>
         <div class="form-group">
-          <label for="phone2">Telefono secundario <span class="muted">(opcional)</span></label>
+          <label for="phone2">Teléfono secundario <span class="muted">(opcional)</span></label>
           <input class="form-control" type="tel" id="phone2" name="phone2" value="<?php echo html_escape(set_value('phone2')); ?>">
         </div>
       </div>
@@ -38,17 +38,17 @@
         <input class="form-control" type="text" id="delivery_zone" name="delivery_zone" value="<?php echo html_escape(set_value('delivery_zone')); ?>" required>
       </div>
       <div class="form-group">
-        <label for="delivery_address">Direccion aproximada</label>
+        <label for="delivery_address">Dirección aproximada</label>
         <textarea class="form-control" id="delivery_address" name="delivery_address" rows="2" required><?php echo html_escape(set_value('delivery_address')); ?></textarea>
       </div>
       <div class="form-grid-2">
         <div class="form-group">
-          <label for="password">Contrasena</label>
+          <label for="password">contraseña</label>
           <input class="form-control" type="password" id="password" name="password" autocomplete="new-password" required>
-          <div class="form-text">Minimo <?php echo (int) $this->config->item('min_password_length', 'ion_auth'); ?> caracteres.</div>
+          <div class="form-text">Mínimo <?php echo (int) $this->config->item('min_password_length', 'ion_auth'); ?> caracteres.</div>
         </div>
         <div class="form-group">
-          <label for="password_confirm">Confirmar contrasena</label>
+          <label for="password_confirm">Confirmar contraseña</label>
           <input class="form-control" type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required>
         </div>
       </div>
@@ -56,7 +56,7 @@
     </form>
 
     <div class="auth-links">
-      <span>¿Ya tienes cuenta? <a href="<?php echo base_url('ingresar'); ?>">Iniciar sesion</a></span>
+      <span>¿Ya tienes cuenta? <a href="<?php echo base_url('ingresar'); ?>">Iniciar sesión</a></span>
     </div>
   </div>
 </div>

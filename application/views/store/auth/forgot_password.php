@@ -14,14 +14,14 @@
     <form method="post" action="<?php echo base_url('recuperar'); ?>">
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
       <div class="form-group">
-        <label for="identity">Correo electronico</label>
+        <label for="identity">Correo electrónico</label>
         <input class="form-control" type="email" id="identity" name="identity" value="<?php echo html_escape(set_value('identity')); ?>" autocomplete="email" required>
       </div>
       <button type="submit" class="btn-brand btn-block">Enviar instrucciones</button>
     </form>
 
     <div class="auth-links">
-      <a href="<?php echo base_url('ingresar'); ?>">Volver a iniciar sesion</a>
+      <a href="<?php echo base_url('ingresar'); ?>">Volver a iniciar sesión</a>
     </div>
   </div>
 </div>

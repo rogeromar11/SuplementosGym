@@ -6,7 +6,7 @@ $hours = store_setting('business_hours', '');
 <section class="page-band">
   <div class="container-x">
     <h1>Contacto</h1>
-    <p>Estamos para ayudarte. Escribenos y te respondemos a la brevedad.</p>
+    <p>Estamos para ayudarte. Escríbenos y te respondemos a la brevedad.</p>
   </div>
 </section>
 
@@ -17,10 +17,10 @@ $hours = store_setting('business_hours', '');
         <div class="bicon"><i class="bi bi-whatsapp" aria-hidden="true"></i></div>
         <h3>WhatsApp</h3>
         <?php if ( ! empty($whatsapp_url)): ?>
-          <p>La via mas rapida para consultas y pedidos.</p>
+          <p>La via más rápida para consultas y pedidos.</p>
           <a class="btn-wa mt-2" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener">Abrir WhatsApp</a>
         <?php else: ?>
-          <p>Numero por definir.</p>
+          <p>Número por definir.</p>
         <?php endif; ?>
       </div>
       <div class="info-card reveal">

@@ -17,7 +17,7 @@ class Store extends MY_Controller
 			'brand_count'     => count($this->Product_model->laboratories($country->id)),
 		), array(
 			'title'       => 'SG Tienda · Suplementos deportivos',
-			'description' => 'Proteina, creatina, preentrenos y mas. Suplementos originales con entrega en ' . $country->name . '.',
+			'description' => 'Proteína, creatina, preentrenos y más. Suplementos originales con entrega en ' . $country->name . '.',
 		));
 	}
 
@@ -73,7 +73,7 @@ class Store extends MY_Controller
 			'pages'          => $pages,
 		), array(
 			'title'       => 'Productos · SG Tienda',
-			'description' => 'Catalogo de suplementos disponibles en ' . $country->name . '.',
+			'description' => 'Catálogo de suplementos disponibles en ' . $country->name . '.',
 		));
 	}
 
@@ -129,7 +129,7 @@ class Store extends MY_Controller
 		{
 			return $this->json_response(array(
 				'success' => FALSE,
-				'message' => 'Pais no valido.',
+				'message' => 'País no válido.',
 			), 422);
 		}
 
@@ -142,7 +142,7 @@ class Store extends MY_Controller
 			return $this->json_response(array(
 				'success'              => FALSE,
 				'require_confirmation' => TRUE,
-				'message'              => 'Al cambiar de pais, los productos actuales del carrito podrian dejar de estar disponibles. ¿Deseas continuar?',
+				'message'              => 'Al cambiar de país, los productos actuales del carrito podrian dejar de estar disponibles. ¿Deseas continuar?',
 			));
 		}
 
@@ -155,7 +155,7 @@ class Store extends MY_Controller
 
 		return $this->json_response(array(
 			'success'  => TRUE,
-			'message'  => 'Pais actualizado.',
+			'message'  => 'País actualizado.',
 			'redirect' => base_url('productos'),
 		));
 	}
@@ -164,7 +164,7 @@ class Store extends MY_Controller
 	{
 		$this->render_store('store/about', array(), array(
 			'title'       => 'Sobre nosotros · SG Tienda',
-			'description' => 'Conoce SG Tienda: productos originales, atencion personalizada y entrega nacional.',
+			'description' => 'Conoce SG Tienda: productos originales, atención personalizada y entrega nacional.',
 		));
 	}
 
@@ -174,8 +174,8 @@ class Store extends MY_Controller
 			'guides' => store_supplement_guides(),
 			'goals'  => store_goals(),
 		), array(
-			'title'       => 'Guia de suplementos · SG Tienda',
-			'description' => 'Aprende que hace cada suplemento, sus beneficios y como elegirlo segun tu objetivo.',
+			'title'       => 'Guía de suplementos · SG Tienda',
+			'description' => 'Aprende qué hace cada suplemento, sus beneficios y cómo elegirlo según tu objetivo.',
 		));
 	}
 
@@ -183,7 +183,7 @@ class Store extends MY_Controller
 	{
 		$this->render_store('store/macros', array(), array(
 			'title'       => 'Calculadora de macronutrientes · SG Tienda',
-			'description' => 'Calcula tus calorias, proteinas, carbohidratos y grasas diarias segun tu objetivo fisico.',
+			'description' => 'Calcula tus calorías, proteínas, carbohidratos y grasas diarias según tu objetivo físico.',
 		));
 	}
 
@@ -199,7 +199,7 @@ class Store extends MY_Controller
 			'methods' => $methods,
 		), array(
 			'title'       => 'Formas de pago · SG Tienda',
-			'description' => 'Metodos de pago disponibles en ' . $country->name . '.',
+			'description' => 'Métodos de pago disponibles en ' . $country->name . '.',
 		));
 	}
 
@@ -208,7 +208,7 @@ class Store extends MY_Controller
 		$country = current_store_country();
 		$this->render_store('store/contact', array(), array(
 			'title'       => 'Contacto · SG Tienda',
-			'description' => 'Escribenos por WhatsApp o correo. Atencion en ' . $country->name . '.',
+			'description' => 'Escríbenos por WhatsApp o correo. Atención en ' . $country->name . '.',
 		));
 	}
 }

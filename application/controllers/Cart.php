@@ -30,7 +30,7 @@ class Cart extends MY_Controller
 	{
 		if ($this->input->method() !== 'post')
 		{
-			return $this->json_response(array('success' => FALSE, 'message' => 'Metodo no permitido.'), 405);
+			return $this->json_response(array('success' => FALSE, 'message' => 'Método no permitido.'), 405);
 		}
 
 		$country = current_store_country();
@@ -67,7 +67,7 @@ class Cart extends MY_Controller
 	{
 		if ($this->input->method() !== 'post')
 		{
-			return $this->json_response(array('success' => FALSE, 'message' => 'Metodo no permitido.'), 405);
+			return $this->json_response(array('success' => FALSE, 'message' => 'Método no permitido.'), 405);
 		}
 
 		$country = current_store_country();
@@ -99,7 +99,7 @@ class Cart extends MY_Controller
 	{
 		if ($this->input->method() !== 'post')
 		{
-			return $this->json_response(array('success' => FALSE, 'message' => 'Metodo no permitido.'), 405);
+			return $this->json_response(array('success' => FALSE, 'message' => 'Método no permitido.'), 405);
 		}
 
 		$country = current_store_country();
@@ -112,7 +112,7 @@ class Cart extends MY_Controller
 	{
 		if ($this->input->method() !== 'post')
 		{
-			return $this->json_response(array('success' => FALSE, 'message' => 'Metodo no permitido.'), 405);
+			return $this->json_response(array('success' => FALSE, 'message' => 'Método no permitido.'), 405);
 		}
 
 		$this->store_cart->clear();

@@ -22,9 +22,9 @@ $win_end = min($pages, $page + 2);
     </nav>
     <div class="section-head" style="margin-top:.75rem; margin-bottom:0;">
       <div>
-        <p class="eyebrow" style="margin-bottom:8px;">Catalogo</p>
+        <p class="eyebrow" style="margin-bottom:8px;">Catálogo</p>
         <h1 class="section-title">Productos</h1>
-        <p class="section-subtitle">Catalogo disponible en <?php echo html_escape($current_country->name); ?>.</p>
+        <p class="section-subtitle">Catálogo disponible en <?php echo html_escape($current_country->name); ?>.</p>
       </div>
     </div>
   </div>
@@ -35,8 +35,8 @@ $win_end = min($pages, $page + 2);
     <?php if ($country_total === 0): ?>
       <div class="empty-state">
         <i class="bi bi-geo" aria-hidden="true"></i>
-        <h3>Actualmente no hay productos disponibles para este pais.</h3>
-        <p>Estamos trabajando para ampliar nuestro catalogo. Vuelve pronto.</p>
+        <h3>Actualmente no hay productos disponibles para este país.</h3>
+        <p>Estamos trabajando para ampliar nuestro catálogo. Vuelve pronto.</p>
         <a class="btn-ghost mt-3" href="<?php echo base_url('contacto'); ?>">Contactar</a>
       </div>
     <?php else: ?>
@@ -47,7 +47,7 @@ $win_end = min($pages, $page + 2);
             <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
               <label class="perpage">
                 Mostrar
-                <select onchange="var f=document.getElementById('catalogFilters'); f.por_pagina.value=this.value; f.submit();" aria-label="Productos por pagina">
+                <select onchange="var f=document.getElementById('catalogFilters'); f.por_pagina.value=this.value; f.submit();" aria-label="Productos por página">
                   <?php foreach ($per_options as $opt): ?>
                     <option value="<?php echo $opt; ?>"<?php echo $opt === $per_page ? ' selected' : ''; ?>><?php echo $opt; ?></option>
                   <?php endforeach; ?>
@@ -74,13 +74,13 @@ $win_end = min($pages, $page + 2);
             <div class="empty-state d-none" data-search-empty style="margin-top:1rem;">
               <i class="bi bi-search" aria-hidden="true"></i>
               <h3>No encontramos productos que coincidan con tu busqueda.</h3>
-              <p>Prueba con otro nombre, categoria o laboratorio.</p>
+              <p>Prueba con otro nombre, categoría o laboratorio.</p>
             </div>
 
             <?php if ($pages > 1): ?>
-              <nav class="pagination" aria-label="Paginacion de productos">
+              <nav class="pagination" aria-label="Paginación de productos">
                 <?php if ($page > 1): ?>
-                  <a href="<?php echo store_products_url($filters, array('pagina' => $page - 1)); ?>" aria-label="Pagina anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => $page - 1)); ?>" aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>
                 <?php else: ?>
                   <span class="is-disabled" aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
                 <?php endif; ?>
@@ -104,7 +104,7 @@ $win_end = min($pages, $page + 2);
                 <?php endif; ?>
 
                 <?php if ($page < $pages): ?>
-                  <a href="<?php echo store_products_url($filters, array('pagina' => $page + 1)); ?>" aria-label="Pagina siguiente"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                  <a href="<?php echo store_products_url($filters, array('pagina' => $page + 1)); ?>" aria-label="Página siguiente"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
                 <?php else: ?>
                   <span class="is-disabled" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
                 <?php endif; ?>
@@ -114,10 +114,10 @@ $win_end = min($pages, $page + 2);
             <div class="empty-state">
               <i class="bi bi-search" aria-hidden="true"></i>
               <?php if ($is_category): ?>
-                <h3>No hay productos disponibles en esta categoria.</h3>
+                <h3>No hay productos disponibles en esta categoría.</h3>
               <?php elseif ($is_search): ?>
                 <h3>No encontramos productos que coincidan con tu busqueda.</h3>
-                <p>Prueba con otro nombre, categoria o laboratorio.</p>
+                <p>Prueba con otro nombre, categoría o laboratorio.</p>
               <?php else: ?>
                 <h3>No hay productos que coincidan con los filtros seleccionados.</h3>
               <?php endif; ?>
@@ -134,11 +134,11 @@ $win_end = min($pages, $page + 2);
           <form method="get" action="<?php echo base_url('productos'); ?>" id="catalogFilters">
             <div class="filter-group">
               <h4 class="filter-title">Buscar</h4>
-              <input type="search" class="form-control" name="q" value="<?php echo html_escape($filters['search']); ?>" placeholder="Nombre, laboratorio o categoria" data-live-search aria-label="Buscar productos">
+              <input type="search" class="form-control" name="q" value="<?php echo html_escape($filters['search']); ?>" placeholder="Nombre, laboratorio o categoría" data-live-search aria-label="Buscar productos">
             </div>
             <div class="filter-group">
-              <h4 class="filter-title">Categoria</h4>
-              <select class="form-control" name="categoria" aria-label="Categoria">
+              <h4 class="filter-title">Categoría</h4>
+              <select class="form-control" name="categoria" aria-label="Categoría">
                 <option value="">Todas</option>
                 <?php foreach ($categories as $key => $label): ?>
                   <option value="<?php echo html_escape($key); ?>"<?php echo $filters['category'] === $key ? ' selected' : ''; ?>><?php echo html_escape($label); ?></option>
@@ -157,8 +157,8 @@ $win_end = min($pages, $page + 2);
             <div class="filter-group">
               <h4 class="filter-title">Precio</h4>
               <div style="display:flex; gap:.5rem;">
-                <input type="number" class="form-control" name="min" min="0" step="1" placeholder="Min" value="<?php echo html_escape($filters['min_price']); ?>" aria-label="Precio minimo">
-                <input type="number" class="form-control" name="max" min="0" step="1" placeholder="Max" value="<?php echo html_escape($filters['max_price']); ?>" aria-label="Precio maximo">
+                <input type="number" class="form-control" name="min" min="0" step="1" placeholder="Min" value="<?php echo html_escape($filters['min_price']); ?>" aria-label="Precio mínimo">
+                <input type="number" class="form-control" name="max" min="0" step="1" placeholder="Max" value="<?php echo html_escape($filters['max_price']); ?>" aria-label="Precio máximo">
               </div>
             </div>
             <div class="filter-group">

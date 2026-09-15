@@ -2,8 +2,8 @@
 
 <section class="page-band">
   <div class="container-x">
-    <h1>Guia de suplementos</h1>
-    <p>Entiende que hace cada suplemento, sus beneficios y como elegirlo segun tu objetivo. Recuerda que esta informacion es orientativa y no sustituye la opinion de un profesional de la salud.</p>
+    <h1>Guía de suplementos</h1>
+    <p>Entiende qué hace cada suplemento, sus beneficios y cómo elegirlo según tu objetivo. Recuerda que esta información es orientativa y no sustituye la opinión de un profesional de la salud.</p>
   </div>
 </section>
 
@@ -39,7 +39,7 @@
     <div class="section-head">
       <div>
         <span class="section-eyebrow">Tu objetivo</span>
-        <h2 class="section-title">Elige segun tu meta</h2>
+        <h2 class="section-title">Elige según tu meta</h2>
         <p class="section-subtitle">El punto de partida ideal para tu suplementacion.</p>
       </div>
     </div>
@@ -62,7 +62,7 @@
     <div class="form-card">
       <div class="bicon" style="width:46px;height:46px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:1.3rem;margin-bottom:.9rem;"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></div>
       <h2 style="font-size:1.15rem; margin-top:0;">Recomendacion importante</h2>
-      <p class="mb-0">La suplementacion es un complemento de una alimentacion equilibrada, una hidratacion adecuada y un entrenamiento planificado. Si tienes una condicion de salud, estas embarazada o tomas medicamentos, consulta a un medico o nutricionista antes de consumir cualquier suplemento. Sigue siempre las indicaciones del fabricante.</p>
+      <p class="mb-0">La suplementacion es un complemento de una alimentación equilibrada, una hidratación adecuada y un entrenamiento planificado. Si tienes una condición de salud, estás embarazada o tomas medicamentos, consulta a un médico o nutricionista antes de consumir cualquier suplemento. Sigue siempre las indicaciones del fabricante.</p>
     </div>
   </div>
 </section>

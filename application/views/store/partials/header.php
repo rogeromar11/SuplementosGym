@@ -63,7 +63,7 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
             <?php endforeach; ?>
           </div>
         </li>
-        <li><a href="<?php echo base_url('guia'); ?>">Guia</a></li>
+        <li><a href="<?php echo base_url('guia'); ?>">Guía</a></li>
         <li><a href="<?php echo base_url('calculadora'); ?>">Calculadora</a></li>
         <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
         <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
@@ -72,7 +72,7 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
     </nav>
 
     <div class="header-actions">
-      <div class="country-switch" role="group" aria-label="Elegir pais de compra">
+      <div class="country-switch" role="group" aria-label="Elegir país de compra">
         <?php foreach ($countries as $country): ?>
           <?php $iso = strtolower($country->code); ?>
           <button class="country-btn<?php echo ((int) $country->id === (int) $current_country->id) ? ' active' : ''; ?>" type="button" data-country-choice data-country-id="<?php echo (int) $country->id; ?>" aria-pressed="<?php echo ((int) $country->id === (int) $current_country->id) ? 'true' : 'false'; ?>" title="Comprar en <?php echo html_escape($country->name); ?>">
@@ -96,11 +96,11 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
             <a href="<?php echo base_url('cuenta'); ?>"><i class="bi bi-person" aria-hidden="true"></i> Mi perfil</a>
             <a href="<?php echo base_url('cuenta/pedidos'); ?>"><i class="bi bi-box-seam" aria-hidden="true"></i> Mis pedidos</a>
             <hr>
-            <a href="<?php echo base_url('salir'); ?>"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesion</a>
+            <a href="<?php echo base_url('salir'); ?>"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</a>
           </div>
         </div>
       <?php else: ?>
-        <a class="icon-link" href="<?php echo base_url('ingresar'); ?>" aria-label="Iniciar sesion"><i class="bi bi-person" aria-hidden="true"></i></a>
+        <a class="icon-link" href="<?php echo base_url('ingresar'); ?>" aria-label="Iniciar sesión"><i class="bi bi-person" aria-hidden="true"></i></a>
       <?php endif; ?>
 
       <button class="menu-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
@@ -112,7 +112,7 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
   <nav class="menu-panel" aria-label="Menu movil">
     <a class="menu-link" href="<?php echo base_url(); ?>">Inicio</a>
     <a class="menu-link" href="<?php echo base_url('productos'); ?>">Productos</a>
-    <a class="menu-link" href="<?php echo base_url('guia'); ?>">Guia</a>
+    <a class="menu-link" href="<?php echo base_url('guia'); ?>">Guía</a>
     <a class="menu-link" href="<?php echo base_url('calculadora'); ?>">Calculadora</a>
     <a class="menu-link" href="<?php echo base_url('nosotros'); ?>">Nosotros</a>
     <a class="menu-link" href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a>
@@ -120,9 +120,9 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
     <?php if ($store_logged_in): ?>
       <a class="menu-link" href="<?php echo base_url('cuenta'); ?>">Mi perfil</a>
       <a class="menu-link" href="<?php echo base_url('cuenta/pedidos'); ?>">Mis pedidos</a>
-      <a class="menu-link" href="<?php echo base_url('salir'); ?>">Cerrar sesion</a>
+      <a class="menu-link" href="<?php echo base_url('salir'); ?>">Cerrar sesión</a>
     <?php else: ?>
-      <a class="menu-link" href="<?php echo base_url('ingresar'); ?>">Iniciar sesion</a>
+      <a class="menu-link" href="<?php echo base_url('ingresar'); ?>">Iniciar sesión</a>
       <a class="menu-link" href="<?php echo base_url('registro'); ?>">Crear cuenta</a>
     <?php endif; ?>
   </nav>

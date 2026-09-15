@@ -29,10 +29,10 @@ class Account extends MY_Controller
 
 		$this->form_validation->set_rules('first_name', 'Nombre', 'trim|required|max_length[60]');
 		$this->form_validation->set_rules('email', 'Correo', 'trim|required|valid_email|max_length[254]');
-		$this->form_validation->set_rules('phone', 'Numero celular', 'trim|required|max_length[30]');
-		$this->form_validation->set_rules('phone2', 'Telefono secundario', 'trim|max_length[30]');
+		$this->form_validation->set_rules('phone', 'Número celular', 'trim|required|max_length[30]');
+		$this->form_validation->set_rules('phone2', 'Teléfono secundario', 'trim|max_length[30]');
 		$this->form_validation->set_rules('delivery_zone', 'Zona de entrega', 'trim|required|max_length[100]');
-		$this->form_validation->set_rules('delivery_address', 'Direccion', 'trim|required');
+		$this->form_validation->set_rules('delivery_address', 'Dirección', 'trim|required');
 
 		$email = strtolower(trim((string) $this->input->post('email')));
 		if ($email !== strtolower((string) $user->email))
@@ -73,9 +73,9 @@ class Account extends MY_Controller
 			redirect('cuenta');
 		}
 
-		$this->form_validation->set_rules('old', 'Contrasena actual', 'required');
-		$this->form_validation->set_rules('new', 'Nueva contrasena', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[new_confirm]');
-		$this->form_validation->set_rules('new_confirm', 'Confirmar contrasena', 'required');
+		$this->form_validation->set_rules('old', 'Contraseña actual', 'required');
+		$this->form_validation->set_rules('new', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[new_confirm]');
+		$this->form_validation->set_rules('new_confirm', 'Confirmar contraseña', 'required');
 
 		if ($this->form_validation->run() === FALSE)
 		{
@@ -93,7 +93,7 @@ class Account extends MY_Controller
 		}
 
 		$this->ion_auth->logout();
-		$this->session->set_flashdata('store_success', 'Contrasena actualizada. Inicia sesion nuevamente.');
+		$this->session->set_flashdata('store_success', 'Contraseña actualizada. Inicia sesión nuevamente.');
 		redirect('ingresar');
 	}
 

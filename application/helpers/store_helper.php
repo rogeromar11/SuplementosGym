@@ -75,13 +75,13 @@ if ( ! function_exists('store_categories'))
 	function store_categories()
 	{
 		return array(
-			'proteinas'        => 'Proteinas',
+			'proteinas'        => 'Proteínas',
 			'creatinas'        => 'Creatinas',
 			'preentrenos'      => 'Preentrenos',
 			'aminos'           => 'Aminos',
 			'quemadores'       => 'Quemadores de Grasa',
 			'ganadores'        => 'Ganadores de Peso',
-			'multivitaminicos' => 'Multivitaminicos',
+			'multivitaminicos' => 'Multivitamínicos',
 			'otros'            => 'Otros',
 		);
 	}
@@ -282,7 +282,7 @@ if ( ! function_exists('store_cart_whatsapp_message'))
 			$msg .= ' - ' . store_price($line['line_total'], $country) . "\n";
 		}
 		$msg .= "\nSubtotal: " . store_price($subtotal, $country);
-		$msg .= "\nEnvio: " . store_price($shipping, $country);
+		$msg .= "\nEnvío: " . store_price($shipping, $country);
 		$msg .= "\nTotal: " . store_price($total, $country);
 		if ( ! empty($customer['nombre']))
 		{
@@ -290,7 +290,7 @@ if ( ! function_exists('store_cart_whatsapp_message'))
 		}
 		if ( ! empty($customer['telefono']))
 		{
-			$msg .= "\nTelefono: " . $customer['telefono'];
+			$msg .= "\nTeléfono: " . $customer['telefono'];
 		}
 		if ( ! empty($customer['zona']))
 		{
@@ -298,7 +298,7 @@ if ( ! function_exists('store_cart_whatsapp_message'))
 		}
 		if ( ! empty($customer['direccion']))
 		{
-			$msg .= "\nDireccion: " . $customer['direccion'];
+			$msg .= "\nDirección: " . $customer['direccion'];
 		}
 		return $msg;
 	}
@@ -432,55 +432,55 @@ if ( ! function_exists('store_supplement_guides'))
 	{
 		return array(
 			'proteinas' => array(
-				'name'        => 'Proteinas',
+				'name'        => 'Proteínas',
 				'icon'        => 'bi-cup-hot',
 				'tagline'     => 'Whey, aisladas e hidrolizadas',
-				'description' => 'Favorecen la sintesis proteica y ayudan a cubrir el requerimiento diario de proteina, clave para la recuperacion y el desarrollo muscular.',
-				'benefit'     => 'Recuperacion y construccion muscular.',
-				'usage'       => 'Ideal despues del entrenamiento o como complemento entre comidas.',
+				'description' => 'Favorecen la síntesis proteica y ayudan a cubrir el requerimiento diario de proteína, clave para la recuperación y el desarrollo muscular.',
+				'benefit'     => 'Recuperación y construccion muscular.',
+				'usage'       => 'Ideal después del entrenamiento o como complemento entre comidas.',
 			),
 			'creatinas' => array(
 				'name'        => 'Creatina',
 				'icon'        => 'bi-lightning-charge',
-				'tagline'     => 'El suplemento mas estudiado',
-				'description' => 'Mejora la potencia y el rendimiento en esfuerzos cortos e intensos, favoreciendo la fuerza y la recuperacion entre series.',
+				'tagline'     => 'El suplemento más estudiado',
+				'description' => 'Mejora la potencia y el rendimiento en esfuerzos cortos e intensos, favoreciendo la fuerza y la recuperación entre series.',
 				'benefit'     => 'Fuerza, potencia y rendimiento.',
 				'usage'       => 'Consumo diario constante. No requiere ciclado.',
 			),
 			'preentrenos' => array(
 				'name'        => 'Preentrenos',
 				'icon'        => 'bi-activity',
-				'tagline'     => 'Energia y enfoque',
-				'description' => 'Aportan energia, concentracion y resistencia para afrontar entrenamientos exigentes con mayor intensidad.',
-				'benefit'     => 'Energia, enfoque y resistencia.',
+				'tagline'     => 'Energía y enfoque',
+				'description' => 'Aportan energía, concentracion y resistencia para afrontar entrenamientos exigentes con mayor intensidad.',
+				'benefit'     => 'Energía, enfoque y resistencia.',
 				'usage'       => 'Tomar 20-30 minutos antes de entrenar.',
 			),
 			'aminos' => array(
 				'name'        => 'Aminos (BCAA / EAA)',
 				'icon'        => 'bi-droplet',
 				'tagline'     => 'Aminoacidos esenciales',
-				'description' => 'Los aminoacidos ayudan a la recuperacion muscular y pueden apoyar la resistencia durante el entrenamiento.',
-				'benefit'     => 'Recuperacion y resistencia.',
-				'usage'       => 'Durante o despues del entrenamiento, segun el producto.',
+				'description' => 'Los aminoacidos ayudan a la recuperación muscular y pueden apoyar la resistencia durante el entrenamiento.',
+				'benefit'     => 'Recuperación y resistencia.',
+				'usage'       => 'Durante o después del entrenamiento, según el producto.',
 			),
 			'quemadores' => array(
 				'name'        => 'Quemadores de grasa',
 				'icon'        => 'bi-fire',
 				'tagline'     => 'Apoyo a la definicion',
-				'description' => 'Apoyan el metabolismo y el gasto energetico como complemento de una alimentacion y rutina adecuadas.',
+				'description' => 'Apoyan el metabolismo y el gasto energetico como complemento de una alimentación y rutina adecuadas.',
 				'benefit'     => 'Apoyo en la etapa de definicion.',
-				'usage'       => 'Segun indicacion del producto, junto a dieta y entrenamiento.',
+				'usage'       => 'Según indicacion del producto, junto a dieta y entrenamiento.',
 			),
 			'ganadores' => array(
 				'name'        => 'Ganadores de peso',
 				'icon'        => 'bi-bar-chart-fill',
 				'tagline'     => 'Mass Gainers',
-				'description' => 'Aportan calorias, carbohidratos y proteina para quienes buscan aumentar peso y masa muscular.',
+				'description' => 'Aportan calorías, carbohidratos y proteína para quienes buscan aumentar peso y masa muscular.',
 				'benefit'     => 'Aumento de masa y peso.',
-				'usage'       => 'Despues del entrenamiento o entre comidas.',
+				'usage'       => 'Después del entrenamiento o entre comidas.',
 			),
 			'multivitaminicos' => array(
-				'name'        => 'Multivitaminicos',
+				'name'        => 'Multivitamínicos',
 				'icon'        => 'bi-capsule-pill',
 				'tagline'     => 'Salud y bienestar diario',
 				'description' => 'Aportan vitaminas y minerales para cubrir tus necesidades diarias y apoyar tu rendimiento y salud general.',
@@ -490,10 +490,10 @@ if ( ! function_exists('store_supplement_guides'))
 			'otros' => array(
 				'name'        => 'Otros',
 				'icon'        => 'bi-capsule',
-				'tagline'     => 'Omega-3, magnesio y mas',
+				'tagline'     => 'Omega-3, magnesio y más',
 				'description' => 'Complementos para necesidades especificas como omega-3, magnesio, ashwagandha y otros.',
 				'benefit'     => 'Apoyo integral al rendimiento.',
-				'usage'       => 'Segun tu objetivo y la indicacion del producto.',
+				'usage'       => 'Según tu objetivo y la indicacion del producto.',
 			),
 		);
 	}
@@ -507,8 +507,8 @@ if ( ! function_exists('store_goals'))
 			array(
 				'icon'        => 'bi-graph-up-arrow',
 				'title'       => 'Ganar masa muscular',
-				'description' => 'Necesitas un aporte suficiente de proteina y calorias para construir tejido muscular.',
-				'recommended' => 'Proteinas, ganadores de peso y creatina.',
+				'description' => 'Necesitas un aporte suficiente de proteína y calorías para construir tejido muscular.',
+				'recommended' => 'Proteínas, ganadores de peso y creatina.',
 				'link'        => 'proteinas',
 			),
 			array(
@@ -520,16 +520,16 @@ if ( ! function_exists('store_goals'))
 			),
 			array(
 				'icon'        => 'bi-lightning-charge-fill',
-				'title'       => 'Energia y rendimiento',
-				'description' => 'Rendir mas en cada sesion con mayor fuerza y concentracion.',
+				'title'       => 'Energía y rendimiento',
+				'description' => 'Rendir más en cada sesión con mayor fuerza y concentracion.',
 				'recommended' => 'Preentrenos y creatina.',
 				'link'        => 'preentrenos',
 			),
 			array(
 				'icon'        => 'bi-heart-pulse',
-				'title'       => 'Recuperacion',
-				'description' => 'Acelerar la recuperacion muscular despues del entrenamiento.',
-				'recommended' => 'Proteinas y BCAA.',
+				'title'       => 'Recuperación',
+				'description' => 'Acelerar la recuperación muscular después del entrenamiento.',
+				'recommended' => 'Proteínas y BCAA.',
 				'link'        => 'proteinas',
 			),
 		);
@@ -546,24 +546,24 @@ if ( ! function_exists('store_faqs'))
 				'a' => 'Si. Trabajamos unicamente con marcas reconocidas y verificamos la procedencia de cada producto antes de ofrecerlo.',
 			),
 			array(
-				'q' => '¿Como elijo el suplemento adecuado?',
-				'a' => 'Depende de tu objetivo (masa, definicion, energia o recuperacion). Puedes guiarte por nuestra guia de suplementos o escribirnos por WhatsApp para recibir asesoria personalizada.',
+				'q' => '¿Cómo elijo el suplemento adecuado?',
+				'a' => 'Depende de tu objetivo (masa, definicion, energía o recuperación). Puedes guiarte por nuestra guía de suplementos o escribirnos por WhatsApp para recibir asesoría personalizada.',
 			),
 			array(
-				'q' => '¿Realizan envios a todo el pais?',
-				'a' => 'Cubrimos las principales zonas del pais activo. Al confirmar tu pedido te indicamos la informacion de entrega.',
+				'q' => '¿Realizan envíos a todo el país?',
+				'a' => 'Cubrimos las principales zonas del país activo. Al confirmar tu pedido te indicamos la información de entrega.',
 			),
 			array(
-				'q' => '¿Como puedo pagar?',
-				'a' => 'Segun tu pais ofrecemos efectivo, transferencia, SINPE Movil u otras opciones. Consulta la seccion de formas de pago.',
+				'q' => '¿Cómo puedo pagar?',
+				'a' => 'Según tu país ofrecemos efectivo, transferencia, SINPE Movil u otras opciones. Consulta la seccion de formas de pago.',
 			),
 			array(
-				'q' => '¿Que pasa si un producto esta agotado?',
+				'q' => '¿Qué pasa si un producto está agotado?',
 				'a' => 'Lo marcamos como "Agotado" y deshabilitamos la compra. Puedes consultarnos por WhatsApp la disponibilidad y fecha de reposicion.',
 			),
 			array(
 				'q' => '¿Debo consultar a un profesional?',
-				'a' => 'Recomendamos consultar a un medico o nutricionista antes de iniciar cualquier suplementacion, especialmente si tienes alguna condicion de salud.',
+				'a' => 'Recomendamos consultar a un médico o nutricionista antes de iniciar cualquier suplementacion, especialmente si tienes alguna condición de salud.',
 			),
 		);
 	}

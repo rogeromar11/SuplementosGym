@@ -22,7 +22,7 @@ class Store_auth extends MY_Controller
 		if ($this->input->method() === 'post')
 		{
 			$this->form_validation->set_rules('identity', 'Correo', 'trim|required|valid_email');
-			$this->form_validation->set_rules('password', 'Contrasena', 'required');
+			$this->form_validation->set_rules('password', 'Contraseña', 'required');
 
 			if ($this->form_validation->run() === TRUE)
 			{
@@ -42,7 +42,7 @@ class Store_auth extends MY_Controller
 
 		$this->render_store('store/auth/login', array(
 			'auth_error' => isset($this->data['auth_error']) ? $this->data['auth_error'] : '',
-		), array('title' => 'Iniciar sesion · SG Tienda', 'robots' => 'noindex,follow'));
+		), array('title' => 'Iniciar sesión · SG Tienda', 'robots' => 'noindex,follow'));
 	}
 
 	public function register()
@@ -56,12 +56,12 @@ class Store_auth extends MY_Controller
 		{
 			$this->form_validation->set_rules('first_name', 'Nombre', 'trim|required|max_length[60]');
 			$this->form_validation->set_rules('email', 'Correo', 'trim|required|valid_email|is_unique[users.email]');
-			$this->form_validation->set_rules('phone', 'Numero celular', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('phone2', 'Telefono secundario', 'trim|max_length[30]');
+			$this->form_validation->set_rules('phone', 'Número celular', 'trim|required|max_length[30]');
+			$this->form_validation->set_rules('phone2', 'Teléfono secundario', 'trim|max_length[30]');
 			$this->form_validation->set_rules('delivery_zone', 'Zona de entrega', 'trim|required|max_length[100]');
-			$this->form_validation->set_rules('delivery_address', 'Direccion', 'trim|required');
-			$this->form_validation->set_rules('password', 'Contrasena', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[password_confirm]');
-			$this->form_validation->set_rules('password_confirm', 'Confirmar contrasena', 'required');
+			$this->form_validation->set_rules('delivery_address', 'Dirección', 'trim|required');
+			$this->form_validation->set_rules('password', 'Contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[password_confirm]');
+			$this->form_validation->set_rules('password_confirm', 'Confirmar contraseña', 'required');
 
 			if ($this->form_validation->run() === TRUE)
 			{
@@ -80,7 +80,7 @@ class Store_auth extends MY_Controller
 				if ($registered)
 				{
 					$this->ion_auth->activate($registered);
-					$this->session->set_flashdata('store_success', 'Cuenta creada. Ya puedes iniciar sesion.');
+					$this->session->set_flashdata('store_success', 'Cuenta creada. Ya puedes iniciar sesión.');
 					redirect('ingresar');
 				}
 
@@ -100,7 +100,7 @@ class Store_auth extends MY_Controller
 	public function logout()
 	{
 		$this->ion_auth->logout();
-		$this->session->set_flashdata('store_success', 'Sesion cerrada.');
+		$this->session->set_flashdata('store_success', 'Sesión cerrada.');
 		redirect('/');
 	}
 
@@ -150,21 +150,21 @@ class Store_auth extends MY_Controller
 
 		if ( ! $user)
 		{
-			$this->session->set_flashdata('store_error', 'El enlace de restablecimiento no es valido o expiro.');
+			$this->session->set_flashdata('store_error', 'El enlace de restablecimiento no es válido o expiró.');
 			redirect('ingresar');
 		}
 
 		if ($this->input->method() === 'post')
 		{
-			$this->form_validation->set_rules('new', 'Nueva contrasena', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[new_confirm]');
-			$this->form_validation->set_rules('new_confirm', 'Confirmar contrasena', 'required');
+			$this->form_validation->set_rules('new', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[new_confirm]');
+			$this->form_validation->set_rules('new_confirm', 'Confirmar contraseña', 'required');
 
 			if ($this->form_validation->run() === TRUE)
 			{
 				$identity = $user->{$this->config->item('identity', 'ion_auth')};
 				if ($this->ion_auth->reset_password($identity, $this->input->post('new')))
 				{
-					$this->session->set_flashdata('store_success', 'Contrasena actualizada. Ya puedes iniciar sesion.');
+					$this->session->set_flashdata('store_success', 'Contraseña actualizada. Ya puedes iniciar sesión.');
 					redirect('ingresar');
 				}
 				$this->data['auth_error'] = trim(strip_tags($this->ion_auth->errors()));

@@ -3,7 +3,7 @@
   <div class="auth-card">
     <div class="auth-head">
       <div class="bicon"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i></div>
-      <h1>Iniciar sesion</h1>
+      <h1>Iniciar sesión</h1>
       <p>Ingresa para completar tu compra y ver tus pedidos.</p>
     </div>
 
@@ -15,22 +15,22 @@
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
       <input type="hidden" name="return" value="<?php echo html_escape(isset($return) ? $return : ''); ?>">
       <div class="form-group">
-        <label for="identity">Correo electronico</label>
+        <label for="identity">Correo electrónico</label>
         <input class="form-control" type="email" id="identity" name="identity" value="<?php echo html_escape(set_value('identity')); ?>" autocomplete="email" required>
       </div>
       <div class="form-group">
-        <label for="password">Contrasena</label>
+        <label for="password">contraseña</label>
         <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
       </div>
       <div class="form-check mb-3">
         <input type="checkbox" id="remember" name="remember" value="1">
         <label for="remember">Recordarme</label>
       </div>
-      <button type="submit" class="btn-brand btn-block">Iniciar sesion</button>
+      <button type="submit" class="btn-brand btn-block">Iniciar sesión</button>
     </form>
 
     <div class="auth-links">
-      <a href="<?php echo base_url('recuperar'); ?>">¿Olvidaste tu contrasena?</a><br>
+      <a href="<?php echo base_url('recuperar'); ?>">¿¿Olvidaste tu contraseña??</a><br>
       <span>¿No tienes cuenta? <a href="<?php echo base_url('registro'); ?>">Crear cuenta</a></span>
     </div>
   </div>

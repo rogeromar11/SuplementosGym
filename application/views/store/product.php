@@ -44,7 +44,7 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
           <?php if ( ! empty($product->weight)): ?><div class="pd-spec"><strong>Peso</strong><?php echo html_escape($product->weight); ?></div><?php endif; ?>
           <?php if ( ! empty($product->servings)): ?><div class="pd-spec"><strong>Porciones</strong><?php echo html_escape($product->servings); ?></div><?php endif; ?>
           <?php if ((empty($group) || count($group->flavors) <= 1) && ! empty($product->flavor)): ?><div class="pd-spec"><strong>Sabor</strong><?php echo html_escape($product->flavor); ?></div><?php endif; ?>
-          <?php if ( ! empty($product->sku)): ?><div class="pd-spec"><strong>Codigo</strong><?php echo html_escape($product->sku); ?></div><?php endif; ?>
+          <?php if ( ! empty($product->sku)): ?><div class="pd-spec"><strong>Código</strong><?php echo html_escape($product->sku); ?></div><?php endif; ?>
         </div>
 
         <?php if ( ! empty($group) && count($group->flavors) > 1): ?>

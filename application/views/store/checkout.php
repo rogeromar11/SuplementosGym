@@ -7,7 +7,7 @@ $u = $store_user;
   <div class="container-x">
     <span class="section-eyebrow">Checkout</span>
     <h1 class="section-title">Finalizar compra</h1>
-    <p class="section-subtitle">Confirma tus datos de entrega y metodo de pago.</p>
+    <p class="section-subtitle">Confirma tus datos de entrega y método de pago.</p>
 
     <form class="checkout-layout mt-4" method="post" action="<?php echo base_url('checkout/confirmar'); ?>">
       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
@@ -20,13 +20,13 @@ $u = $store_user;
             <input class="form-control" type="text" id="customer_name" name="customer_name" value="<?php echo html_escape(set_value('customer_name', $u->first_name)); ?>" required>
           </div>
           <div class="form-group">
-            <label for="customer_phone">Numero celular</label>
+            <label for="customer_phone">Número celular</label>
             <input class="form-control" type="tel" id="customer_phone" name="customer_phone" value="<?php echo html_escape(set_value('customer_phone', $u->phone)); ?>" required>
           </div>
         </div>
         <div class="form-grid-2">
           <div class="form-group">
-            <label for="customer_phone2">Telefono secundario <span class="muted">(opcional)</span></label>
+            <label for="customer_phone2">Teléfono secundario <span class="muted">(opcional)</span></label>
             <input class="form-control" type="tel" id="customer_phone2" name="customer_phone2" value="<?php echo html_escape(set_value('customer_phone2', $u->phone2)); ?>">
           </div>
           <div class="form-group">
@@ -35,7 +35,7 @@ $u = $store_user;
           </div>
         </div>
         <div class="form-group">
-          <label for="delivery_address">Direccion aproximada</label>
+          <label for="delivery_address">Dirección aproximada</label>
           <textarea class="form-control" id="delivery_address" name="delivery_address" rows="3" required><?php echo html_escape(set_value('delivery_address', $u->delivery_address)); ?></textarea>
         </div>
         <div class="form-group">
@@ -43,7 +43,7 @@ $u = $store_user;
           <textarea class="form-control" id="notes" name="notes" rows="2"><?php echo html_escape(set_value('notes')); ?></textarea>
         </div>
 
-        <h2 style="font-size:1.1rem;">Metodo de pago</h2>
+        <h2 style="font-size:1.1rem;">Método de pago</h2>
         <div class="pay-options">
           <?php foreach ($methods as $index => $method): ?>
             <label class="pay-option">
@@ -52,7 +52,7 @@ $u = $store_user;
             </label>
           <?php endforeach; ?>
           <?php if (empty($methods)): ?>
-            <p class="muted">No hay metodos de pago configurados para este pais.</p>
+            <p class="muted">No hay métodos de pago configurados para este país.</p>
           <?php endif; ?>
         </div>
       </div>
@@ -68,7 +68,7 @@ $u = $store_user;
           <?php endforeach; ?>
         </div>
         <div class="summary-line mt-2"><span>Subtotal</span><strong><?php echo store_price($subtotal); ?></strong></div>
-        <div class="summary-line"><span>Envio</span><strong><?php echo store_price($shipping); ?></strong></div>
+        <div class="summary-line"><span>Envío</span><strong><?php echo store_price($shipping); ?></strong></div>
         <div class="summary-total"><span>Total</span><span><?php echo store_price($total); ?></span></div>
         <button type="submit" class="btn-brand btn-block mt-3"<?php echo empty($methods) ? ' disabled' : ''; ?>>Confirmar pedido</button>
         <?php if ( ! empty(store_whatsapp_number())): ?>

@@ -63,10 +63,10 @@ $status_labels = array(
       <aside class="summary">
         <h3>Resumen</h3>
         <div class="summary-line"><span>Fecha</span><strong><?php echo date('d/m/Y H:i', strtotime($order->created_at)); ?></strong></div>
-        <div class="summary-line"><span>Pais</span><strong><?php echo html_escape($order->country_code); ?></strong></div>
-        <div class="summary-line"><span>Metodo de pago</span><strong><?php echo html_escape($order->payment_method_name ?: 'Por definir'); ?></strong></div>
+        <div class="summary-line"><span>País</span><strong><?php echo html_escape($order->country_code); ?></strong></div>
+        <div class="summary-line"><span>Método de pago</span><strong><?php echo html_escape($order->payment_method_name ?: 'Por definir'); ?></strong></div>
         <div class="summary-line"><span>Subtotal</span><strong><?php echo store_order_price($order, $order->subtotal); ?></strong></div>
-        <div class="summary-line"><span>Envio</span><strong><?php echo store_order_price($order, $order->shipping); ?></strong></div>
+        <div class="summary-line"><span>Envío</span><strong><?php echo store_order_price($order, $order->shipping); ?></strong></div>
         <div class="summary-total"><span>Total</span><span><?php echo store_order_price($order, $order->total); ?></span></div>
         <?php $wa = store_whatsapp_url('Hola, acabo de realizar el pedido #' . $order->order_number . '.'); ?>
         <?php if ( ! empty($wa)): ?>
