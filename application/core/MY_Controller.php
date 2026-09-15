@@ -30,6 +30,45 @@ class MY_Controller extends CI_Controller
 		$flash = store_flash();
 		$this->data['flash_error'] = $flash['error'];
 		$this->data['flash_success'] = $flash['success'];
+
+		$this->record_store_visit();
+	}
+
+	/**
+	 * Registra una visita a la tienda web (una fila por vista de página GET).
+	 * Los visitantes únicos se calculan por session_id distinto en una fecha.
+	 */
+	protected function record_store_visit()
+	{
+		if ($this->input->method() !== 'get' || $this->input->is_ajax_request())
+		{
+			return;
+		}
+		if ( ! $this->db->table_exists('store_visits'))
+		{
+			return;
+		}
+
+		$vid = $this->session->userdata('store_visit_id');
+		if ( ! $vid)
+		{
+			$vid = bin2hex(random_bytes(16));
+			$this->session->set_userdata('store_visit_id', $vid);
+		}
+
+		$country = current_store_country();
+		$user = $this->ion_auth->logged_in() ? $this->ion_auth->user()->row() : NULL;
+
+		$this->db->insert('store_visits', array(
+			'country_id' => $country ? (int) $country->id : NULL,
+			'user_id'    => $user ? (int) $user->id : NULL,
+			'session_id' => $vid,
+			'ip_address' => $this->input->ip_address(),
+			'user_agent' => substr((string) $this->input->user_agent(), 0, 255),
+			'path'       => substr((string) $this->uri->uri_string(), 0, 255),
+			'visit_date' => date('Y-m-d'),
+			'created_at' => date('Y-m-d H:i:s'),
+		));
 	}
 
 	protected function render_store($view, $data = array(), $meta = array())
@@ -68,3 +107,9 @@ class MY_Controller extends CI_Controller
 		}
 	}
 }
+
+// Bases del backoffice: se cargan aquí porque CI3 solo autocarga MY_Controller.
+// Las clases base adicionales (SG_Controller, Authenticated_Controller,
+// Admin_Controller, Courier_Controller) deben existir antes de instanciar
+// los controladores de application/controllers/admin/.
+require_once __DIR__ . '/SG_Controller.php';

@@ -73,6 +73,7 @@ class Store_order_model extends CI_Model
 			return NULL;
 		}
 		$order->items = $this->db->where('order_id', $order->id)->order_by('id', 'ASC')->get($this->items)->result();
+		$order->history = $this->db->where('order_id', $order->id)->order_by('created_at', 'ASC')->get('order_status_history')->result();
 		return $order;
 	}
 

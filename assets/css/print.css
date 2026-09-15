@@ -1,0 +1,46 @@
+/* ==========================================================================
+   SGMensajeria - Estilos de impresion
+   ========================================================================== */
+@media print {
+    body { font-family: 'Fira Sans', Arial, sans-serif; color: #111114; }
+    h1, h2, h3, h4 { font-family: 'Fira Code', monospace; }
+
+    .no-print { display: none !important; }
+
+    .print-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 3px solid #DC2626;
+    }
+
+    .print-header img {
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+
+    .print-header .brand { font-family: 'Fira Code', monospace; font-weight: 700; font-size: 1.2rem; }
+    .print-header .brand em { font-style: normal; color: #DC2626; }
+    .print-header .meta { color: #52525B; font-size: 0.8rem; }
+
+    .print-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+    }
+
+    .print-subtitle { color: #52525B; font-size: 0.85rem; margin: 0 0 18px; }
+
+    .print-summary td { padding: 3px 10px 3px 0; font-size: 0.85rem; }
+    .print-summary td:first-child { color: #52525B; }
+    .print-summary td:last-child { font-weight: 600; }
+
+    .print-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .print-table th, .print-table td { border: 1px solid #D4D4D8; padding: 7px 9px; text-align: left; }
+    .print-table th { background: #111114; color: #fff; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .print-table tfoot td { font-weight: 700; background: #F4F4F5; }
+}

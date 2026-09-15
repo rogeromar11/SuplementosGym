@@ -391,9 +391,9 @@ $config['encryption_key'] = 'yxKiAXEBYZPDLTa1bOjzp9wcJ6kSM5UWtRnHmvg2';
 |
 */
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'ci_session';
+$config['sess_cookie_name'] = 'sg_session';
 $config['sess_samesite'] = 'Lax';
-$config['sess_expiration'] = 7200;
+$config['sess_expiration'] = 28800;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
@@ -437,8 +437,8 @@ $config['cookie_samesite'] 	= 'Lax';
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
 $config['csrf_protection'] = TRUE;
-$config['csrf_token_name'] = 'csrf_test_name';
-$config['csrf_cookie_name'] = 'csrf_cookie_name';
+$config['csrf_token_name'] = 'csrf_sgms_token';
+$config['csrf_cookie_name'] = 'csrf_sgms_cookie';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array();
@@ -463,7 +463,7 @@ $config['csrf_exclude_uris'] = array();
 | by the output class.  Do not 'echo' any values with compression enabled.
 |
 */
-$config['compress_output'] = TRUE;
+$config['compress_output'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------

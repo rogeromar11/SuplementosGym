@@ -84,3 +84,23 @@ $route['registro'] = 'store_auth/register';
 $route['salir'] = 'store_auth/logout';
 $route['recuperar'] = 'store_auth/forgot_password';
 $route['restablecer/(:any)'] = 'store_auth/reset_password/$1';
+
+/* -----------------------------------------------------------------
+ * Backoffice (/admin): funcionalidad portada de SGMensajeria.
+ * Los controladores viven en application/controllers/admin/ y las
+ * vistas en application/third_party/sgadmin/views.
+ * ----------------------------------------------------------------- */
+$route['menu'] = 'admin/dashboard/menu';
+
+$admin_modules = array(
+	'auth', 'dashboard', 'users', 'roles', 'clients', 'products',
+	'warehouses', 'deposits', 'catalogs', 'orders', 'preparation',
+	'routes', 'reports', 'audit', 'settings', 'courier',
+);
+foreach ($admin_modules as $admin_module)
+{
+	$route[$admin_module] = 'admin/' . $admin_module;
+	// (.*) captura rutas de varios segmentos (ej. orders/detail/5, auth/login/CR).
+	$route[$admin_module . '/(.*)'] = 'admin/' . $admin_module . '/$1';
+}
+

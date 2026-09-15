@@ -18,8 +18,8 @@ $status_labels = array(
     </nav>
     <h1 class="section-title mt-2">Pedido <?php echo html_escape($order->order_number); ?></h1>
     <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin:.5rem 0 1.5rem;">
-      <span class="status status-<?php echo html_escape($order->status); ?>"><?php echo html_escape(isset($status_labels[$order->status]) ? $status_labels[$order->status] : $order->status); ?></span>
-      <span class="status status-<?php echo html_escape($order->payment_status); ?>">Pago: <?php echo html_escape(isset($status_labels[$order->payment_status]) ? $status_labels[$order->payment_status] : $order->payment_status); ?></span>
+      <span class="status status-<?php echo html_escape(store_order_status_class($order->status)); ?>"><?php echo html_escape(store_order_status_label($order->status)); ?></span>
+      <span class="status status-<?php echo html_escape(store_order_status_class($order->payment_status)); ?>">Pago: <?php echo html_escape(store_order_status_label($order->payment_status)); ?></span>
     </div>
 
     <div class="checkout-layout">
@@ -40,6 +40,24 @@ $status_labels = array(
           <?php echo html_escape($order->customer_phone); ?><?php echo ! empty($order->customer_phone2) ? ' / ' . html_escape($order->customer_phone2) : ''; ?><br>
           <?php echo html_escape($order->delivery_zone); ?> — <?php echo nl2br(html_escape((string) $order->delivery_address)); ?>
         </p>
+
+        <?php if ( ! empty($order->history)): ?>
+        <h2 style="font-size:1.1rem;" class="mt-3">Seguimiento</h2>
+        <ul class="order-timeline">
+          <?php foreach ($order->history as $h): ?>
+            <li class="order-timeline-item">
+              <span class="order-timeline-dot"></span>
+              <div>
+                <strong><?php echo html_escape(store_order_status_label($h->to_status)); ?></strong>
+                <small class="muted"><?php echo date('d/m/Y H:i', strtotime($h->created_at)); ?></small>
+                <?php if ( ! empty($h->notes)): ?>
+                  <div class="muted" style="font-size:.85rem;"><?php echo html_escape($h->notes); ?></div>
+                <?php endif; ?>
+              </div>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
       </div>
 
       <aside class="summary">

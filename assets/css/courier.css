@@ -1,0 +1,126 @@
+/* ==========================================================================
+   SGMensajeria - Estilos moviles del mensajero
+   ========================================================================== */
+body.courier-app {
+    background: #F4F4F5;
+    min-height: 100vh;
+    padding-bottom: 72px;
+    font-family: 'Fira Sans', system-ui, sans-serif;
+}
+
+.courier-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: var(--sg-black, #0B0B0F);
+    color: #FAFAFA;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.courier-topbar img {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.courier-topbar .titles { flex: 1; min-width: 0; }
+.courier-topbar .titles strong { font-family: 'Fira Code', monospace; font-size: 0.95rem; }
+.courier-topbar .titles strong em { font-style: normal; color: #EF4444; }
+.courier-topbar .titles small { display: block; color: #A1A1AA; font-size: 0.75rem; }
+
+.courier-content { padding: 16px 14px 24px; }
+
+.courier-bottombar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1020;
+    background: #FFFFFF;
+    border-top: 1px solid #E4E4E7;
+    display: flex;
+    justify-content: space-around;
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+
+.courier-bottombar a {
+    flex: 1;
+    text-align: center;
+    color: #71717A;
+    font-size: 0.72rem;
+    padding: 8px 4px;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.courier-bottombar a i { display: block; font-size: 1.35rem; margin-bottom: 2px; }
+.courier-bottombar a.active { color: #DC2626; font-weight: 600; }
+
+.courier-route-card {
+    background: #FFFFFF;
+    border: 1px solid #E4E4E7;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(11, 11, 15, 0.05);
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.courier-route-card .card-head {
+    background: var(--sg-black, #0B0B0F);
+    color: #FAFAFA;
+    padding: 14px 16px;
+}
+
+.courier-route-card .card-head h2 { font-family: 'Fira Code', monospace; font-size: 1rem; margin: 0; }
+.courier-route-card .card-head small { color: #A1A1AA; }
+.courier-route-card .card-body { padding: 14px 16px; }
+
+.courier-delivery {
+    background: #FFFFFF;
+    border: 1px solid #E4E4E7;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.courier-delivery .d-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #F0F0F2;
+}
+
+.courier-delivery .d-order-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #DC2626;
+    color: #FFF;
+    display: grid;
+    place-items: center;
+    font-family: 'Fira Code', monospace;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.courier-delivery .d-body { padding: 12px 14px; }
+.courier-delivery .d-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 14px 14px; }
+.courier-delivery .d-actions .btn { min-height: 46px; font-size: 0.82rem; }
+.courier-delivery .d-actions .btn i { font-size: 1.1rem; }
+
+.courier-btn { min-height: 48px; font-weight: 600; }
+
+.progress-slim { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.15); }
+.progress-slim .progress-bar { background: #EF4444; border-radius: 999px; }
+
+.d-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #71717A; }
+.d-value { font-weight: 600; }
+
+@media (min-width: 768px) {
+    .courier-app .courier-wrap { max-width: 640px; margin: 0 auto; }
+}

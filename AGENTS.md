@@ -6,9 +6,10 @@ Project rules for AI agents and developers.
 
 - **Framework**: CodeIgniter 3.4.2 (`pocketarc/codeigniter` fork) — never edit `system/`.
 - **Auth**: IonAuth in `application/third_party/ion_auth` (registered as a package in `autoload.php`).
-- **PHP**: >= 7.2, works up to 8.x (dev currently on 8.2).
+- **PHP**: >= 8.1 (dev on 8.2). The backoffice uses PHP 8.1+ features.
 - **Email**: PHPMailer 6.9 via `application/libraries/MY_Email.php` (extends `CI_Email`, same API, falls back to native transport if vendor is missing).
 - **API**: `chriskacerguis/codeigniter-restserver` — config in `application/config/rest.php`, example controller `application/controllers/Api.php`.
+- **Reports**: Dompdf (`Pdf_service`) and PhpSpreadsheet (`Excel_service`) for PDF/Excel exports.
 - **Composer**: autoloads root `vendor/autoload.php`. `composer.lock` is intentionally gitignored — pin versions in `composer.json` deliberately.
 
 ## Quick start
@@ -22,22 +23,48 @@ php -S localhost:8000
 2. Import `database/database.sql` (IonAuth schema + seed admin `admin@admin.com`).
 3. Configure `application/config/email.php` (SMTP) for real email delivery.
 
-Useful URLs: `/auth/login`, `/auth/register`, `/auth/forgot_password`, `/api/ping` (health check).
+Useful URLs: storefront `/productos`, `/carrito`, `/cuenta`, customer login `/ingresar`;
+backoffice login `/auth/login` (staff), dashboard `/dashboard`; health check `/api/ping`.
 
 ## Architecture
 
 ```
 application/
-  controllers/   Auth (IonAuth flows: login/register/forgot/reset, HTML + AJAX JSON), Api (REST), Welcome
-  models/        (empty today — business logic lives in controllers/libraries)
-  libraries/     MY_Email (PHPMailer transport for CI_Email)
-  core/          (empty — extend CI3 there with MY_ subclasses)
+  controllers/   Store/Auth/Cart/Checkout/Account (storefront) + admin/ (backoffice)
+  models/        Country, Product, Store_order, Inventory, plus admin models
+  libraries/     Store_cart, MY_Email, and admin services (Order, Route, Payment,
+                 Delivery, Permission, Audit, Pdf, Excel, Map_link_parser...)
+  core/          MY_Controller (storefront base), SG_Controller + role bases, MY_Model
   config/        database.php, email.php, rest.php, routes.php, config.php (subclass_prefix)
-  views/         auth/ (all auth pages on auth_template.php), errors/, welcome_message.php
+  views/         store/ (storefront), auth/ (IonAuth), errors/
   language/      english/ and spanish/ packs for auth, ion_auth, rest (default language: english)
-  third_party/   ion_auth (library + model + its own config/ion_auth.php)
+  third_party/   ion_auth, sgadmin/views (backoffice views via package path)
 database/        database.sql (full base schema) + upgrade_*.sql migrations
 ```
+
+### Backoffice (`/admin`)
+
+The storefront and the backoffice share one CodeIgniter app and one database.
+`store_orders` is the **single source of truth** for orders (web + manual).
+
+- **Controllers**: `application/controllers/admin/` (Auth, Dashboard, Users, Roles,
+  Clients, Products, Warehouses, Catalogs, Orders, Preparation, Routes, Courier,
+  Reports, Settings, Audit, Deposits). Routed by prefix in `routes.php`.
+- **Views**: `application/third_party/sgadmin/views/` — loaded through a package path
+  added in `SG_Controller` / admin `Auth`. Admin login views live in `admin_auth/`.
+- **Core base classes**: `SG_Controller` (shared base: country session, settings,
+  permissions, audit, JSON + layouts), `Authenticated_Controller`, `Admin_Controller`
+  (group `admin`), `Courier_Controller` (group `mensajero`), plus `MY_Model`.
+- **Permissions**: granular `permissions` + `group_permissions` tables with
+  `Permission_service` / `has_permission()` / `require_permission()`. Groups:
+  `admin`, `customer`, `vendedor`, `bodeguero`, `mensajero`, `auxiliar_admin`.
+- **Order flow**: `pendiente_preparacion` → `en_preparacion` → `preparado` →
+  `asignado_ruta` → `en_ruta` → `entregado`/`no_entregado` → `reprogramado`/`cancelado`.
+  `order_status_history` drives customer tracking in `cuenta/pedidos`.
+- **Clientes**: `clients.user_id` is a nullable FK to `users`; registered store users
+  are homologated on registration/first order, manual clients have no account.
+- **Uploads**: `uploads/delivery_evidence/`, `uploads/payment_receipts/`,
+  `uploads/deposit_receipts/` (all block execution via `.htaccess`).
 
 Conventions: controllers fill `$this->data` (title, message, per-field input arrays) and render through
 `_render_page()`. REST endpoints are controller methods named `<resource>_<verb>` (e.g. `ping_get`).

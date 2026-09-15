@@ -7,9 +7,7 @@ if ( ! function_exists('store_ci'))
 	{
 		return get_instance();
 	}
-}
-
-if ( ! function_exists('store_countries'))
+}if ( ! function_exists('store_countries'))
 {
 	function store_countries()
 	{
@@ -551,5 +549,75 @@ if ( ! function_exists('store_faqs'))
 				'a' => 'Recomendamos consultar a un medico o nutricionista antes de iniciar cualquier suplementacion, especialmente si tienes alguna condicion de salud.',
 			),
 		);
+	}
+}
+
+if ( ! function_exists('store_order_status_label'))
+{
+	/**
+	 * Etiqueta visible en la tienda para el estado de un pedido.
+	 * Cubre los estados canónicos compartidos con el panel admin.
+	 *
+	 * @param string $status
+	 * @return string
+	 */
+	function store_order_status_label($status)
+	{
+		$map = array(
+			'registrado'             => 'Registrado',
+			'pendiente'              => 'Pendiente',
+			'pendiente_preparacion'  => 'Pendiente de preparación',
+			'confirmado'             => 'Confirmado',
+			'en_preparacion'         => 'En preparación',
+			'preparando'             => 'En preparación',
+			'preparado'              => 'Preparado',
+			'asignado_ruta'          => 'Asignado a ruta',
+			'en_ruta'                => 'En ruta',
+			'enviado'                => 'En ruta',
+			'entregado'              => 'Entregado',
+			'no_entregado'           => 'No entregado',
+			'reprogramado'           => 'Reprogramado',
+			'cancelado'              => 'Cancelado',
+			'pagado'                 => 'Pagado',
+			'en_verificacion'        => 'En verificación',
+			'pendiente_pago'         => 'Pago pendiente',
+			'parcial'                => 'Pago parcial',
+		);
+		return isset($map[$status]) ? $map[$status] : $status;
+	}
+}
+
+if ( ! function_exists('store_order_status_class'))
+{
+	/**
+	 * Clase CSS (status-*) para el estado del pedido. Agrupa los estados
+	 * canónicos en las clases ya definidas por la tienda.
+	 *
+	 * @param string $status
+	 * @return string
+	 */
+	function store_order_status_class($status)
+	{
+		$map = array(
+			'registrado'            => 'pendiente',
+			'pendiente'             => 'pendiente',
+			'pendiente_preparacion' => 'confirmado',
+			'confirmado'            => 'confirmado',
+			'en_preparacion'        => 'preparando',
+			'preparando'            => 'preparando',
+			'preparado'             => 'preparando',
+			'asignado_ruta'         => 'enviado',
+			'en_ruta'               => 'enviado',
+			'enviado'               => 'enviado',
+			'entregado'             => 'entregado',
+			'no_entregado'          => 'cancelado',
+			'reprogramado'          => 'pendiente',
+			'cancelado'             => 'cancelado',
+			'pagado'                => 'entregado',
+			'en_verificacion'       => 'pendiente',
+			'pendiente_pago'        => 'pendiente',
+			'parcial'               => 'pendiente',
+		);
+		return isset($map[$status]) ? $map[$status] : 'pendiente';
 	}
 }

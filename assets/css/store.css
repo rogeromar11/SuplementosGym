@@ -474,3 +474,8 @@ select.form-control:hover, .toolbar-select:hover { border-color: rgba(255,255,25
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Seguimiento de pedidos (Mis pedidos) */
+.order-timeline { list-style: none; margin: 0; padding: 0; }
+.order-timeline-item { display: flex; gap: .6rem; padding: .35rem 0; }
+.order-timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: #e11d48; margin-top: .35rem; flex: none; }

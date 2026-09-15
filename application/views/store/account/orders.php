@@ -40,8 +40,8 @@ $status_labels = array(
                 </div>
               </div>
               <div style="display:flex; gap:.4rem; align-items:center; flex-wrap:wrap;">
-                <span class="status status-<?php echo html_escape($order->status); ?>"><?php echo html_escape(isset($status_labels[$order->status]) ? $status_labels[$order->status] : $order->status); ?></span>
-                <span class="status status-<?php echo html_escape($order->payment_status); ?>">Pago: <?php echo html_escape(isset($status_labels[$order->payment_status]) ? $status_labels[$order->payment_status] : $order->payment_status); ?></span>
+                <span class="status status-<?php echo html_escape(store_order_status_class($order->status)); ?>"><?php echo html_escape(store_order_status_label($order->status)); ?></span>
+                <span class="status status-<?php echo html_escape(store_order_status_class($order->payment_status)); ?>">Pago: <?php echo html_escape(store_order_status_label($order->payment_status)); ?></span>
               </div>
             </div>
             <div class="summary-line mt-2"><span>Metodo de pago</span><strong><?php echo html_escape($order->payment_method_name ?: 'Por definir'); ?></strong></div>

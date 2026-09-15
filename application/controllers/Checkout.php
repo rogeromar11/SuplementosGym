@@ -96,12 +96,27 @@ class Checkout extends MY_Controller
 		$shipping = $this->store_cart->shipping($subtotal, $country->id);
 		$total = $subtotal + $shipping;
 
+		// Homologación: el usuario registrado queda como cliente del backoffice.
+		$this->load->model('Client_model');
+		$client_id = $this->Client_model->find_or_create_for_user((int) $user->id, $country->id, array(
+			'name'          => $this->input->post('customer_name', TRUE),
+			'email'         => $user->email,
+			'phone'         => $this->input->post('customer_phone', TRUE),
+			'phone2'        => $this->input->post('customer_phone2', TRUE),
+			'zone'          => $this->input->post('delivery_zone', TRUE),
+			'address'       => $this->input->post('delivery_address', TRUE),
+			'delivery_type' => 'domicilio',
+			'client_type'   => 'web',
+		), (int) $user->id);
+
 		$this->db->trans_begin();
 
 		$order_id = $this->Store_order_model->create(array(
 			'country_id'        => $country->id,
 			'user_id'           => (int) $user->id,
+			'client_id'         => $client_id ?: NULL,
 			'order_number'      => $this->Store_order_model->next_number($country->id),
+			'origin'            => 'web',
 			'customer_name'     => $this->input->post('customer_name', TRUE),
 			'customer_email'    => $user->email,
 			'customer_phone'    => $this->input->post('customer_phone', TRUE),
@@ -110,12 +125,17 @@ class Checkout extends MY_Controller
 			'delivery_address'  => $this->input->post('delivery_address', TRUE),
 			'subtotal'          => $subtotal,
 			'shipping'          => $shipping,
+			'discount'          => 0,
 			'total'             => $total,
+			'paid_amount'       => 0,
+			'balance_amount'    => $total,
 			'payment_method_id' => (int) $payment_method->id,
 			'payment_status'    => 'pendiente',
-			'status'            => 'confirmado',
+			'status'            => 'registrado',
 			'inventory_applied' => 0,
 			'notes'             => $this->input->post('notes', TRUE),
+			'created_by'        => (int) $user->id,
+			'updated_by'        => (int) $user->id,
 		));
 
 		if ( ! $order_id)
@@ -140,6 +160,18 @@ class Checkout extends MY_Controller
 
 		$this->sync_user_profile($user->id);
 		$this->store_cart->clear();
+
+		// Historial inicial para el seguimiento en "Mis pedidos".
+		$this->db->insert('order_status_history', array(
+			'order_id'    => $order_id,
+			'from_status' => NULL,
+			'to_status'   => 'registrado',
+			'user_id'     => (int) $user->id,
+			'ip_address'  => $this->input->ip_address(),
+			'user_agent'  => substr((string) $this->input->user_agent(), 0, 255),
+			'notes'       => 'Pedido creado desde la tienda.',
+			'created_at'  => date('Y-m-d H:i:s'),
+		));
 
 		$this->session->set_flashdata('store_success', 'Tu pedido fue registrado correctamente.');
 		redirect('cuenta/pedido/' . $order_id);

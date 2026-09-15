@@ -1,0 +1,7 @@
+# Block PHP execution
+<FilesMatch "\.(php|php[0-9]|phtml|pht|cgi|pl|py|asp|aspx|sh)$">
+    Require all denied
+</FilesMatch>
+
+# Deny listing
+Options -Indexes
