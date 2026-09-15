@@ -28,7 +28,7 @@ $status_labels = array(
         <div class="order-lines">
           <?php foreach ($order->items as $item): ?>
             <div class="order-line">
-              <span><?php echo (int) $item->quantity; ?>× <?php echo html_escape($item->item_name); ?><br><small class="muted"><?php echo store_order_price($order, $item->unit_price); ?> c/u</small></span>
+              <span><?php echo (int) $item->quantity; ?>× <?php echo html_escape($item->item_name); ?><?php echo ! empty($item->item_flavor) ? ' <small class="muted">(' . html_escape($item->item_flavor) . ')</small>' : ''; ?><br><small class="muted"><?php echo store_order_price($order, $item->unit_price); ?> c/u</small></span>
               <strong><?php echo store_order_price($order, $item->line_total); ?></strong>
             </div>
           <?php endforeach; ?>

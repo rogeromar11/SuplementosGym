@@ -1,4 +1,17 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+$wa_customer = array();
+if ($store_logged_in && ! empty($store_user))
+{
+	$wa_customer = array(
+		'nombre'    => $store_user->first_name,
+		'telefono'  => $store_user->phone,
+		'zona'      => $store_user->delivery_zone,
+		'direccion' => $store_user->delivery_address,
+	);
+}
+$wa_order = empty($contents) ? '' : store_cart_whatsapp_url($contents, $subtotal, $shipping, $total, $current_country, $wa_customer);
+?>
 
 <section class="section">
   <div class="container-x">
@@ -26,6 +39,7 @@
                   <h3 class="cart-name"><a href="<?php echo store_product_url($line['product']); ?>"><?php echo html_escape($line['name']); ?></a></h3>
                   <div class="muted" style="font-size:.82rem;">
                     <?php if ( ! empty($line['laboratory'])): ?><?php echo html_escape($line['laboratory']); ?> · <?php endif; ?>
+                    <?php if ( ! empty($line['flavor'])): ?>Sabor: <?php echo html_escape($line['flavor']); ?> · <?php endif; ?>
                     <?php echo store_price($line['unit_price']); ?> c/u
                   </div>
                 </div>
@@ -55,6 +69,10 @@
           <div class="summary-line"><span>Envio</span><strong data-summary-shipping><?php echo store_price($shipping); ?></strong></div>
           <div class="summary-total"><span>Total</span><span data-summary-total><?php echo store_price($total); ?></span></div>
           <a class="btn-brand btn-block mt-3" href="<?php echo base_url('checkout'); ?>">Finalizar compra <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+          <?php if ( ! empty($wa_order)): ?>
+            <a class="btn-wa btn-block mt-2" href="<?php echo html_escape($wa_order); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Finalizar por WhatsApp</a>
+            <p class="muted mt-2 mb-0" style="font-size:.78rem;">Se abrira WhatsApp con el detalle de tu pedido escrito.</p>
+          <?php endif; ?>
           <?php if ( ! $store_logged_in): ?>
             <p class="muted mt-2 mb-0" style="font-size:.82rem;">Necesitaras iniciar sesion o crear una cuenta para completar la compra.</p>
           <?php endif; ?>

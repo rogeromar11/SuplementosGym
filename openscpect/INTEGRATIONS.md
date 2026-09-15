@@ -7,8 +7,13 @@
 - Mensajes:
   - Producto: `Hola, estoy interesado en el producto: [PRODUCTO].`
   - Pedido: `Hola, acabo de realizar el pedido #[NUMERO].`
+- **Carrito**: "Finalizar por WhatsApp" envia el detalle escrito del pedido
+  (productos, cantidades, subtotal, envio, total) via `store_cart_whatsapp_url()`.
+- **Checkout**: "Pedir por WhatsApp" envia productos + datos de entrega del
+  formulario (`waCheckoutData`).
+- **Boton flotante** `.fab-wa` en la esquina inferior derecha (global).
 - El numero se adapta segun el pais activo.
-- Placeholder hasta contar con el numero real.
+- **Placeholders actuales** (reemplazar): CR `50688888888`, SV `50377777777`.
 
 ## Correo
 

@@ -57,6 +57,75 @@
     });
   }
 
+  function addProduct(id, quantity, button) {
+    if (button) { button.disabled = true; }
+    return post('carrito/agregar', { product_id: id, quantity: quantity || 1 }).then(function (res) {
+      if (button) { button.disabled = false; }
+      if (res.success) {
+        setBadge(res.count);
+        toast(res.message || 'Producto agregado.');
+        if (button && button.hasAttribute('data-buy-now')) {
+          window.location.href = url('checkout');
+        }
+      } else {
+        toast(res.message || 'No fue posible agregar el producto.', true);
+      }
+      return res;
+    }).catch(function () {
+      if (button) { button.disabled = false; }
+      toast('Error de conexion. Intenta nuevamente.', true);
+    });
+  }
+
+  function openFlavorModal(button) {
+    var modal = document.querySelector('[data-flavor-modal]');
+    if (!modal) { return; }
+    var flavors;
+    try { flavors = JSON.parse(button.getAttribute('data-flavor-picker')); } catch (e) { return; }
+    if (!flavors || !flavors.length) { return; }
+
+    var optionsWrap = modal.querySelector('[data-flavor-options]');
+    var productEl = modal.querySelector('[data-flavor-product]');
+    var confirmBtn = modal.querySelector('[data-flavor-confirm]');
+    var selected = null;
+
+    if (productEl) { productEl.textContent = button.getAttribute('data-product-name') || ''; }
+    optionsWrap.innerHTML = '';
+    confirmBtn.disabled = true;
+
+    flavors.forEach(function (f) {
+      var option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'flavor-option' + (f.available ? '' : ' is-out');
+      option.textContent = f.flavor + (f.available ? ' · ' + f.price : ' (agotado)');
+      if (!f.available) { option.disabled = true; }
+      option.addEventListener('click', function () {
+        optionsWrap.querySelectorAll('.flavor-option').forEach(function (el) { el.classList.remove('active'); });
+        option.classList.add('active');
+        selected = f;
+        confirmBtn.disabled = false;
+      });
+      optionsWrap.appendChild(option);
+      if (!selected && f.available) {
+        selected = f;
+        option.classList.add('active');
+        confirmBtn.disabled = false;
+      }
+    });
+
+    function close() { modal.classList.remove('open'); }
+    confirmBtn.onclick = function () {
+      if (!selected) { return; }
+      close();
+      addProduct(selected.id, 1, null);
+    };
+    var cancel = modal.querySelector('[data-flavor-cancel]');
+    if (cancel) { cancel.onclick = close; }
+    modal.onclick = function (event) { if (event.target === modal) { close(); } };
+
+    modal.classList.add('open');
+  }
+
   function bindAddToCart() {
     document.querySelectorAll('[data-add-to-cart]').forEach(function (button) {
       if (button._bound) { return; }
@@ -64,26 +133,14 @@
       button.addEventListener('click', function (event) {
         event.preventDefault();
         if (button.disabled) { return; }
+        if (button.hasAttribute('data-flavor-picker')) {
+          openFlavorModal(button);
+          return;
+        }
         var id = button.getAttribute('data-product-id');
         var qtyInput = document.querySelector('[data-qty-input][data-product-id="' + id + '"]');
         var quantity = qtyInput ? qtyInput.value : (button.getAttribute('data-quantity') || 1);
-
-        button.disabled = true;
-        post('carrito/agregar', { product_id: id, quantity: quantity }).then(function (res) {
-          button.disabled = false;
-          if (res.success) {
-            setBadge(res.count);
-            toast(res.message || 'Producto agregado.');
-            if (button.hasAttribute('data-buy-now')) {
-              window.location.href = url('checkout');
-            }
-          } else {
-            toast(res.message || 'No fue posible agregar el producto.', true);
-          }
-        }).catch(function () {
-          button.disabled = false;
-          toast('Error de conexion. Intenta nuevamente.', true);
-        });
+        addProduct(id, quantity, button);
       });
     });
   }
@@ -339,11 +396,71 @@
     });
   }
 
-  function bindImageLoading() {
-    document.querySelectorAll('.product-media img').forEach(function (img) {
-      var mark = function () { img.classList.add('loaded'); };
-      if (img.complete && img.naturalWidth > 0) { mark(); }
-      else { img.addEventListener('load', mark); img.addEventListener('error', mark); }
+  function bindCheckoutWhatsApp() {
+    var button = document.querySelector('[data-wa-checkout]');
+    var dataEl = document.getElementById('waCheckoutData');
+    if (!button || !dataEl) { return; }
+    var data;
+    try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+
+    button.addEventListener('click', function () {
+      var field = function (name) {
+        var el = document.querySelector('[name="' + name + '"]');
+        return el ? el.value.trim() : '';
+      };
+      var msg = 'Hola, quiero finalizar esta compra (' + data.country + '):\n\n';
+      (data.lines || []).forEach(function (l) {
+        msg += '- ' + l.qty + 'x ' + l.name + (l.lab ? ' (' + l.lab + ')' : '') + (l.flavor ? ' - Sabor: ' + l.flavor : '') + ' - ' + l.total + '\n';
+      });
+      msg += '\nSubtotal: ' + data.subtotal;
+      msg += '\nEnvio: ' + data.shipping;
+      msg += '\nTotal: ' + data.total;
+      var nombre = field('customer_name');
+      var tel = field('customer_phone');
+      var zona = field('delivery_zone');
+      var dir = field('delivery_address');
+      if (nombre || tel || zona || dir) { msg += '\n\n'; }
+      if (nombre) { msg += 'Nombre: ' + nombre + '\n'; }
+      if (tel) { msg += 'Telefono: ' + tel + '\n'; }
+      if (zona) { msg += 'Zona: ' + zona + '\n'; }
+      if (dir) { msg += 'Direccion: ' + dir + '\n'; }
+      window.open('https://wa.me/' + data.number + '?text=' + encodeURIComponent(msg), '_blank');
+    });
+  }
+
+  function bindDropdowns() {
+    var drops = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+    if (!drops.length) { return; }
+
+    function closeAll(except) {
+      drops.forEach(function (d) {
+        if (d !== except) {
+          d.classList.remove('open');
+          var b = d.querySelector('[data-dropdown-toggle]');
+          if (b) { b.setAttribute('aria-expanded', 'false'); }
+        }
+      });
+    }
+
+    drops.forEach(function (d) {
+      var btn = d.querySelector('[data-dropdown-toggle]');
+      if (!btn) { return; }
+      btn.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var willOpen = !d.classList.contains('open');
+        closeAll(d);
+        d.classList.toggle('open', willOpen);
+        btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      });
+    });
+
+    document.addEventListener('click', function () { closeAll(null); });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') { closeAll(null); }
+    });
+    document.querySelectorAll('[data-dropdown-menu] a').forEach(function (link) {
+      link.addEventListener('click', function () { closeAll(null); });
     });
   }
 
@@ -359,7 +476,8 @@
     bindNavbarScroll();
     bindCounters();
     bindHeroParallax();
-    bindImageLoading();
+    bindCheckoutWhatsApp();
+    bindDropdowns();
   });
 
   window.storeToast = toast;

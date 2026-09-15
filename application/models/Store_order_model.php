@@ -36,13 +36,14 @@ class Store_order_model extends CI_Model
 		foreach ($lines as $line)
 		{
 			$this->db->insert($this->items, array(
-				'order_id'   => (int) $order_id,
-				'product_id' => (int) $line['product_id'],
-				'item_sku'   => $line['sku'],
-				'item_name'  => $line['name'],
-				'unit_price' => $line['unit_price'],
-				'quantity'   => (int) $line['quantity'],
-				'line_total' => $line['line_total'],
+				'order_id'    => (int) $order_id,
+				'product_id'  => (int) $line['product_id'],
+				'item_sku'    => $line['sku'],
+				'item_name'   => $line['name'],
+				'item_flavor' => isset($line['flavor']) ? $line['flavor'] : NULL,
+				'unit_price'  => $line['unit_price'],
+				'quantity'    => (int) $line['quantity'],
+				'line_total'  => $line['line_total'],
 			));
 		}
 	}

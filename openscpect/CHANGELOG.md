@@ -141,6 +141,82 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
   con navegacion numerada, "mostrando X–Y de Z" y preservacion de filtros
   (`Store::products`, `store_products_url`, `products.php`).
 
+### Added — WhatsApp: boton flotante y checkout por WhatsApp (2026-09-12)
+- Boton flotante `.fab-wa` en la esquina inferior derecha, visible en todo el
+  sitio (si no hay numero configurado, enlaza a Contacto).
+- **Carrito**: boton "Finalizar por WhatsApp" que abre wa.me con el detalle
+  escrito de los productos, cantidades, subtotal, envio y total
+  (`store_cart_whatsapp_url()`), incluyendo los datos del cliente si hay sesion.
+- **Checkout**: boton "Pedir por WhatsApp" que arma el mensaje con los productos
+  y los datos de entrega escritos en el formulario (JS con `waCheckoutData`).
+- `database/upgrade_set_placeholder_contact_20260912.sql`: numeros de WhatsApp
+  **placeholder** (CR/SV) y horario, para activar estos botones. **Reemplazar
+  por los numeros reales antes de publicar.**
+
+### Changed — Optimizacion del navbar (2026-09-12)
+- Se quito el boton de WhatsApp del navbar (se mantiene el boton flotante
+  `.fab-wa` y los botones de producto/carrito/checkout).
+- **Cuenta**: el icono de usuario ahora abre un **dropdown** con "Mi perfil",
+  "Mis pedidos" y "Cerrar sesion" (invitados ven "Iniciar sesion").
+- **Productos**: el enlace del navbar es un **dropdown con las categorias**
+  (mas "Todos los productos") que llevan al catalogo filtrado.
+- Dropdowns propios (`data-dropdown`, `bindDropdowns`) sin depender de Bootstrap:
+  cierre al hacer clic fuera o con Escape.
+
+### Added — Calculadora de macronutrientes (2026-09-12)
+- Nueva pagina publica `/calculadora` (`Store::macros`, `store/macros.php`).
+- Calcula calorias diarias (Mifflin-St Jeor + nivel de actividad + ajuste por
+  objetivo) y el reparto de **proteinas, carbohidratos y grasas** (g y %), con
+  barras visuales. Logica en `assets/js/calculator.js` (Vanilla, en el navegador).
+- Incluye **explicacion clara para principiantes** (calorias, cada macro, como
+  usar el resultado, consejos) y aviso de que es orientativo.
+- Enlaces en el navbar, el menu movil y el footer.
+
+### Changed — Tarjetas de producto mas limpias (2026-09-12)
+- Se quito el boton de WhatsApp de cada tarjeta de producto; queda solo
+  "Agregar al carrito" (el WhatsApp sigue en la ficha del producto, el boton
+  flotante y el checkout).
+- Se elimino la animacion de "reflejo"/shimmer permanente sobre la imagen del
+  producto. Las imagenes se muestran directamente (sin depender de JS).
+
+### Added — Variantes por sabor (2026-09-12)
+- Los productos que comparten **tipo, laboratorio, nombre, peso y porciones**
+  (considerando campos vacios) se agrupan como un mismo producto con varios
+  **sabores** (`Product_model::variant_key()`, `group()`, `group_for()`).
+- Catalogo y destacados muestran **una sola tarjeta por producto** con los
+  sabores **informativos** (texto) y un solo boton de agregar al carrito.
+- Al agregar un producto con varios sabores se abre una **vista previa (modal)**
+  para elegir el sabor antes de agregar (muestra precio por sabor y deshabilita
+  los agotados). El agregado se hace a la variante elegida.
+- Ficha de producto: chips de sabor que llevan a la variante seleccionada.
+- "Productos relacionados" y los contadores por categoria ahora usan grupos.
+
+### Added — Sabor en carrito y pedido (2026-09-12)
+- El **sabor seleccionado** se muestra en el carrito, el checkout y el detalle
+  del pedido ("Mis pedidos").
+- Se agrego la columna `store_order_items.item_flavor`
+  (`database/upgrade_add_order_item_flavor_20260912.sql` + `database.sql`),
+  y se guarda al crear el pedido (`Store_order_model::add_items`).
+- El mensaje de **finalizar compra por WhatsApp** incluye el sabor de cada linea.
+
+### Added — Categorias Aminos y Multivitaminicos (2026-09-12)
+- Nuevas categorias **Aminos** (BCAA/EAA) y **Multivitaminicos** en
+  `store_categories()` y su mapeo en `store_category()`.
+- Se agregaron guias de ambas en `store_supplement_guides()` y los iconos en
+  las tarjetas del home. Aparecen en el filtro de productos y el footer.
+
+### Added — Redes sociales en el inicio (2026-09-12)
+- Bloque de **redes sociales clickeables** (Instagram, Facebook, TikTok) junto a
+  las estadisticas del hero (24-48 h, 100%, marcas, CR+SV).
+- Enlaces configurables por pais en `store_settings` (`instagram_url`,
+  `facebook_url`, `tiktok_url`) via `store_social_links()`; el footer usa los
+  mismos. **Placeholders actuales**: se deben reemplazar por los perfiles reales.
+
+### Fixed — Montos del resumen legibles (2026-09-12)
+- Los montos de **Subtotal** y **Envio** (carrito y finalizar compra) se veian
+  "borrosos" por usar la fuente display **Anton** en tamaño pequeno; ahora usan
+  la fuente de texto **Manrope** en negrita y color blanco (mas nitidos).
+
 ## Notas
 - No se modifico SGMensajeria.
 - La base quedo en estado limpio: 54 productos (SV), 0 pedidos, 0 movimientos.

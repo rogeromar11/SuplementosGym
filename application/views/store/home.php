@@ -1,12 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $cat_icons = array(
-	'proteinas'   => 'bi-droplet-half',
-	'creatinas'   => 'bi-lightning-charge',
-	'quemadores'  => 'bi-fire',
-	'preentrenos' => 'bi-activity',
-	'ganadores'   => 'bi-bar-chart-fill',
-	'otros'       => 'bi-capsule',
+	'proteinas'        => 'bi-droplet-half',
+	'creatinas'        => 'bi-lightning-charge',
+	'preentrenos'      => 'bi-activity',
+	'aminos'           => 'bi-droplet',
+	'quemadores'       => 'bi-fire',
+	'ganadores'        => 'bi-bar-chart-fill',
+	'multivitaminicos' => 'bi-capsule-pill',
+	'otros'            => 'bi-capsule',
 );
 $testimonios = array(
 	'CR' => array(
@@ -55,6 +57,17 @@ $wa_pedido = $whatsapp_url ?: base_url('contacto');
       <li class="stat"><span class="stat-num">100%</span><span class="stat-label">Originales</span></li>
       <li class="stat"><span class="stat-num"><?php echo (int) $brand_count; ?>+</span><span class="stat-label">Marcas</span></li>
       <li class="stat"><span class="stat-num">CR + SV</span><span class="stat-label">Dos paises</span></li>
+      <?php $socials = store_social_links(); ?>
+      <?php if ( ! empty($socials)): ?>
+        <li class="stat stat-social">
+          <span class="stat-label">Siguenos</span>
+          <span class="hero-social">
+            <?php foreach ($socials as $s): ?>
+              <a href="<?php echo html_escape($s['url']); ?>" target="_blank" rel="noopener" aria-label="<?php echo html_escape($s['label']); ?>" title="<?php echo html_escape($s['label']); ?>"><i class="bi <?php echo html_escape($s['icon']); ?>" aria-hidden="true"></i></a>
+            <?php endforeach; ?>
+          </span>
+        </li>
+      <?php endif; ?>
     </ul>
   </div>
 
@@ -126,7 +139,7 @@ $wa_pedido = $whatsapp_url ?: base_url('contacto');
     <?php else: ?>
       <div class="product-grid">
         <?php foreach ($featured as $product): ?>
-          <?php $this->load->view('store/partials/product_card', array('product' => $product)); ?>
+          <?php $this->load->view('store/partials/product_card', array('group' => $product)); ?>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

@@ -58,11 +58,17 @@ JOIN (
     UNION ALL SELECT 'CR', 'business_hours', '', 'Horario de atencion (texto libre)'
     UNION ALL SELECT 'CR', 'shipping_cost', '0', 'Costo de envio'
     UNION ALL SELECT 'CR', 'free_shipping_from', '0', 'Envio gratis a partir de (0 = desactivado)'
+    UNION ALL SELECT 'CR', 'instagram_url', 'https://www.instagram.com/', 'Enlace a Instagram'
+    UNION ALL SELECT 'CR', 'facebook_url', 'https://www.facebook.com/', 'Enlace a Facebook'
+    UNION ALL SELECT 'CR', 'tiktok_url', 'https://www.tiktok.com/', 'Enlace a TikTok'
     UNION ALL SELECT 'SV', 'whatsapp_number', '', 'Numero de WhatsApp (con codigo de pais)'
     UNION ALL SELECT 'SV', 'contact_email', '', 'Correo de contacto'
     UNION ALL SELECT 'SV', 'business_hours', '', 'Horario de atencion (texto libre)'
     UNION ALL SELECT 'SV', 'shipping_cost', '0', 'Costo de envio'
     UNION ALL SELECT 'SV', 'free_shipping_from', '0', 'Envio gratis a partir de (0 = desactivado)'
+    UNION ALL SELECT 'SV', 'instagram_url', 'https://www.instagram.com/', 'Enlace a Instagram'
+    UNION ALL SELECT 'SV', 'facebook_url', 'https://www.facebook.com/', 'Enlace a Facebook'
+    UNION ALL SELECT 'SV', 'tiktok_url', 'https://www.tiktok.com/', 'Enlace a TikTok'
 ) t ON t.country_code = c.`code`
 WHERE NOT EXISTS (
     SELECT 1 FROM `store_settings` d

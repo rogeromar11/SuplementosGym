@@ -146,10 +146,116 @@ class Product_model extends CI_Model
 	public function category_counts($country_id)
 	{
 		$counts = array_fill_keys(array_keys(store_categories()), 0);
-		foreach ($this->active_by_country($country_id) as $product)
+		foreach ($this->group($this->active_by_country($country_id)) as $group)
 		{
-			$counts[store_category($product->product_type)]++;
+			$counts[store_category($group->product->product_type)]++;
 		}
 		return $counts;
+	}
+
+	/**
+	 * Clave de variante: dos productos son el "mismo" si comparten tipo,
+	 * laboratorio, nombre, peso y porciones (los campos vacios cuentan igual).
+	 */
+	public function variant_key($product)
+	{
+		$norm = function ($value) {
+			return mb_strtolower(trim((string) $value), 'UTF-8');
+		};
+		return implode('|', array(
+			$norm($product->product_type),
+			$norm($product->laboratory),
+			$norm($product->name),
+			$norm($product->weight),
+			$norm($product->servings),
+		));
+	}
+
+	/**
+	 * Agrupa productos por variante. Devuelve grupos con:
+	 * product (representante), variants, flavors, available, min_price, max_price.
+	 */
+	public function group($products)
+	{
+		$map = array();
+		foreach ($products as $product)
+		{
+			$key = $this->variant_key($product);
+			if ( ! isset($map[$key]))
+			{
+				$map[$key] = array('product' => $product, 'variants' => array());
+			}
+			$map[$key]['variants'][] = $product;
+		}
+
+		$groups = array();
+		foreach ($map as $key => $data)
+		{
+			$variants = $data['variants'];
+			$flavors = array();
+			$available = FALSE;
+			$prices = array();
+			$default = NULL;
+
+			foreach ($variants as $variant)
+			{
+				$is_available = store_product_available($variant);
+				$flavor = trim((string) $variant->flavor);
+				$flavors[] = array(
+					'id'        => (int) $variant->id,
+					'flavor'    => ($flavor !== '') ? $flavor : 'Unico',
+					'product'   => $variant,
+					'available' => $is_available,
+				);
+				$prices[] = (float) $variant->unit_price;
+				if ($is_available)
+				{
+					$available = TRUE;
+					if ($default === NULL)
+					{
+						$default = $variant;
+					}
+				}
+			}
+
+			usort($flavors, function ($a, $b) {
+				return strcasecmp($a['flavor'], $b['flavor']);
+			});
+
+			if ($default === NULL)
+			{
+				$default = $variants[0];
+			}
+
+			$groups[] = (object) array(
+				'product'   => $data['product'],
+				'default'   => $default,
+				'variants'  => $variants,
+				'flavors'   => $flavors,
+				'available' => $available,
+				'min_price' => min($prices),
+				'max_price' => max($prices),
+			);
+		}
+
+		return $groups;
+	}
+
+	/**
+	 * Grupo de variantes al que pertenece un producto (mismo pais, activo).
+	 */
+	public function group_for($product, $country_id)
+	{
+		$key = $this->variant_key($product);
+		$variants = array();
+		foreach ($this->active_by_country($country_id) as $candidate)
+		{
+			if ($this->variant_key($candidate) === $key)
+			{
+				$variants[] = $candidate;
+			}
+		}
+		$groups = $this->group($variants);
+		return $groups ? $groups[0] : NULL;
 	}
 }

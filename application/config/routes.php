@@ -58,6 +58,7 @@ $route['productos'] = 'store/products';
 $route['producto/(:num)'] = 'store/product/$1';
 $route['nosotros'] = 'store/about';
 $route['guia'] = 'store/guide';
+$route['calculadora'] = 'store/macros';
 $route['formas-de-pago'] = 'store/payments';
 $route['contacto'] = 'store/contact';
 $route['pais'] = 'store/set_country';

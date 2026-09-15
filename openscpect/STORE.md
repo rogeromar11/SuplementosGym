@@ -55,11 +55,13 @@ Mapeo desde `product_type` real:
 
 | Categoria de tienda | Valores reales de `product_type` |
 |---|---|
-| Proteinas | `Proteina`, `Mass Gainer` |
+| Proteinas | `Proteina`, `Whey`, `ISO 100`, `Caseina` |
 | Creatinas | `Creatina` |
-| Quemadores de Grasa | `Quemador`, `CLA` |
-| Preentrenos | `Pre - entreno` |
+| Preentrenos | `Pre - entreno`, `Pre workout` |
+| Aminos | `BCAA`, `EAA`, `Amino` |
+| Quemadores de Grasa | `Quemador`, `CLA`, `Lipo` |
 | Ganadores de Peso | `Mass Gainer` |
+| Multivitaminicos | `Multivitamínico`, `Vitamina` |
 | Otros | cualquier otro valor no reconocido |
 
 > Todo valor no reconocido cae en **Otros**. No se elimina ningun producto.

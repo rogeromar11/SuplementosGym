@@ -62,7 +62,7 @@ $u = $store_user;
         <div class="order-lines">
           <?php foreach ($contents as $line): ?>
             <div class="order-line">
-              <span><?php echo (int) $line['quantity']; ?>× <?php echo html_escape($line['name']); ?></span>
+              <span><?php echo (int) $line['quantity']; ?>× <?php echo html_escape($line['name']); ?><?php echo ! empty($line['flavor']) ? ' <small class="muted">(' . html_escape($line['flavor']) . ')</small>' : ''; ?></span>
               <strong><?php echo store_price($line['line_total']); ?></strong>
             </div>
           <?php endforeach; ?>
@@ -71,8 +71,37 @@ $u = $store_user;
         <div class="summary-line"><span>Envio</span><strong><?php echo store_price($shipping); ?></strong></div>
         <div class="summary-total"><span>Total</span><span><?php echo store_price($total); ?></span></div>
         <button type="submit" class="btn-brand btn-block mt-3"<?php echo empty($methods) ? ' disabled' : ''; ?>>Confirmar pedido</button>
+        <?php if ( ! empty(store_whatsapp_number())): ?>
+          <button type="button" class="btn-wa btn-block mt-2" data-wa-checkout><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir por WhatsApp</button>
+          <p class="muted mt-2 mb-0" style="font-size:.8rem;">Envia los productos y tus datos escritos por WhatsApp.</p>
+        <?php endif; ?>
         <p class="muted mt-2 mb-0" style="font-size:.8rem;">El pedido quedara con pago <strong>pendiente</strong> hasta ser verificado.</p>
       </aside>
     </form>
   </div>
 </section>
+
+<?php if ( ! empty(store_whatsapp_number())): ?>
+  <?php
+  $wa_lines = array();
+  foreach ($contents as $line)
+  {
+      $wa_lines[] = array(
+          'qty'    => (int) $line['quantity'],
+          'name'   => $line['name'],
+          'lab'    => $line['laboratory'],
+          'flavor' => isset($line['flavor']) ? $line['flavor'] : '',
+          'total'  => store_price($line['line_total']),
+      );
+  }
+  $wa_data = array(
+      'number'   => store_whatsapp_number(),
+      'country'  => $current_country->name,
+      'lines'    => $wa_lines,
+      'subtotal' => store_price($subtotal),
+      'shipping' => store_price($shipping),
+      'total'    => store_price($total),
+  );
+  ?>
+  <script type="application/json" id="waCheckoutData"><?php echo json_encode($wa_data); ?></script>
+<?php endif; ?>

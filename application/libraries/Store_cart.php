@@ -184,6 +184,7 @@ class Store_cart
 				'name'       => $product->name,
 				'sku'        => $product->sku,
 				'laboratory' => $product->laboratory,
+				'flavor'     => $product->flavor,
 				'unit_price' => $unit,
 				'quantity'   => $quantity,
 				'line_total' => $unit * $quantity,

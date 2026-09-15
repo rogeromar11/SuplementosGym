@@ -11,10 +11,17 @@ $hours = store_setting('business_hours', '');
     <div class="f-brand">
       <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="SG Tienda" width="110" height="44">
       <p>Suplementos originales para gente que entrena en serio. <?php echo html_escape($current_country->name); ?>.</p>
+      <?php $socials = store_social_links(); ?>
       <div class="socials">
-        <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
-        <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
-        <a href="#" aria-label="TikTok"><i class="bi bi-tiktok" aria-hidden="true"></i></a>
+        <?php if ( ! empty($socials)): ?>
+          <?php foreach ($socials as $s): ?>
+            <a href="<?php echo html_escape($s['url']); ?>" target="_blank" rel="noopener" aria-label="<?php echo html_escape($s['label']); ?>"><i class="bi <?php echo html_escape($s['icon']); ?>" aria-hidden="true"></i></a>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+          <a href="#" aria-label="TikTok"><i class="bi bi-tiktok" aria-hidden="true"></i></a>
+        <?php endif; ?>
       </div>
     </div>
 
@@ -23,6 +30,7 @@ $hours = store_setting('business_hours', '');
       <ul>
         <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
         <li><a href="<?php echo base_url('guia'); ?>">Guia de suplementos</a></li>
+        <li><a href="<?php echo base_url('calculadora'); ?>">Calculadora de macros</a></li>
         <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
       </ul>
     </nav>
@@ -61,11 +69,10 @@ $hours = store_setting('business_hours', '');
   </div>
 </footer>
 
-<?php if ( ! empty($wa)): ?>
-  <a class="fab-wa" href="<?php echo html_escape($wa); ?>" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
-    <i class="bi bi-whatsapp" aria-hidden="true"></i>
-  </a>
-<?php endif; ?>
+<?php $fab_href = ! empty($wa) ? $wa : base_url('contacto'); ?>
+<a class="fab-wa" href="<?php echo html_escape($fab_href); ?>"<?php echo ! empty($wa) ? ' target="_blank" rel="noopener"' : ''; ?> aria-label="Escribir por WhatsApp">
+  <i class="bi bi-whatsapp" aria-hidden="true"></i>
+</a>
 
 <div class="store-modal" data-country-modal role="dialog" aria-modal="true" aria-labelledby="countryModalTitle">
   <div class="store-modal-card">
@@ -74,6 +81,18 @@ $hours = store_setting('business_hours', '');
     <div class="mt-3" style="display:flex; gap:.6rem; justify-content:flex-end;">
       <button type="button" class="btn-ghost" data-country-cancel>Cancelar</button>
       <button type="button" class="btn-brand" data-country-confirm>Continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="store-modal" data-flavor-modal role="dialog" aria-modal="true" aria-labelledby="flavorModalTitle">
+  <div class="store-modal-card">
+    <h3 id="flavorModalTitle">Elegir sabor</h3>
+    <p class="muted" data-flavor-product style="margin-top:-.2rem;"></p>
+    <div class="flavor-options" data-flavor-options></div>
+    <div class="mt-3" style="display:flex; gap:.6rem; justify-content:flex-end;">
+      <button type="button" class="btn-ghost" data-flavor-cancel>Cancelar</button>
+      <button type="button" class="btn-brand" data-flavor-confirm>Agregar al carrito</button>
     </div>
   </div>
 </div>

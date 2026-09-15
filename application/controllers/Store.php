@@ -8,7 +8,7 @@ class Store extends MY_Controller
 		$country = current_store_country();
 		$counts = $this->Product_model->category_counts($country->id);
 		$total = array_sum($counts);
-		$featured = $total > 0 ? $this->Product_model->featured($country->id, 8) : array();
+		$featured = $total > 0 ? array_slice($this->Product_model->group($this->Product_model->featured($country->id, 30)), 0, 8) : array();
 
 		$this->render_store('store/home', array(
 			'featured'        => $featured,
@@ -48,13 +48,14 @@ class Store extends MY_Controller
 		$filters['per_page'] = $per_page;
 
 		$all = $this->Product_model->catalog($country->id, $filters);
-		$filtered_total = count($all);
+		$groups = $this->Product_model->group($all);
+		$filtered_total = count($groups);
 		$pages = max(1, (int) ceil($filtered_total / $per_page));
 		if ($page > $pages)
 		{
 			$page = $pages;
 		}
-		$products = array_slice($all, ($page - 1) * $per_page, $per_page);
+		$products = array_slice($groups, ($page - 1) * $per_page, $per_page);
 
 		$counts = $this->Product_model->category_counts($country->id);
 
@@ -87,13 +88,15 @@ class Store extends MY_Controller
 		}
 
 		$all = $this->Product_model->catalog($country->id, array('category' => store_category($product->product_type)));
+		$current_key = $this->Product_model->variant_key($product);
 		$related = array();
-		foreach ($all as $item)
+		foreach ($this->Product_model->group($all) as $group)
 		{
-			if ((int) $item->id !== (int) $product->id)
+			if ($this->Product_model->variant_key($group->product) === $current_key)
 			{
-				$related[] = $item;
+				continue;
 			}
+			$related[] = $group;
 			if (count($related) >= 4)
 			{
 				break;
@@ -102,6 +105,7 @@ class Store extends MY_Controller
 
 		$this->render_store('store/product', array(
 			'product' => $product,
+			'group'   => $this->Product_model->group_for($product, $country->id),
 			'related' => $related,
 		), array(
 			'title'       => $product->name . ' · SG Tienda',
@@ -172,6 +176,14 @@ class Store extends MY_Controller
 		), array(
 			'title'       => 'Guia de suplementos · SG Tienda',
 			'description' => 'Aprende que hace cada suplemento, sus beneficios y como elegirlo segun tu objetivo.',
+		));
+	}
+
+	public function macros()
+	{
+		$this->render_store('store/macros', array(), array(
+			'title'       => 'Calculadora de macronutrientes · SG Tienda',
+			'description' => 'Calcula tus calorias, proteinas, carbohidratos y grasas diarias segun tu objetivo fisico.',
 		));
 	}
 

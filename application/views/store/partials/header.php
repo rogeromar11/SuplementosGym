@@ -52,8 +52,19 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
     <nav class="nav" aria-label="Principal">
       <ul class="nav-list">
         <li><a href="<?php echo base_url(); ?>">Inicio</a></li>
-        <li><a href="<?php echo base_url('productos'); ?>">Productos</a></li>
+        <li class="nav-item-dropdown" data-dropdown>
+          <button type="button" class="nav-drop-btn" data-dropdown-toggle aria-expanded="false" aria-haspopup="true">
+            Productos <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="nav-drop-menu" data-dropdown-menu>
+            <a href="<?php echo base_url('productos'); ?>"><i class="bi bi-grid" aria-hidden="true"></i> Todos los productos</a>
+            <?php foreach (store_categories() as $key => $label): ?>
+              <a href="<?php echo base_url('productos?categoria=' . $key); ?>"><?php echo html_escape($label); ?></a>
+            <?php endforeach; ?>
+          </div>
+        </li>
         <li><a href="<?php echo base_url('guia'); ?>">Guia</a></li>
+        <li><a href="<?php echo base_url('calculadora'); ?>">Calculadora</a></li>
         <li><a href="<?php echo base_url('nosotros'); ?>">Nosotros</a></li>
         <li><a href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a></li>
         <li><a href="<?php echo base_url('contacto'); ?>">Contacto</a></li>
@@ -77,15 +88,19 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
       </a>
 
       <?php if ($store_logged_in): ?>
-        <a class="icon-link" href="<?php echo base_url('cuenta'); ?>" aria-label="Mi cuenta"><i class="bi bi-person-circle" aria-hidden="true"></i></a>
+        <div class="nav-item-dropdown account-dropdown" data-dropdown>
+          <button type="button" class="icon-link" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Mi cuenta">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+          </button>
+          <div class="nav-drop-menu nav-drop-menu--right" data-dropdown-menu>
+            <a href="<?php echo base_url('cuenta'); ?>"><i class="bi bi-person" aria-hidden="true"></i> Mi perfil</a>
+            <a href="<?php echo base_url('cuenta/pedidos'); ?>"><i class="bi bi-box-seam" aria-hidden="true"></i> Mis pedidos</a>
+            <hr>
+            <a href="<?php echo base_url('salir'); ?>"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesion</a>
+          </div>
+        </div>
       <?php else: ?>
         <a class="icon-link" href="<?php echo base_url('ingresar'); ?>" aria-label="Iniciar sesion"><i class="bi bi-person" aria-hidden="true"></i></a>
-      <?php endif; ?>
-
-      <?php if ( ! empty($whatsapp_url)): ?>
-        <a class="btn-brand btn-sm header-cta" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir</a>
-      <?php else: ?>
-        <a class="btn-brand btn-sm header-cta" href="<?php echo base_url('contacto'); ?>"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir</a>
       <?php endif; ?>
 
       <button class="menu-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
@@ -98,6 +113,7 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
     <a class="menu-link" href="<?php echo base_url(); ?>">Inicio</a>
     <a class="menu-link" href="<?php echo base_url('productos'); ?>">Productos</a>
     <a class="menu-link" href="<?php echo base_url('guia'); ?>">Guia</a>
+    <a class="menu-link" href="<?php echo base_url('calculadora'); ?>">Calculadora</a>
     <a class="menu-link" href="<?php echo base_url('nosotros'); ?>">Nosotros</a>
     <a class="menu-link" href="<?php echo base_url('formas-de-pago'); ?>">Formas de pago</a>
     <a class="menu-link" href="<?php echo base_url('contacto'); ?>">Contacto</a>
@@ -109,7 +125,6 @@ $flags = array('CR' => 'cr', 'SV' => 'sv');
       <a class="menu-link" href="<?php echo base_url('ingresar'); ?>">Iniciar sesion</a>
       <a class="menu-link" href="<?php echo base_url('registro'); ?>">Crear cuenta</a>
     <?php endif; ?>
-    <a class="btn btn-brand header-cta<?php echo empty($whatsapp_url) ? ' d-none' : ''; ?>" href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Pedir por WhatsApp</a>
   </nav>
 </header>
 

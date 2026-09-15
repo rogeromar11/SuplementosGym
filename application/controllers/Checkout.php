@@ -87,6 +87,7 @@ class Checkout extends MY_Controller
 				'product_id' => $line['product_id'],
 				'sku'        => $line['sku'],
 				'name'       => $line['name'],
+				'flavor'     => isset($line['flavor']) ? $line['flavor'] : NULL,
 				'unit_price' => $line['unit_price'],
 				'quantity'   => (int) $line['quantity'],
 				'line_total' => $line['line_total'],

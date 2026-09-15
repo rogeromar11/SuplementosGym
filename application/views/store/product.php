@@ -44,9 +44,24 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
         <div class="pd-specs">
           <?php if ( ! empty($product->weight)): ?><div class="pd-spec"><strong>Peso</strong><?php echo html_escape($product->weight); ?></div><?php endif; ?>
           <?php if ( ! empty($product->servings)): ?><div class="pd-spec"><strong>Porciones</strong><?php echo html_escape($product->servings); ?></div><?php endif; ?>
-          <?php if ( ! empty($product->flavor)): ?><div class="pd-spec"><strong>Sabor</strong><?php echo html_escape($product->flavor); ?></div><?php endif; ?>
+          <?php if ((empty($group) || count($group->flavors) <= 1) && ! empty($product->flavor)): ?><div class="pd-spec"><strong>Sabor</strong><?php echo html_escape($product->flavor); ?></div><?php endif; ?>
           <?php if ( ! empty($product->sku)): ?><div class="pd-spec"><strong>Codigo</strong><?php echo html_escape($product->sku); ?></div><?php endif; ?>
         </div>
+
+        <?php if ( ! empty($group) && count($group->flavors) > 1): ?>
+          <div class="pd-flavors">
+            <span class="pd-flavors-label">Elige tu sabor</span>
+            <div class="flavor-chips">
+              <?php foreach ($group->flavors as $f): ?>
+                <?php if ((int) $f['id'] === (int) $product->id): ?>
+                  <span class="flavor-chip active"><?php echo html_escape($f['flavor']); ?></span>
+                <?php else: ?>
+                  <a class="flavor-chip<?php echo $f['available'] ? '' : ' is-out'; ?>" href="<?php echo store_product_url($f['product']); ?>"><?php echo html_escape($f['flavor']); ?><?php echo $f['available'] ? '' : ' (agotado)'; ?></a>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
 
         <p><?php echo nl2br(html_escape((string) ($product->store_description ?: $product->description))); ?></p>
 
@@ -88,7 +103,7 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
     </div>
     <div class="product-grid">
       <?php foreach ($related as $item): ?>
-        <?php $this->load->view('store/partials/product_card', array('product' => $item)); ?>
+        <?php $this->load->view('store/partials/product_card', array('group' => $item)); ?>
       <?php endforeach; ?>
     </div>
   </div>

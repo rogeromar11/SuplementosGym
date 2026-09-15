@@ -77,12 +77,14 @@ if ( ! function_exists('store_categories'))
 	function store_categories()
 	{
 		return array(
-			'proteinas'    => 'Proteinas',
-			'creatinas'    => 'Creatinas',
-			'quemadores'   => 'Quemadores de Grasa',
-			'preentrenos'  => 'Preentrenos',
-			'ganadores'    => 'Ganadores de Peso',
-			'otros'        => 'Otros',
+			'proteinas'        => 'Proteinas',
+			'creatinas'        => 'Creatinas',
+			'preentrenos'      => 'Preentrenos',
+			'aminos'           => 'Aminos',
+			'quemadores'       => 'Quemadores de Grasa',
+			'ganadores'        => 'Ganadores de Peso',
+			'multivitaminicos' => 'Multivitaminicos',
+			'otros'            => 'Otros',
 		);
 	}
 }
@@ -95,11 +97,13 @@ if ( ! function_exists('store_category'))
 		$type = str_replace(array('á', 'é', 'í', 'ó', 'ú', 'ñ'), array('a', 'e', 'i', 'o', 'u', 'n'), $type);
 
 		$rules = array(
-			'ganadores'   => array('mass gainer', 'gainer', 'ganador'),
-			'proteinas'   => array('proteina', 'protein', 'whey', 'iso 100', 'caseina'),
-			'creatinas'   => array('creatina', 'creatine'),
-			'quemadores'  => array('quemador', 'cla', 'lipo', 'fat burn'),
-			'preentrenos' => array('pre - entreno', 'pre-entreno', 'preentreno', 'pre workout', 'preworkout'),
+			'ganadores'        => array('mass gainer', 'gainer', 'ganador'),
+			'proteinas'        => array('proteina', 'protein', 'whey', 'iso 100', 'caseina'),
+			'creatinas'        => array('creatina', 'creatine'),
+			'aminos'           => array('bcaa', 'eaa', 'amino'),
+			'multivitaminicos' => array('multivit', 'vitamina', 'vitamin'),
+			'quemadores'       => array('quemador', 'cla', 'lipo', 'fat burn'),
+			'preentrenos'      => array('pre - entreno', 'pre-entreno', 'preentreno', 'pre workout', 'preworkout'),
 		);
 
 		foreach ($rules as $category => $keywords)
@@ -243,6 +247,84 @@ if ( ! function_exists('store_product_whatsapp_url'))
 	}
 }
 
+if ( ! function_exists('store_cart_whatsapp_message'))
+{
+	function store_cart_whatsapp_message($lines, $subtotal, $shipping, $total, $country = NULL, $customer = array())
+	{
+		$country = $country ?: current_store_country();
+		$msg = 'Hola, quiero finalizar esta compra' . ($country ? ' (' . $country->name . ')' : '') . ':' . "\n\n";
+		foreach ($lines as $line)
+		{
+			$msg .= '- ' . (int) $line['quantity'] . 'x ' . $line['name'];
+			if ( ! empty($line['laboratory']))
+			{
+				$msg .= ' (' . $line['laboratory'] . ')';
+			}
+			if ( ! empty($line['flavor']))
+			{
+				$msg .= ' - Sabor: ' . $line['flavor'];
+			}
+			$msg .= ' - ' . store_price($line['line_total'], $country) . "\n";
+		}
+		$msg .= "\nSubtotal: " . store_price($subtotal, $country);
+		$msg .= "\nEnvio: " . store_price($shipping, $country);
+		$msg .= "\nTotal: " . store_price($total, $country);
+		if ( ! empty($customer['nombre']))
+		{
+			$msg .= "\n\nNombre: " . $customer['nombre'];
+		}
+		if ( ! empty($customer['telefono']))
+		{
+			$msg .= "\nTelefono: " . $customer['telefono'];
+		}
+		if ( ! empty($customer['zona']))
+		{
+			$msg .= "\nZona: " . $customer['zona'];
+		}
+		if ( ! empty($customer['direccion']))
+		{
+			$msg .= "\nDireccion: " . $customer['direccion'];
+		}
+		return $msg;
+	}
+}
+
+if ( ! function_exists('store_cart_whatsapp_url'))
+{
+	function store_cart_whatsapp_url($lines, $subtotal, $shipping, $total, $country = NULL, $customer = array())
+	{
+		$message = store_cart_whatsapp_message($lines, $subtotal, $shipping, $total, $country, $customer);
+		$number = store_whatsapp_number($country ? $country->id : NULL);
+		if ($number === '')
+		{
+			return '';
+		}
+		return 'https://wa.me/' . $number . '?text=' . rawurlencode($message);
+	}
+}
+
+if ( ! function_exists('store_social_links'))
+{
+	function store_social_links($country_id = NULL)
+	{
+		$defs = array(
+			'instagram' => array('label' => 'Instagram', 'icon' => 'bi-instagram'),
+			'facebook'  => array('label' => 'Facebook', 'icon' => 'bi-facebook'),
+			'tiktok'    => array('label' => 'TikTok', 'icon' => 'bi-tiktok'),
+		);
+		$links = array();
+		foreach ($defs as $key => $def)
+		{
+			$url = store_setting($key . '_url', '', $country_id);
+			if (trim((string) $url) !== '')
+			{
+				$links[] = array('key' => $key, 'label' => $def['label'], 'icon' => $def['icon'], 'url' => $url);
+			}
+		}
+		return $links;
+	}
+}
+
 if ( ! function_exists('store_product_image'))
 {
 	function store_product_image($product)
@@ -358,6 +440,14 @@ if ( ! function_exists('store_supplement_guides'))
 				'benefit'     => 'Energia, enfoque y resistencia.',
 				'usage'       => 'Tomar 20-30 minutos antes de entrenar.',
 			),
+			'aminos' => array(
+				'name'        => 'Aminos (BCAA / EAA)',
+				'icon'        => 'bi-droplet',
+				'tagline'     => 'Aminoacidos esenciales',
+				'description' => 'Los aminoacidos ayudan a la recuperacion muscular y pueden apoyar la resistencia durante el entrenamiento.',
+				'benefit'     => 'Recuperacion y resistencia.',
+				'usage'       => 'Durante o despues del entrenamiento, segun el producto.',
+			),
 			'quemadores' => array(
 				'name'        => 'Quemadores de grasa',
 				'icon'        => 'bi-fire',
@@ -374,11 +464,19 @@ if ( ! function_exists('store_supplement_guides'))
 				'benefit'     => 'Aumento de masa y peso.',
 				'usage'       => 'Despues del entrenamiento o entre comidas.',
 			),
+			'multivitaminicos' => array(
+				'name'        => 'Multivitaminicos',
+				'icon'        => 'bi-capsule-pill',
+				'tagline'     => 'Salud y bienestar diario',
+				'description' => 'Aportan vitaminas y minerales para cubrir tus necesidades diarias y apoyar tu rendimiento y salud general.',
+				'benefit'     => 'Cobertura de micronutrientes.',
+				'usage'       => 'Una dosis diaria, preferiblemente con una comida.',
+			),
 			'otros' => array(
 				'name'        => 'Otros',
 				'icon'        => 'bi-capsule',
-				'tagline'     => 'BCAA, vitaminas y mas',
-				'description' => 'Complementos para necesidades especificas: aminoacidos, vitaminas, omega-3 y salud general.',
+				'tagline'     => 'Omega-3, magnesio y mas',
+				'description' => 'Complementos para necesidades especificas como omega-3, magnesio, ashwagandha y otros.',
 				'benefit'     => 'Apoyo integral al rendimiento.',
 				'usage'       => 'Segun tu objetivo y la indicacion del producto.',
 			),

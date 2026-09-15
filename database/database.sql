@@ -249,6 +249,7 @@ CREATE TABLE `store_order_items` (
   `product_id` int(10) unsigned DEFAULT NULL,
   `item_sku` varchar(30) DEFAULT NULL,
   `item_name` varchar(150) NOT NULL,
+  `item_flavor` varchar(120) DEFAULT NULL,
   `unit_price` decimal(15,2) NOT NULL DEFAULT 0.00,
   `quantity` int(11) NOT NULL DEFAULT 1,
   `line_total` decimal(15,2) NOT NULL DEFAULT 0.00,

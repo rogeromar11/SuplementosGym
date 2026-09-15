@@ -68,7 +68,7 @@ $win_end = min($pages, $page + 2);
           <?php if ($has_products): ?>
             <div class="product-grid" data-product-grid>
               <?php foreach ($products as $product): ?>
-                <?php $this->load->view('store/partials/product_card', array('product' => $product)); ?>
+                <?php $this->load->view('store/partials/product_card', array('group' => $product)); ?>
               <?php endforeach; ?>
             </div>
             <div class="empty-state d-none" data-search-empty style="margin-top:1rem;">
