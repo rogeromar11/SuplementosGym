@@ -23,7 +23,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+// Protocolo real (nginx/PHP-FPM requiere fastcgi_param HTTPS $https; ver deploy/nginx.conf).
+$is_https = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+	|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+	|| (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+$protocol = $is_https ? 'https' : 'http';
 $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 $base_path = '';
 if (isset($_SERVER['SCRIPT_NAME']))
@@ -31,7 +35,13 @@ if (isset($_SERVER['SCRIPT_NAME']))
 	$script = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 	$base_path = ($script === '/' || $script === '.') ? '/' : rtrim($script, '/') . '/';
 }
-$config['base_url'] = getenv('BASE_URL') ?: $protocol . '://' . $host . $base_path;
+// Override explicito: getenv() y $_SERVER (FastCGI puede no exponerlo en getenv).
+$base_override = getenv('BASE_URL');
+if (( ! $base_override || $base_override === '') && isset($_SERVER['BASE_URL']) && $_SERVER['BASE_URL'] !== '')
+{
+	$base_override = $_SERVER['BASE_URL'];
+}
+$config['base_url'] = ($base_override && $base_override !== '') ? $base_override : $protocol . '://' . $host . $base_path;
 
 /*
 |--------------------------------------------------------------------------

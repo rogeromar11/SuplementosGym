@@ -1,0 +1,36 @@
+User-agent: *
+Allow: /
+
+Disallow: /application
+Disallow: /system
+Disallow: /vendor
+Disallow: /database
+Disallow: /openscpect
+Disallow: /deploy
+Disallow: /carrito
+Disallow: /checkout
+Disallow: /cuenta
+Disallow: /ingresar
+Disallow: /registro
+Disallow: /salir
+Disallow: /recuperar
+Disallow: /restablecer
+Disallow: /auth
+Disallow: /dashboard
+Disallow: /users
+Disallow: /roles
+Disallow: /clients
+Disallow: /products
+Disallow: /warehouses
+Disallow: /catalogs
+Disallow: /orders
+Disallow: /preparation
+Disallow: /routes
+Disallow: /courier
+Disallow: /reports
+Disallow: /audit
+Disallow: /settings
+Disallow: /deposits
+Disallow: /menu
+
+Sitemap: https://suplementosgym.hosting.renxaii.com/sitemap.xml

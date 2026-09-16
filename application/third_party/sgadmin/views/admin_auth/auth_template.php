@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo html_escape($title ?? 'Acceso'); ?> · <?php echo html_escape($appName ?? 'SGMensajeria'); ?></title>
+    <title><?php echo html_escape($title ?? 'Acceso'); ?> · <?php echo html_escape($appName ?? 'SG Tienda'); ?></title>
     <link rel="icon" type="image/png" href="<?php echo base_url('assets/img/logo.png'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
         }
         $companyPhone = $_ci->settings['company_phone'] ?? '';
         $companyEmail = $_ci->settings['company_email'] ?? '';
-        $companyName  = $_ci->settings['company_name'] ?? 'SGMensajeria';
+        $companyName  = $_ci->settings['company_name'] ?? 'SG Tienda';
 
         $config = [
             'login' => [

@@ -6,6 +6,41 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 
 ## 2026-09-15
 
+### Added — Despliegue nginx y SEO
+- `deploy/nginx.conf`: server block para nginx-only (front controller `try_files`, bloqueo de
+  `application/`, `system/`, `vendor/`, `database/`, `openscpect/`, `deploy/`, archivos ocultos y
+  `composer.*`, PHP denegado en `uploads/`), PHP-FPM con `fastcgi_param CI_ENV production`, cache
+  de estaticos, gzip, cabeceras y **HTTPS** con redireccion 301 (HSTS).
+- `Sitemap` controller + vista `store/sitemap.php`: `/sitemap.xml` y `/robots.txt` **dinamicos**
+  (usan `base_url()`, sin dominio hardcodeado). Rutas nuevas en `routes.php`.
+- `Product_model::for_sitemap()`.
+- Documentado en `DEPLOYMENT.md` (seccion nginx, HTTPS y "que subir al hosting").
+
+### Fixed — Compatibilidad nginx/Linux
+- `fastcgi_param HTTPS $https if_not_empty;` en `deploy/nginx.conf`: sin esto `config.php`
+  generaba `base_url` en `http://` bajo TLS (contenido mixto).
+- `config.php`: deteccion de protocolo tambien por `X-Forwarded-Proto` y puerto 443; `BASE_URL`
+  se lee de `getenv()` **o** `$_SERVER['BASE_URL']` (PHP-FPM puede no exponerlo en `getenv`).
+- `fastcgi_param HTTP_AUTHORIZATION $http_authorization;` para headers de autorizacion (REST).
+- Auditoria de mayusculas/minusculas (Linux sensible): 0 mismatches en vistas y assets.
+
+### Added — Empaquetado de despliegue
+- `deploy/package.ps1`: arma `build/upload/` y `build/suplementosgym-upload.zip` con lo que va a
+  `public_html` (application/, system/, assets/, vendor/, index.php, composer.*, uploads/ con solo
+  sus guardas). Excluye `.git`, `openscpect/`, `database/`, `deploy/`, `*.md` y evidencia de prueba.
+- Zip con separador `/` (el `Compress-Archive` de PowerShell 5.1 usaba `\` y rompia la extraccion
+  en Linux/cPanel).
+- `/build/` agregado a `.gitignore`.
+
+### Fixed — Despliegue HestiaCP (nginx + PHP-FPM)
+- Causa del 404 en rutas limpias: la plantilla `default` de Hestia no trae `try_files`. Solucion:
+  **Web Template (NGINX) = `codeigniter`** en el panel (sin SSH, sin cambios de codigo).
+- `robots.txt` **estatico** en la raiz: la plantilla `codeigniter` sirve `location = /robots.txt`
+  como archivo fisico, por lo que no llega a la ruta dinamica de `Sitemap`. Incluido en el paquete.
+- `/sitemap.xml` sigue dinamico (pasa por `location /` → `index.php`).
+- Verificado en produccion: `/`, `/productos`, `/guia`, `/carrito`, `/ingresar`, `/auth/login`,
+  `/sitemap.xml`, `/api/ping` → 200.
+
 ### Added — Backoffice (staff)
 - Base comun `SG_Controller` + `Authenticated_Controller` / `Admin_Controller` /
   `Courier_Controller`, con vistas por *package path* en `application/third_party/sgadmin/views/`
@@ -34,6 +69,17 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - Nuevo `openscpect/ADMIN.md` (backoffice).
 - `DEPLOYMENT.md` reescrito: PHP 8.2+, SQL real, entorno `CI_ENV`, HTTPS, uploads y hardening.
 - `README.md` raiz reescrito (ya no es la plantilla IonAuth).
+
+### Changed — Limpieza post-despliegue (nginx/Hestia)
+- Eliminado `deploy/nginx.conf`: ya no aplica (Hestia gestiona nginx con la plantilla
+  `codeigniter`). Se conserva `deploy/package.ps1` para empaquetar.
+- `routes.php`: removida la ruta `robots.txt` (ahora es un archivo estatico en la raiz).
+- `Sitemap`: removido el metodo `robots()` (el sitemap sigue dinamico; robots es estatico).
+- `index.php`: `ENVIRONMENT` por deteccion de host — `production` en hosts reales y
+  `development` en `localhost`/`127.0.0.1`, ya no depende de `fastcgi_param CI_ENV`.
+- Branding del backoffice: el login ya no muestra `SGMensajeria` sino **SG Tienda**
+  (`admin_auth/auth_template.php`); User-Agent de geocodificacion actualizado.
+- `DEPLOYMENT.md` reescrito para el caso real (HestiaCP / nginx + PHP-FPM).
 
 ## 2026-09-12
 

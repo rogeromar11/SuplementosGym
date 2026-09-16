@@ -57,6 +57,10 @@ class MY_Controller extends CI_Controller
 		}
 
 		$country = current_store_country();
+		if ($country && ! empty($country->timezone))
+		{
+			date_default_timezone_set($country->timezone);
+		}
 		$user = $this->ion_auth->logged_in() ? $this->ion_auth->user()->row() : NULL;
 
 		$this->db->insert('store_visits', array(

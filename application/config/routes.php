@@ -85,6 +85,9 @@ $route['salir'] = 'store_auth/logout';
 $route['recuperar'] = 'store_auth/forgot_password';
 $route['restablecer/(:any)'] = 'store_auth/reset_password/$1';
 
+/* SEO: sitemap.xml dinamico (robots.txt es un archivo estatico en la raiz) */
+$route['sitemap.xml'] = 'sitemap/index';
+
 /* -----------------------------------------------------------------
  * Backoffice (/admin): funcionalidad portada de SGMensajeria.
  * Los controladores viven en application/controllers/admin/ y las

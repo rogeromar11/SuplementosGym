@@ -73,7 +73,7 @@ class Map_link_parser
 		curl_setopt_array($ch, array(
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HTTPHEADER => array(
-				'User-Agent: SGMensajeria/1.0 (geocodificacion de pedidos; soporte: administracion@sgmensajeria.local)',
+				'User-Agent: SG Tienda/1.0 (geocodificacion de pedidos; soporte: administracion@suplementosgym.local)',
 				'Referer: ' . $referer,
 				'Accept: application/json',
 			),

@@ -42,11 +42,11 @@ class Dashboard extends Authenticated_Controller
 		$totals = $this->Order_model->today_totals($today);
 
 		// Visitas a la tienda web de hoy (visitantes únicos y vistas de página)
+		// Las visitas son de la tienda web (todas sus sesiones), no del pais del admin.
 		$visits = (object) array('visitors' => 0, 'pageviews' => 0);
 		if ($this->db->table_exists('store_visits')) {
 			$row = $this->db->select('COUNT(*) AS pageviews, COUNT(DISTINCT session_id) AS visitors')
 				->where('visit_date', $today)
-				->where('country_id', current_country_id())
 				->get('store_visits')->row();
 			if ($row) {
 				$visits = $row;
@@ -58,7 +58,6 @@ class Dashboard extends Authenticated_Controller
 		if ($this->db->table_exists('store_visits')) {
 			$from = date('Y-m-d', strtotime('-6 days'));
 			$rows = $this->db->select('visit_date, COUNT(*) AS pageviews, COUNT(DISTINCT session_id) AS visitors')
-				->where('country_id', current_country_id())
 				->where('visit_date >=', $from)
 				->group_by('visit_date')
 				->order_by('visit_date', 'ASC')

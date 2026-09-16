@@ -13,6 +13,14 @@ class Product_model extends CI_Model
 			->get($this->table)->result();
 	}
 
+	public function for_sitemap()
+	{
+		return $this->db->select('id, updated_at')
+			->where('is_active', 1)
+			->order_by('id', 'ASC')
+			->get($this->table)->result();
+	}
+
 	public function find($id, $country_id = NULL)
 	{
 		$this->db->where('id', (int) $id);

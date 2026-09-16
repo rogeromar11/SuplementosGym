@@ -11,6 +11,9 @@ application/logs/*
 composer.lock
 /vendor/
 
+# Paquete de despliegue generado por deploy/package.ps1
+/build/
+
 # IDE Files
 #-------------------------
 /nbproject/
