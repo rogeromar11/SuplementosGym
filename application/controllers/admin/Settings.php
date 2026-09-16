@@ -31,6 +31,7 @@ class Settings extends Admin_Controller
 		// --- Configuracion de la tienda web (store_settings) ---
 		$storeFields = array(
 			'whatsapp_number', 'contact_email', 'business_hours',
+			'shipping_cost', 'free_shipping_from',
 			'instagram_url', 'facebook_url', 'tiktok_url',
 			'availability_low_stock', 'availability_min_stock', 'availability_show_qty',
 		);
@@ -54,6 +55,17 @@ class Settings extends Admin_Controller
 					$this->json_response(false, 'Una de las direcciones de redes sociales no es válida.');
 					return;
 				}
+			}
+			if (in_array($field, array('shipping_cost', 'free_shipping_from'), true)) {
+				$value = str_replace(',', '.', $value);
+				if ($value === '') {
+					$value = '0';
+				}
+				if (!is_numeric($value) || (float) $value < 0) {
+					$this->json_response(false, 'El costo de envio debe ser un numero mayor o igual a 0.');
+					return;
+				}
+				$value = number_format((float) $value, 2, '.', '');
 			}
 			$storeValues[$field] = $value;
 		}

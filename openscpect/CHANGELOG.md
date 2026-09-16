@@ -81,6 +81,13 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
   (`admin_auth/auth_template.php`); User-Agent de geocodificacion actualizado.
 - `DEPLOYMENT.md` reescrito para el caso real (HestiaCP / nginx + PHP-FPM).
 
+### Added — Costo de envio configurable (backoffice)
+- Expuestos en **Configuracion → Tienda web → Envio**: `shipping_cost` (default `0`) y
+  `free_shipping_from` (default `0` = desactivado).
+- `Settings::save()` valida montos (numero >= 0, normaliza a 2 decimales) y los guarda.
+- La logica ya existia en `Store_cart::shipping()`; ahora es editable desde el panel.
+- Valores por **pais del admin** (store_settings es por `country_id`).
+
 ## 2026-09-12
 
 ### Added — Fase 1 (Auditoria)

@@ -128,6 +128,20 @@
                         <input type="text" class="form-control" id="tiktok_url" name="tiktok_url" value="<?php echo html_escape($storeSettings['tiktok_url'] ?? ''); ?>" placeholder="https://tiktok.com/@tuempresa">
                     </div>
                 </div>
+                <hr>
+                <h6 class="mb-3">Envío</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="shipping_cost">Costo de envío</label>
+                        <input type="number" min="0" step="0.01" class="form-control" id="shipping_cost" name="shipping_cost" value="<?php echo html_escape($storeSettings['shipping_cost'] ?? '0'); ?>" style="max-width:220px;">
+                        <div class="form-text">Monto que se suma al pedido de la web. Usa <strong>0</strong> para envío gratis.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="free_shipping_from">Envío gratis a partir de</label>
+                        <input type="number" min="0" step="0.01" class="form-control" id="free_shipping_from" name="free_shipping_from" value="<?php echo html_escape($storeSettings['free_shipping_from'] ?? '0'); ?>" style="max-width:220px;">
+                        <div class="form-text">Si el subtotal alcanza este monto, el envío es gratis. Usa <strong>0</strong> para desactivar.</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
