@@ -88,14 +88,28 @@ Paleta del tema (dark + rojo):
 2. Cambiar familias en `assets/css/fonts.css` si se reemplazan las fuentes.
 3. Mantener todos los `data-*` que usa `assets/js/store.js`.
 
+## Backoffice
+
+El panel interno tiene una identidad **funcional y sobria**, distinta del storefront:
+
+- CSS: `assets/css/app.css` (+ `courier.css` para la vista movil y `print.css` para impresion).
+- UI: Bootstrap 5 + Bootstrap Icons locales, con librerias locales (DataTables, Select2,
+  SweetAlert2, Chart.js, Leaflet, SortableJS).
+- Tipografia: Fira Sans / Fira Code (**aun por Google Fonts**; ver `INTEGRATIONS.md`).
+- Layouts: `application/third_party/sgadmin/views/layouts/{admin,courier,print}/`.
+- Scripts por pagina en `assets/js/pages/` (orders, routes, products, deposits, ...).
+- Vistas: `application/third_party/sgadmin/views/`.
+
 ## Archivos
 
 | Recurso | Ruta |
 |---|---|
-| Tema base | `assets/css/design.css` |
-| Capa funcional | `assets/css/store.css` |
+| Tema base storefront | `assets/css/design.css` |
+| Capa funcional storefront | `assets/css/store.css` |
+| CSS backoffice | `assets/css/app.css`, `courier.css`, `print.css` |
 | Fuentes | `assets/fonts/*` + `assets/css/fonts.css` |
-| JS | `assets/js/store.js`, `assets/js/landing.js` |
+| JS storefront | `assets/js/store.js`, `landing.js`, `calculator.js` |
+| JS backoffice | `assets/js/pages/*` |
 | GSAP | `assets/vendor/gsap/` |
 | Imagenes de producto | `assets/img/products/` |
 | Video + poster | `assets/video/hero-web.mp4`, `assets/img/hero-poster.jpg` |

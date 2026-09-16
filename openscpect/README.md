@@ -1,7 +1,7 @@
 # openscpect · Documentacion viva de SG Tienda
 
-Esta carpeta es la **documentacion viva** del proyecto **SG Tienda**, la tienda online
-de suplementos deportivos construida sobre el proyecto `SuplementosGym`.
+Esta carpeta es la **documentacion viva** del proyecto **SuplementosGym**, compuesto por
+**SG Tienda** (storefront publico) y su **backoffice** (staff), construidos sobre CodeIgniter 3.
 
 > Ruta del proyecto: `C:/xampp/htdocs/SuplementosGym`
 > Proyecto de referencia (solo lectura): `C:/xampp/htdocs/SGMensajeria`
@@ -12,7 +12,8 @@ de suplementos deportivos construida sobre el proyecto `SuplementosGym`.
 |---|---|
 | **SGMensajeria** | Sistema de gestion de mensajeria y rutas de entrega. Proyecto de referencia. **Intocable.** |
 | **SuplementosGym** | Proyecto CodeIgniter 3 + IonAuth independiente donde vive SG Tienda, con su propia base de datos. |
-| **SG Tienda** | El modulo publico de e-commerce de suplementos que construimos dentro de SuplementosGym. |
+| **SG Tienda** | El modulo publico de e-commerce de suplementos dentro de SuplementosGym. |
+| **Backoffice** | El panel interno (staff) del mismo proyecto: pedidos, rutas, mensajeria, depositos, reportes. Ver `ADMIN.md`. |
 | **openscpect** | Esta documentacion viva (nombre exacto solicitado del proyecto). |
 
 ## Indice de documentos
@@ -22,6 +23,7 @@ de suplementos deportivos construida sobre el proyecto `SuplementosGym`.
 | [AI_CONTEXT.md](AI_CONTEXT.md) | Contexto maestro + protocolo obligatorio para futuras IAs. |
 | [AUDIT.md](AUDIT.md) | Auditoria de SGMensajeria realizada en Fase 1. |
 | [PROJECT.md](PROJECT.md) | Vision, objetivos y alcance de SG Tienda. |
+| [ADMIN.md](ADMIN.md) | Backoffice: modulos, roles, permisos, flujo de pedidos. |
 | [DESIGN.md](DESIGN.md) | Sistema de diseno (tipografia, color, movimiento). |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Publicacion en cPanel (assets autocontenidos). |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitectura e independencia de datos. |

@@ -14,27 +14,30 @@ e-commerce que replique visual y funcionalmente el estilo del ecosistema SG, per
 
 ## Objetivos especificos
 
-1. Catalogar los suplementos provenientes de SGMensajeria en una base propia (`suplementosgym`).
+1. Catalogar los suplementos en una base propia (`suplementosgym`), gestionable desde el backoffice.
 2. Permitir la compra online con cuenta de usuario, carrito y checkout.
 3. Gestionar inventario propio (aislado del inventario de SGMensajeria).
 4. Soportar multipais (CR / SV) sin mezclar datos.
 5. Centralizar el contacto comercial via WhatsApp, correo y redes.
-6. Cumplir estandares de seguridad, accesibilidad, SEO y responsive.
+6. Operar el negocio: pedidos manuales, preparacion, rutas, mensajeria, depositos y reportes.
+7. Cumplir estandares de seguridad, accesibilidad, SEO y responsive.
 
 ## Alcance
 
 ### Incluye
-- Inicio, Productos, Producto individual, Carrito, Checkout, Registro, Login,
-  Mi perfil, Mis pedidos, Sobre nosotros, Formas de pago, Contacto, Footer.
-- Busqueda, filtros, categorias, selector de pais.
-- Registro/login con IonAuth.
-- Pedidos e inventario propios.
-- Integracion WhatsApp.
+- **Storefront**: Inicio, Productos, Producto individual, Carrito, Checkout, Registro, Login,
+  Mi perfil, Mis pedidos, Sobre nosotros, Guia, Calculadora de macros, Formas de pago, Contacto, Footer.
+- Busqueda, filtros, categorias, variantes por sabor y selector de pais.
+- Registro/login con IonAuth y grupo `customer`.
+- Pedidos e inventario propios, con historial de estados.
+- Integracion WhatsApp (boton flotante, carrito y checkout).
+- **Backoffice**: usuarios, roles y permisos, clientes, catalogo e imagenes, bodegas, catalogos,
+  pedidos manuales, preparacion de bodega, rutas, mensajeria movil, pagos, depositos de efectivo,
+  reportes (PDF/Excel), auditoria y configuracion. Ver `ADMIN.md`.
 
 ### No incluye (esta fase)
 - Sincronizacion automatica con SGMensajeria.
 - Pasarela de pago en linea (se registran pagos manuales/verificables).
-- Panel administrativo avanzado (se prioriza la tienda publica).
 - Facturacion electronica.
 
 ## Identidad visual

@@ -4,6 +4,37 @@ Todos los cambios relevantes de SG Tienda / SuplementosGym.
 
 Formato: `Added`, `Changed`, `Fixed`, `Security`.
 
+## 2026-09-15
+
+### Added — Backoffice (staff)
+- Base comun `SG_Controller` + `Authenticated_Controller` / `Admin_Controller` /
+  `Courier_Controller`, con vistas por *package path* en `application/third_party/sgadmin/views/`
+  (layouts `admin`, `courier`, `print`).
+- Permisos granulares: `permissions` (45) + `group_permissions`; `Permission_service`,
+  `has_permission()` / `require_permission()` y helper `permission_helper`.
+- Grupos: `admin`, `customer`, `vendedor`, `bodeguero`, `mensajero`, `auxiliar_admin`.
+- Modulos y controladores `admin/`: Auth, Dashboard, Users, Roles, Clients, Products,
+  Warehouses, Catalogs, Orders, Preparation, Routes, Courier, Reports, Settings, Audit, Deposits.
+- Servicios: `Order_service`, `Route_service`, `Delivery_service`, `Payment_service`,
+  `Audit_service`, `Pdf_service`, `Excel_service`, `Map_link_parser`, `Client_import_service`,
+  `Product_import_service`, `Sgms_phar_zip_archive`.
+- Modelos de backoffice: `Order_model`, `Route_model`, `Client_model`, `Catalog_product_model`,
+  `Warehouse_model`, `Deposit_model`, `Report_model`, `User_model`, `Settings_model`.
+- Flujo de pedidos con `order_status_history`; preparacion, rutas, mensajeria movil y depositos.
+- Reportes PDF/Excel, auditoria (`audit_logs`) y configuracion (`system_settings`/`store_settings`).
+- `clients` con homologacion de usuarios registrados (`clients.user_id`).
+
+### Changed — Base de datos
+- `database/suplementosgym.sql` queda como **instalador unico** (33 tablas + datos iniciales).
+  El instalador **no** siembra productos.
+- `database/limpiar_suplementosgym.sql` reinicia la base (borra las 33 tablas).
+
+### Changed — Documentacion
+- Actualizados todos los documentos de `openscpect/` al estado real de la aplicacion.
+- Nuevo `openscpect/ADMIN.md` (backoffice).
+- `DEPLOYMENT.md` reescrito: PHP 8.2+, SQL real, entorno `CI_ENV`, HTTPS, uploads y hardening.
+- `README.md` raiz reescrito (ya no es la plantilla IonAuth).
+
 ## 2026-09-12
 
 ### Added — Fase 1 (Auditoria)

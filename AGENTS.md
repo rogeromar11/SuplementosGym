@@ -6,7 +6,8 @@ Project rules for AI agents and developers.
 
 - **Framework**: CodeIgniter 3.4.2 (`pocketarc/codeigniter` fork) — never edit `system/`.
 - **Auth**: IonAuth in `application/third_party/ion_auth` (registered as a package in `autoload.php`).
-- **PHP**: >= 8.1 (dev on 8.2). The backoffice uses PHP 8.1+ features.
+- **PHP**: `composer.json` declares `>=8.1 <8.6`, but the installed dependency tree requires
+  **PHP 8.2+** (`vendor/composer/platform_check.php`). Target 8.2+ where PhpSpreadsheet/Dompdf run.
 - **Email**: PHPMailer 6.9 via `application/libraries/MY_Email.php` (extends `CI_Email`, same API, falls back to native transport if vendor is missing).
 - **API**: `chriskacerguis/codeigniter-restserver` — config in `application/config/rest.php`, example controller `application/controllers/Api.php`.
 - **Reports**: Dompdf (`Pdf_service`) and PhpSpreadsheet (`Excel_service`) for PDF/Excel exports.
@@ -19,9 +20,10 @@ composer install
 php -S localhost:8000
 ```
 
-1. Set real values in `application/config/database.php` (committed placeholders: `root`/empty/`testdb`).
+1. Set real values in `application/config/database.php` (committed placeholders: `root`/empty/`suplementosgym`).
 2. Import `database/suplementosgym.sql` (full schema + seed admins `admin@admin.com` and `admin@elsalvador.local`).
 3. Configure `application/config/email.php` (SMTP) for real email delivery.
+4. Load products from the backoffice (`/products`) or by SQL — the installer leaves `products` empty.
 
 Useful URLs: storefront `/productos`, `/carrito`, `/cuenta`, customer login `/ingresar`;
 backoffice login `/auth/login` (staff), dashboard `/dashboard`; health check `/api/ping`.
@@ -161,4 +163,8 @@ Conventions: controllers fill `$this->data` (title, message, per-field input arr
   real environment.
 - Bilingual UI: language packs live in `application/language/english|spanish`; the default is
   `english`, so new user-facing strings need both packs.
-- `models/` and `core/` are empty; do not assume every flow follows "controller → model" today.
+- `models/` and `core/` are populated (`MY_Model`, `SG_Controller` + role bases, storefront and
+  admin models/libraries). `MY_Controller` (storefront) and `SG_Controller` (backoffice) are the two
+  entry bases; `SG_Controller.php` requires the role bases at EOF.
+- The installer (`database/suplementosgym.sql`) seeds countries, groups, permissions, base catalogs,
+  settings and two dev admins, but **no products**. Loading catalog data is a separate step.

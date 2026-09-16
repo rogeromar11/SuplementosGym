@@ -28,17 +28,31 @@
 |---|---|
 | Bootstrap 5 | `assets/vendor/bootstrap` |
 | Bootstrap Icons | `assets/vendor/bootstrap-icons` |
+| jQuery | `assets/vendor/jquery` |
+| DataTables (+ lang `es-ES.json`) | `assets/vendor/datatables` |
+| Select2 | `assets/vendor/select2` |
+| SweetAlert2 | `assets/vendor/sweetalert2` |
+| Chart.js | `assets/vendor/chartjs` |
+| Leaflet (+ marker images) | `assets/vendor/leaflet` |
+| GSAP + ScrollTrigger | `assets/vendor/gsap` |
+| SortableJS | `assets/vendor/sortablejs` |
 | Logo | `assets/img/logo.png` |
 | Imagenes de producto | `assets/img/products/` |
+| Video del hero | `assets/video/hero-web.mp4` |
 
-> Copiar `bootstrap` y `bootstrap-icons` desde SGMensajeria (`assets/vendor/`) o
-> usar los disponibles. No instalar frameworks innecesarios.
+> Todo local, sin instalar frameworks innecesarios.
 
-## Google Fonts
+## Fuentes
 
-> **Unificado:** las fuentes se sirven **localmente** desde `assets/fonts/`
-> con `@font-face` en `assets/css/fonts.css`. Actualmente **Anton** (display) y
-> **Manrope** (texto). No se usa CDN en runtime. Ver `DESIGN.md`.
+> **Storefront:** fuentes **locales** en `assets/fonts/` con `@font-face` en
+> `assets/css/fonts.css` — **Anton** (display) y **Manrope** (texto). Sin CDN en runtime.
+
+> **Pendiente (backoffice):** los layouts `sgadmin/layouts/{admin,courier,print}/header.php`
+> y las plantillas de auth (`views/auth/auth_template.php`,
+> `admin_auth/auth_template.php`) todavia cargan **Google Fonts (Fira Sans / Fira Code /
+> Plus Jakarta Sans)** y, en las plantillas de auth, **jQuery y SweetAlert2 desde CDN**
+> (jsdelivr / code.jquery.com). Conviene migrarlos a los assets locales para un despliegue
+> 100% autocontenido.
 
 ## Diseno y animaciones
 

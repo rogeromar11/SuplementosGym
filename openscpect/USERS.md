@@ -57,13 +57,17 @@ iniciar sesion o registrarse.
 
 ## Implementacion tecnica
 
-- Motor: **IonAuth** (ya presente en SuplementosGym).
+- Motor: **IonAuth**.
 - Grupo de tienda: `customer`.
 - `country_id` en `users` para separar clientes por pais.
-- Password hashing: bcrypt (IonAuth). Nunca hashing propio.
-- Registro publico existente en `application/controllers/Auth.php`.
-- Campos extra (zona de entrega, direccion, telefono secundario) se agregan a `users`
-  o a una tabla `user_profiles`.
+- Password hashing: bcrypt (IonAuth, cost 12). Nunca hashing propio.
+- Flujos publicos: `application/controllers/Store_auth.php`
+  (`login`, `register`, `logout`, `forgot_password`, `reset_password`) con vistas en
+  `application/views/store/auth/`.
+- Perfil y pedidos: `application/controllers/Account.php` + `application/models/Store_order_model.php`.
+- **Homologacion con el backoffice**: al registrarse o en el primer pedido, el usuario se
+  vincula (o crea) en `clients` (`Client_model::find_or_create_for_user`). Los clientes manuales
+  creados en el backoffice no tienen cuenta (`clients.user_id` es opcional). Ver `ADMIN.md`.
 
 ## Reglas
 

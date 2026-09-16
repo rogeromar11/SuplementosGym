@@ -9,13 +9,14 @@
 
 Definidos en la tabla `countries` (copiada de SGMensajeria).
 
-## Estado del catalogo por pais (copia inicial)
+## Estado del catalogo por pais
 
-- **El Salvador (`id=2`)**: 54 productos de suplementos copiados.
-- **Costa Rica (`id=1`)**: sin productos en esta fase.
+- El instalador (`database/suplementosgym.sql`) **no carga productos**: ambos paises arrancan con
+  la tabla `products` vacia. El catalogo se carga desde el backoffice (`/products`) o por SQL.
+- Historicamente la copia inicial cargo productos **solo para El Salvador (`id=2`)**.
+- Un pais sin productos muestra **"Actualmente no hay productos disponibles para este pais."**
 
-> Decision de Fase 1: copiar tal cual (solo SV). Costa Rica mostrara
-> **"Actualmente no hay productos disponibles para este pais."**
+> Pendiente: definir productos/precios para Costa Rica.
 
 ## Selector de pais
 

@@ -1,53 +1,45 @@
 # STORE · Catalogo y experiencia de tienda
 
-## Implementacion (2026-09-12)
+## Implementacion
 
 | Pieza | Ubicacion |
 |---|---|
 | Controladores | `application/controllers/Store.php`, `Cart.php`, `Checkout.php`, `Account.php`, `Store_auth.php` |
-| Modelos | `application/models/Country_model.php`, `Product_model.php`, `Store_order_model.php`, `Inventory_model.php` |
+| Modelos | `Country_model.php`, `Product_model.php`, `Store_order_model.php`, `Inventory_model.php` |
 | Libreria | `application/libraries/Store_cart.php` |
 | Helper | `application/helpers/store_helper.php` |
-| Vistas | `application/views/store/` (+ `partials/`) |
-| Assets | `assets/css/store.css`, `assets/js/store.js` |
+| Vistas | `application/views/store/` (+ `partials/header.php`, `partials/footer.php`) |
+| Assets | `assets/css/design.css`, `assets/css/store.css`, `assets/js/store.js`, `assets/js/landing.js` |
 | Rutas | `productos`, `producto/{id}`, `carrito/*`, `checkout`, `cuenta/*`, `ingresar`, `registro`, `pais` |
 
 ## Secciones
 
-1. Inicio
-2. Productos (catalogo)
-3. Producto individual
-4. Carrito
-5. Checkout
-6. Registro
-7. Login
-8. Mi perfil
-9. Mis pedidos
-10. Sobre nosotros
-11. Formas de pago
-12. Contacto
-13. Footer
+Inicio · Productos (catalogo) · Producto individual · Carrito · Checkout · Registro · Login ·
+Mi perfil · Mis pedidos · Sobre nosotros · Guia · Calculadora de macros · Formas de pago ·
+Contacto · Footer.
 
-## Navbar (sticky, fondo `#0B0B0F`)
+## Navbar (sticky, oscuro)
 
-- Logo, Inicio, Productos, Nosotros, Formas de Pago, Contacto.
-- Selector de pais (CR / SV).
+- Logo, Inicio, **Productos** (dropdown con categorias + "Todos los productos"),
+  Nosotros, Guia, Formas de Pago, Contacto, **Calculadora**.
+- Selector de pais (CR / SV) con banderas.
 - Carrito con contador.
-- Cuenta:
-  - Invitado: **Iniciar sesion** / **Registrarse**.
-  - Autenticado: **Mi perfil** / **Mis pedidos** / **Cerrar sesion**.
-- CTA **Haz tu pedido** (WhatsApp).
+- Cuenta: invitado ve **Iniciar sesion**; autenticado ve un dropdown con
+  **Mi perfil / Mis pedidos / Cerrar sesion**.
+- Boton flotante de WhatsApp (`.fab-wa`) global.
 
 ## Hero
 
-Fondo negro, mensaje orientado a fuerza, rendimiento, recuperacion y objetivos.
-Botones: **Ver productos** y **Escríbenos**. Animacion suave.
+Fondo oscuro con video (`assets/video/hero-web.mp4`), mensaje orientado a fuerza, rendimiento,
+recuperacion y objetivos. Incluye estadisticas animadas y bloque de redes sociales.
+Animaciones con GSAP + ScrollTrigger (`assets/js/landing.js`).
 
 ## Catalogo
 
 - Fuente: tabla `products` de `suplementosgym`.
 - Filtros: `country_id = pais_actual` y `is_active = 1`.
-- Orden por `product_type`, `name` (o la mejor alternativa real).
+- Filtros de UI: categoria, laboratorio, precio (min/max), disponibilidad y orden.
+- Paginacion: 10 / 25 / 50 / 100 por pagina (default 25), preservando filtros.
 
 ## Categorias
 
@@ -61,49 +53,49 @@ Mapeo desde `product_type` real:
 | Aminos | `BCAA`, `EAA`, `Amino` |
 | Quemadores de Grasa | `Quemador`, `CLA`, `Lipo` |
 | Ganadores de Peso | `Mass Gainer` |
-| Multivitaminicos | `Multivitamínico`, `Vitamina` |
+| Multivitaminicos | `Multivitaminico`, `Vitamina` |
 | Otros | cualquier otro valor no reconocido |
 
 > Todo valor no reconocido cae en **Otros**. No se elimina ningun producto.
 
+## Variantes por sabor
+
+Los productos que comparten tipo, laboratorio, nombre, peso y porciones (considerando campos
+vacios) se agrupan como un mismo producto con varios **sabores**
+(`Product_model::variant_key()`, `group()`, `group_for()`):
+
+- Catalogo y destacados muestran **una sola tarjeta por producto**.
+- Al agregar un producto con varios sabores se abre un **modal** para elegir el sabor (precio por
+  sabor; agotados deshabilitados).
+- El sabor elegido se muestra en carrito, checkout y "Mis pedidos"
+  (`store_order_items.item_flavor`).
+
 ## Tarjeta de producto
 
-Imagen, laboratorio, nombre, categoria, peso, porciones, sabor, descripcion corta,
-precio y disponibilidad. Botones: **Agregar al carrito**, **Comprar ahora**,
-**Pedir por WhatsApp**. Si esta agotado: **Agotado**.
+Imagen (WebP + fallback JPG con `<picture>`, `loading="lazy"`), laboratorio, nombre, categoria,
+peso, porciones, sabor, descripcion corta, precio y disponibilidad. Boton: **Agregar al carrito**
+(WhatsApp queda en la ficha, el boton flotante y el checkout). Si esta agotado: **Agotado**.
 
 ## Producto individual
 
-Imagen, nombre, laboratorio, categoria, precio, peso, porciones, sabor, descripcion,
-stock y cantidad. Botones: **Agregar al carrito**, **Comprar ahora**, **WhatsApp**.
+Imagen, nombre, laboratorio, categoria, precio, peso, porciones, sabor, descripcion, stock y
+cantidad. Chips de sabor que llevan a la variante. Botones: **Agregar al carrito**, **Comprar
+ahora**, **WhatsApp**. Incluye productos relacionados (por grupo).
 
-## Busqueda (JavaScript Vanilla)
+## Busqueda y filtros
 
-- Por nombre, laboratorio y categoria.
-- Filtrado en tiempo real.
-
-## Filtros
-
-- Categoria, laboratorio, precio, disponibilidad.
-- Orden: relevancia, nombre, precio menor→mayor, precio mayor→menor.
-- Siempre respetan el pais activo.
+- Busqueda por nombre, laboratorio y categoria (con resultados server-side; realce en cliente).
+- Filtros y orden siempre respetan el pais activo.
 
 ## Carrito
 
-Operaciones: agregar, eliminar, aumentar, disminuir, vaciar.
-Muestra: productos, cantidad, precio, subtotal, envio y total.
+Operaciones: agregar, eliminar, aumentar, disminuir, vaciar. Muestra productos, cantidad, precio,
+subtotal, envio y total. Incluye "Finalizar por WhatsApp".
 
 Validacion server-side **antes** de crear pedido:
-1. Consultar producto real.
-2. Validar existencia.
-3. Validar activo.
-4. Validar pais.
-5. Obtener precio real.
-6. Validar stock.
-7. Validar cantidad.
-8. Recalcular subtotal.
-9. Calcular envio.
-10. Recalcular total.
+1. Consultar producto real. 2. Validar existencia. 3. Validar activo. 4. Validar pais.
+5. Obtener precio real. 6. Validar stock. 7. Validar cantidad. 8. Recalcular subtotal.
+9. Calcular envio. 10. Recalcular total.
 
 ## Mensajes de estado vacio
 
@@ -119,14 +111,12 @@ Validacion server-side **antes** de crear pedido:
 
 ## WhatsApp
 
-- Producto: `Hola, estoy interesado en el producto: [PRODUCTO].`
-- Pedido: `Hola, acabo de realizar el pedido #[NUMERO].`
+- Producto, pedido y checkout armados por `store_helper` (`store_whatsapp_url`,
+  `store_cart_whatsapp_url`, `waCheckoutData`).
 - Numero centralizado por pais en `store_settings` (`whatsapp_number`).
+- Placeholders actuales: CR `50688888888`, SV `50377777777` (reemplazar).
 
 ## Carrito y cambio de pais
 
 - No se mezclan productos de distintos paises.
-- Al cambiar de pais con carrito no vacio, confirmar:
-  **"Al cambiar de pais, los productos actuales del carrito podrian dejar de estar
-  disponibles. ¿Deseas continuar?"**
-- Si se confirma, vaciar carrito.
+- Al cambiar de pais con carrito no vacio, confirmar y (si acepta) vaciar el carrito.

@@ -4,6 +4,10 @@ Fecha: 2026-09-12
 Auditor: IA (opencode)
 Alcance: `C:/xampp/htdocs/SGMensajeria` (referencia) y `C:/xampp/htdocs/SuplementosGym` (destino).
 
+> **Documento historico (Fase 1).** Describe el estado previo a la construccion de la tienda.
+> Desde entonces se implemento el storefront y, despues, el **backoffice** completo. Estado actual
+> en `DATABASE.md`, `ADMIN.md` y `ROADMAP.md`.
+
 ## 1. Arquitectura de SGMensajeria
 
 - **CodeIgniter 3.x** + **IonAuth 3**, PHP `>=8.1 <8.6`, MySQL/MariaDB.

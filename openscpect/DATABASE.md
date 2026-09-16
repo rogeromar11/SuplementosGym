@@ -40,17 +40,35 @@ created_at, updated_at, created_by, updated_by
 Base destino: **`suplementosgym`** (localhost, usuario `root`, sin password).
 Configurada en `application/config/database.php`.
 
-> **Estado (Fases 2-3, 2026-09-12):** base creada, esquema importado y datos migrados.
-> Tablas presentes: `countries`, `groups`, `users`, `users_groups`, `login_attempts`,
-> `products` (54 de El Salvador), `payment_methods` (8), `store_orders`,
-> `store_order_items`, `inventory_movements`, `store_settings` (10).
-> Base en estado limpio: 0 pedidos, 0 movimientos, 1 usuario (admin de desarrollo).
+> **Fuente de verdad:** `database/suplementosgym.sql` es el **instalador unico** (esquema
+> completo + datos iniciales). Crea todas las tablas de IonAuth, catalogo, tienda y
+> administracion, ademas de paises, grupos, permisos, catalogos base, configuraciones y
+> administradores de desarrollo. Para reiniciar desde cero:
+> `database/limpiar_suplementosgym.sql` (borra todas las tablas) y volver a importar.
 >
-> Scripts: `database/database.sql` (esquema base),
-> `database/upgrade_add_store_schema_20260912.sql` (esquema incremental),
-> `database/upgrade_migrate_initial_data_20260912.sql` (copia inicial de datos).
+> Tablas (ver detalle en la cabecera de `suplementosgym.sql`):
+> - IonAuth: `groups`, `users`, `users_groups`, `login_attempts`.
+> - Catalogo: `countries`, `products`, `product_images`, `payment_methods`.
+> - Tienda: `store_orders`, `store_order_items`, `inventory_movements`,
+>   `store_settings`, `store_visits`.
+> - Administracion: `clients`, `warehouses`, `transports`, `route_shifts`,
+>   `delivery_failure_reasons`, `routes`, `route_orders`, `route_transfer_history`,
+>   `warehouse_preparation_history`, `delivery_attempts`, `order_status_history`,
+>   `attachments`, `payments`, `payment_history`, `cash_deposits`, `cash_deposit_routes`,
+>   `permissions`, `group_permissions`, `audit_logs`, `system_settings`.
+>
+> **Datos iniciales (semilla del instalador):**
+> - `countries`: 2 (CR, SV).
+> - `groups`: 6 (admin, customer, vendedor, bodeguero, mensajero, auxiliar_admin).
+> - `permissions`: 45 claves; `group_permissions`: 88 filas (admin tiene todas).
+> - `payment_methods`: 8 (4 por pais).
+> - `store_settings`: 22 (11 claves por pais); `system_settings`: 22.
+> - Catalogos: `route_shifts` 4, `delivery_failure_reasons` 14, `transports` 6, `warehouses` 2.
+> - Admins de desarrollo: 2 (`admin@admin.com`, `admin@elsalvador.local`, password `password`).
+> - **`products`: 0 filas.** El instalador no carga catalogo; se carga desde el backoffice
+>   (`/products`) o por SQL. Las imagenes de `assets/img/products/` no se siembran en la BD.
 
-### Tablas IonAuth (base existente de `database/database.sql`)
+### Tablas IonAuth (creadas por `database/suplementosgym.sql`)
 
 `groups`, `users`, `users_groups`, `login_attempts`.
 
@@ -77,7 +95,7 @@ cost_price, unit_price, is_active, stock_enabled, stock_qty,
 created_at, updated_at, created_by, updated_by
 ```
 
-Campos adicionales de tienda (a agregar en SuplementosGym):
+Campos adicionales de tienda (ya agregados en SuplementosGym):
 
 ```
 store_description   TEXT NULL
@@ -95,7 +113,7 @@ id, country_id, code, name, is_active, sort_order
 UNIQUE (country_id, code)
 ```
 
-### Tablas propias de SG Tienda (a crear)
+### Tablas propias de la tienda y el backoffice (ya creadas)
 
 **`store_orders`** — pedido e-commerce
 
@@ -134,7 +152,11 @@ UNIQUE (country_id, key)
 Ejemplos de `key`: `whatsapp_number`, `contact_email`, `business_hours`,
 `shipping_cost`, `free_shipping_from`.
 
-## C. Copia inicial (INSERT SELECT)
+## C. Copia inicial (historica, INSERT SELECT)
+
+> Esta seccion documenta la copia **puntual** desde `sgmensajeria` que se hizo en la fase de
+> migracion. Hoy ambos proyectos son independientes y **no** se vuelve a ejecutar. El catalogo
+> actual se gestiona desde el backoffice (`/products`).
 
 Despues de auditar, la copia se realiza con **columnas explicitas** (nunca `SELECT *`):
 
@@ -180,4 +202,4 @@ WHERE p.country_id = 2 AND p.is_active = 1
 - Baja logica con `is_active`.
 - Inventario solo en SuplementosGym.
 - Nunca stock negativo.
-- Toda migracion se guarda en `database/` (`database.sql` + `upgrade_*.sql`).
+- Toda migracion se guarda en `database/` y se refleja en `suplementosgym.sql`.

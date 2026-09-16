@@ -107,9 +107,31 @@ ORDER    final=http://.../cuenta/pedido/2 hasNumber=True
 inventory_applied=1 ; stock 26 -> 24 ; inventory_movements: salida x2
 ```
 
+## Backoffice
+
+- [ ] Login de staff (`/auth/login`) y dashboard segun rol.
+- [ ] Permisos: cada grupo ve solo sus modulos (`require_permission` responde 403).
+- [ ] Clientes: alta manual e importacion Excel (plantilla/preview/commit).
+- [ ] Productos: alta/edicion, galeria de imagenes, importacion Excel.
+- [ ] Pedido manual: crear, editar, imprimir, anular.
+- [ ] Preparacion: iniciar, marcar preparado, devolver, observaciones.
+- [ ] Rutas: crear, agregar/quitar/reordenar, transferir, iniciar.
+- [ ] Mensajeria movil: entregar/no entregar con evidencia (subida en `uploads/delivery_evidence/`).
+- [ ] Pagos: registro parcial/total, historial e idempotencia.
+- [ ] Depositos: crear con comprobante, confirmar, entregar y aprobar.
+- [ ] Reportes: PDF y Excel por tipo.
+- [ ] Auditoria: las acciones sensibles aparecen en `/audit`.
+
+## Nota sobre el instalador
+
+- `database/suplementosgym.sql` **no** carga productos: al importar desde cero, `products` queda
+  vacia. Para probar el catalogo, cargar productos desde `/products` (importacion Excel o alta
+  manual) antes de ejecutar los checks de catalogo/carrito.
+
 ## Pendiente / futuro
 
 - [ ] Configurar correo real (SMTP) y habilitar `use_ci_email` para recuperacion.
 - [ ] Cargar WhatsApp, correo y horario reales en `store_settings`.
 - [x] Cargar imagenes de producto en `assets/img/products/` (54/54, con placeholders).
 - [ ] Definir precios/productos para Costa Rica.
+- [ ] Forzar HTTPS, `cookie_secure` y `CI_ENV=production` (ver `DEPLOYMENT.md`).
