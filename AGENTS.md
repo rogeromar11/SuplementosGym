@@ -20,7 +20,7 @@ php -S localhost:8000
 ```
 
 1. Set real values in `application/config/database.php` (committed placeholders: `root`/empty/`testdb`).
-2. Import `database/database.sql` (IonAuth schema + seed admin `admin@admin.com`).
+2. Import `database/suplementosgym.sql` (full schema + seed admins `admin@admin.com` and `admin@elsalvador.local`).
 3. Configure `application/config/email.php` (SMTP) for real email delivery.
 
 Useful URLs: storefront `/productos`, `/carrito`, `/cuenta`, customer login `/ingresar`;
@@ -39,7 +39,7 @@ application/
   views/         store/ (storefront), auth/ (IonAuth), errors/
   language/      english/ and spanish/ packs for auth, ion_auth, rest (default language: english)
   third_party/   ion_auth, sgadmin/views (backoffice views via package path)
-database/        database.sql (full base schema) + upgrade_*.sql migrations
+database/        suplementosgym.sql (full schema + data) + limpiar_suplementosgym.sql
 ```
 
 ### Backoffice (`/admin`)
@@ -99,18 +99,19 @@ Conventions: controllers fill `$this->data` (title, message, per-field input arr
 ## Database
 
 - **All** SQL lives in `database/`.
-- `database/database.sql` is the **complete base schema** (from-scratch setup). Currently holds the
-  IonAuth schema (`users`, `groups`, `users_groups`, `login_attempts`) plus seed data.
+- `database/suplementosgym.sql` is the **complete schema + initial data** (from-scratch setup).
+  It creates the database and every table (IonAuth, storefront and backoffice), plus seed data
+  (countries, groups, permissions, base catalogs, settings and the dev admins).
+  Run with `mysql -u root < database/suplementosgym.sql`.
+- `database/limpiar_suplementosgym.sql` drops every application table (empty database reset) so the
+  installer can be re-run. Run with `mysql -u root suplementosgym < database/limpiar_suplementosgym.sql`.
 - **Mandatory**: every DB change must be reflected in the SQL scripts, not done "by hand" on a server.
 
 ### Reflecting a DB change
 
-1. **Update** `database/database.sql` with the change applied to the base schema.
-2. **Create** an incremental migration: `database/upgrade_<change-name>_<YYYYMMDD>.sql`
-   (e.g. `upgrade_add_user_avatar_20260815.sql`).
-   - It contains **only** the ALTER/CREATE/UPDATE statements needed to reach the new version.
-   - Make it idempotent where possible (`IF NOT EXISTS` / guards).
-3. Ship both files in the same PR.
+1. **Update** `database/suplementosgym.sql` with the change applied to the base schema.
+2. Document the change (and any data migration) so it reaches existing installations.
+3. Ship the updated script in the same PR.
 
 ## Coding practices
 
@@ -156,7 +157,7 @@ Conventions: controllers fill `$this->data` (title, message, per-field input arr
 - IonAuth only sends email when `use_ci_email = TRUE` in its config — currently `FALSE`, so
   `forgotten_password()` and registration return the code/data instead of sending mail. Enable it
   (and configure `email.php`) before expecting auth emails.
-- `database.sql` seeds a default admin account with a well-known hash — rotate credentials in any
+- `database/suplementosgym.sql` seeds default admin accounts with a well-known hash — rotate credentials in any
   real environment.
 - Bilingual UI: language packs live in `application/language/english|spanish`; the default is
   `english`, so new user-facing strings need both packs.
