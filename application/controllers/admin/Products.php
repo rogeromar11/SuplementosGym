@@ -213,6 +213,9 @@ class Products extends Authenticated_Controller
 	{
 		$this->load->library('form_validation');
 
+		$this->data['images'] = $product ? $this->Catalog_product_model->images($product->id) : array();
+		$this->data['pageScripts'] = array('assets/js/pages/product_gallery.js');
+
 		if ($this->input->post()) {
 			$this->form_validation->set_rules('product_type', 'Producto', 'trim|required|max_length[100]');
 			$this->form_validation->set_rules('laboratory', 'Laboratorio', 'trim|max_length[120]');
@@ -228,10 +231,10 @@ class Products extends Authenticated_Controller
 				$name = trim((string)$this->input->post('name'));
 				$productType = trim((string)$this->input->post('product_type'));
 
-				// Imagen del producto (opcional): se guarda en assets/img/products/
-				$image = $this->_process_image($product ? $product->image : null);
-				if ($image['error'] !== null) {
-					$this->data['message'] = $image['error'];
+				// Valida las imagenes nuevas antes de guardar el producto.
+				$uploadError = $this->_validate_gallery_uploads();
+				if ($uploadError !== null) {
+					$this->data['message'] = $uploadError;
 					$this->data['product'] = $product;
 					return $this->render('products/form', $this->data);
 				}
@@ -249,7 +252,6 @@ class Products extends Authenticated_Controller
 					'flavor' => $this->_nullable_post('flavor'),
 					'description' => $this->input->post('description'),
 					'store_description' => $this->input->post('store_description'),
-					'image' => $image['file'],
 					'featured' => $this->input->post('featured') ? 1 : 0,
 					'cost_price' => round((float)$this->input->post('cost_price'), 2),
 					'unit_price' => round((float)$this->input->post('unit_price'), 2),
@@ -265,6 +267,7 @@ class Products extends Authenticated_Controller
 						return $this->render('products/form', $this->data);
 					}
 					$id = $product->id;
+					$redirectTo = 'products';
 					$this->audit_service->log('product.update', 'productos', 'products', $id);
 					$flash = 'Producto actualizado correctamente.';
 				} else {
@@ -275,13 +278,23 @@ class Products extends Authenticated_Controller
 						$this->data['message'] = 'El SKU ya existe.';
 						return $this->render('products/form', $this->data);
 					}
+					$redirectTo = 'products/edit/' . $id;
 					$this->audit_service->log('product.create', 'productos', 'products', $id);
-					$flash = 'Producto creado correctamente.';
+					$flash = 'Producto creado. Ahora puedes agregar sus imágenes.';
+				}
+
+				// Galeria: elimina las seleccionadas, sube las nuevas y define la principal.
+				$galleryError = $this->_process_gallery($id);
+				if ($galleryError !== null) {
+					$this->data['message'] = $galleryError;
+					$this->data['product'] = $this->Catalog_product_model->find_for_country($id);
+					$this->data['images'] = $this->Catalog_product_model->images($id);
+					return $this->render('products/form', $this->data);
 				}
 
 				$this->session->set_flashdata('success', true);
 				$this->session->set_flashdata('message', $flash);
-				redirect('products');
+				redirect($redirectTo);
 			}
 		}
 
@@ -305,59 +318,226 @@ class Products extends Authenticated_Controller
 	}
 
 	/**
-	 * Procesa la imagen opcional del producto.
-	 * Guarda el archivo en assets/img/products/ (misma carpeta que usa la tienda)
-	 * y devuelve el nombre de archivo a almacenar en products.image.
+	 * Valida las imagenes nuevas subidas en el formulario (campo images[]).
+	 * No guarda nada; se llama antes de crear/actualizar el producto.
 	 *
-	 * @param string|null $existing Imagen actual
-	 * @return array ['error' => string|null, 'file' => string|null]
+	 * @return string|null Mensaje de error o null si todo es valido
 	 */
-	private function _process_image($existing)
+	private function _validate_gallery_uploads()
+	{
+		$files = isset($_FILES['images']) ? $_FILES['images'] : null;
+		if (!$files || !isset($files['name']) || !is_array($files['name'])) {
+			return null;
+		}
+		$allowed = array('image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp');
+		$count = count($files['name']);
+		for ($i = 0; $i < $count; $i++) {
+			if (!isset($files['error'][$i]) || $files['error'][$i] === UPLOAD_ERR_NO_FILE) {
+				continue;
+			}
+			if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+				return 'No fue posible recibir una de las imágenes.';
+			}
+			if ((int)$files['size'][$i] <= 0 || (int)$files['size'][$i] > 3 * 1024 * 1024) {
+				return 'Cada imagen debe pesar como máximo 3 MB.';
+			}
+			$mime = (new finfo(FILEINFO_MIME_TYPE))->file($files['tmp_name'][$i]);
+			if (!isset($allowed[$mime])) {
+				return 'Formato de imagen no permitido (use JPG, PNG o WEBP).';
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Aplica los cambios de la galeria de un producto: elimina las imagenes
+	 * marcadas, sube las nuevas, define la principal y sincroniza products.image.
+	 *
+	 * @param int $productId
+	 * @return string|null Mensaje de error o null si todo salio bien
+	 */
+	private function _process_gallery($productId)
 	{
 		$dir = FCPATH . 'assets/img/products/';
-		$file = isset($_FILES['image']) ? $_FILES['image'] : null;
+		if (!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
 
-		if ($file && isset($file['error']) && $file['error'] !== UPLOAD_ERR_NO_FILE) {
-			if ($file['error'] !== UPLOAD_ERR_OK) {
-				return array('error' => 'No fue posible recibir la imagen.', 'file' => $existing);
+		// 1) Eliminar imagenes marcadas
+		$deleteIds = (array) $this->input->post('delete_images');
+		$deleteIds = array_values(array_filter(array_map('intval', $deleteIds)));
+		if (!empty($deleteIds)) {
+			$rows = $this->db->where_in('id', $deleteIds)
+				->where('product_id', $productId)
+				->get('product_images')->result();
+			foreach ($rows as $row) {
+				if (is_file($dir . $row->filename)) {
+					@unlink($dir . $row->filename);
+				}
+				$this->Catalog_product_model->delete_image($row->id, $productId);
 			}
-			if ((int)$file['size'] <= 0 || (int)$file['size'] > 3 * 1024 * 1024) {
-				return array('error' => 'La imagen debe pesar como máximo 3 MB.', 'file' => $existing);
-			}
+		}
 
-			$finfo = new finfo(FILEINFO_MIME_TYPE);
-			$mime = $finfo->file($file['tmp_name']);
-			$allowed = array(
-				'image/jpeg' => 'jpg',
-				'image/png'  => 'png',
-				'image/webp' => 'webp',
-			);
+		// 2) Subir imagenes nuevas
+		$uploadError = $this->_move_uploads($productId);
+		if ($uploadError !== null) {
+			return $uploadError;
+		}
+
+		// 3) Definir imagen principal si se eligio una existente
+		$mainId = (int) $this->input->post('main_image_id');
+		if ($mainId) {
+			$belongs = $this->db->where('id', $mainId)->where('product_id', $productId)->count_all_results('product_images');
+			if ($belongs) {
+				$this->Catalog_product_model->set_main_image($productId, $mainId);
+			}
+		}
+
+		// 4) Asegurar una principal y sincronizar products.image
+		$this->Catalog_product_model->sync_main_image($productId);
+		return null;
+	}
+
+	/**
+	 * Mueve a assets/img/products/ las imagenes nuevas subidas (campo images[])
+	 * y las registra en la galeria del producto.
+	 *
+	 * @param int $productId
+	 * @return string|null Mensaje de error o null
+	 */
+	private function _move_uploads($productId)
+	{
+		$dir = FCPATH . 'assets/img/products/';
+		if (!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+		$files = isset($_FILES['images']) ? $_FILES['images'] : null;
+		$allowed = array('image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp');
+		if (!$files || !isset($files['name']) || !is_array($files['name'])) {
+			return null;
+		}
+		$count = count($files['name']);
+		for ($i = 0; $i < $count; $i++) {
+			if (!isset($files['error'][$i]) || $files['error'][$i] === UPLOAD_ERR_NO_FILE) {
+				continue;
+			}
+			$mime = (new finfo(FILEINFO_MIME_TYPE))->file($files['tmp_name'][$i]);
 			if (!isset($allowed[$mime])) {
-				return array('error' => 'Formato de imagen no permitido (use JPG, PNG o WEBP).', 'file' => $existing);
-			}
-
-			if (!is_dir($dir)) {
-				mkdir($dir, 0775, true);
+				continue;
 			}
 			$name = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
-			if (!move_uploaded_file($file['tmp_name'], $dir . $name)) {
-				return array('error' => 'No fue posible guardar la imagen.', 'file' => $existing);
+			if (!move_uploaded_file($files['tmp_name'][$i], $dir . $name)) {
+				return 'No fue posible guardar una de las imágenes.';
 			}
-
-			if ($existing && $existing !== $name && is_file($dir . $existing)) {
-				@unlink($dir . $existing);
-			}
-			return array('error' => null, 'file' => $name);
+			$this->Catalog_product_model->add_image($productId, $name, false);
 		}
+		return null;
+	}
 
-		if ($this->input->post('remove_image')) {
-			if ($existing && is_file($dir . $existing)) {
-				@unlink($dir . $existing);
-			}
-			return array('error' => null, 'file' => null);
+	/**
+	 * Formatea la galeria para las respuestas AJAX.
+	 *
+	 * @param array $images
+	 * @return array
+	 */
+	private function _gallery_payload($images)
+	{
+		$out = array();
+		foreach ($images as $img) {
+			$out[] = array(
+				'id'      => (int) $img->id,
+				'url'     => base_url('assets/img/products/' . rawurlencode($img->filename)),
+				'is_main' => (int) $img->is_main === 1,
+			);
 		}
+		return $out;
+	}
 
-		return array('error' => null, 'file' => $existing);
+	/**
+	 * AJAX: agrega imagenes a la galeria de un producto existente.
+	 *
+	 * @param int $id
+	 */
+	public function upload_images($id)
+	{
+		$this->require_permission('productos.editar');
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		$product = $this->Catalog_product_model->find_for_country($id);
+		if (!$product) {
+			$this->json_response(false, 'El producto no existe.', null, null, 404);
+			return;
+		}
+		$error = $this->_validate_gallery_uploads();
+		if ($error !== null) {
+			$this->json_response(false, $error);
+			return;
+		}
+		$error = $this->_move_uploads((int) $product->id);
+		if ($error !== null) {
+			$this->json_response(false, $error);
+			return;
+		}
+		$this->Catalog_product_model->sync_main_image((int) $product->id);
+		$this->audit_service->log('product.images_add', 'productos', 'product_images', $product->id);
+		$this->json_response(true, 'Imágenes agregadas.', array(
+			'images' => $this->_gallery_payload($this->Catalog_product_model->images($product->id)),
+		));
+	}
+
+	/**
+	 * AJAX: elimina una imagen de la galeria del producto.
+	 *
+	 * @param int $id
+	 * @param int $imageId
+	 */
+	public function delete_image($id, $imageId)
+	{
+		$this->require_permission('productos.editar');
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		$row = $this->db->where('id', (int) $imageId)->where('product_id', (int) $id)->get('product_images')->row();
+		if (!$row) {
+			$this->json_response(false, 'La imagen no existe.', null, null, 404);
+			return;
+		}
+		$path = FCPATH . 'assets/img/products/' . $row->filename;
+		if (is_file($path)) {
+			@unlink($path);
+		}
+		$this->Catalog_product_model->delete_image($row->id, (int) $id);
+		$this->Catalog_product_model->sync_main_image((int) $id);
+		$this->audit_service->log('product.image_delete', 'productos', 'product_images', $row->id);
+		$this->json_response(true, 'Imagen eliminada.', array(
+			'images' => $this->_gallery_payload($this->Catalog_product_model->images($id)),
+		));
+	}
+
+	/**
+	 * AJAX: marca una imagen como principal.
+	 *
+	 * @param int $id
+	 * @param int $imageId
+	 */
+	public function set_main_image($id, $imageId)
+	{
+		$this->require_permission('productos.editar');
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		$belongs = $this->db->where('id', (int) $imageId)->where('product_id', (int) $id)->count_all_results('product_images');
+		if (!$belongs) {
+			$this->json_response(false, 'La imagen no existe.', null, null, 404);
+			return;
+		}
+		$this->Catalog_product_model->set_main_image((int) $id, (int) $imageId);
+		$this->Catalog_product_model->sync_main_image((int) $id);
+		$this->audit_service->log('product.image_main', 'productos', 'product_images', (int) $imageId);
+		$this->json_response(true, 'Imagen principal actualizada.', array(
+			'images' => $this->_gallery_payload($this->Catalog_product_model->images($id)),
+		));
 	}
 
 	/**

@@ -61,6 +61,28 @@ if ( ! function_exists('current_store_country'))
 	}
 }
 
+if ( ! function_exists('store_default_warehouse'))
+{
+	/**
+	 * Bodega por defecto de un país para los pedidos de la tienda.
+	 * Usa la marcada como predeterminada en el admin o, si no hay, la primera activa.
+	 *
+	 * @param int|null $country_id
+	 * @return object|null
+	 */
+	function store_default_warehouse($country_id = NULL)
+	{
+		$ci = store_ci();
+		$country_id = ($country_id === NULL) ? current_store_country_id() : (int) $country_id;
+		return $ci->db->where('country_id', $country_id)
+			->where('is_active', 1)
+			->order_by('is_default', 'DESC')
+			->order_by('id', 'ASC')
+			->limit(1)
+			->get('warehouses')->row();
+	}
+}
+
 if ( ! function_exists('store_country_currency'))
 {
 	function store_country_currency($country = NULL)
@@ -195,6 +217,36 @@ if ( ! function_exists('store_availability_min_stock'))
 	{
 		$value = (int) store_setting('availability_min_stock', 5, $country_id);
 		return $value > 0 ? $value : 1;
+	}
+}
+
+if ( ! function_exists('store_low_stock_notice_enabled'))
+{
+	/**
+	 * Indica si está activo el aviso de "Pocas unidades" según el mínimo de
+	 * existencias. Si está desactivado, solo se muestra "Disponible"/"Agotado".
+	 *
+	 * @param int|null $country_id
+	 * @return bool
+	 */
+	function store_low_stock_notice_enabled($country_id = NULL)
+	{
+		return (string) store_setting('availability_low_stock', '1', $country_id) === '1';
+	}
+}
+
+if ( ! function_exists('store_stock_quantity_visible'))
+{
+	/**
+	 * Indica si se debe mostrar el número de unidades en el aviso de
+	 * "Pocas unidades". Configurable en el admin (Configuración → Tienda web).
+	 *
+	 * @param int|null $country_id
+	 * @return bool
+	 */
+	function store_stock_quantity_visible($country_id = NULL)
+	{
+		return (string) store_setting('availability_show_qty', '1', $country_id) === '1';
 	}
 }
 
@@ -349,6 +401,45 @@ if ( ! function_exists('store_product_image'))
 			return base_url('assets/img/products/' . rawurlencode($product->image));
 		}
 		return base_url('assets/img/product-placeholder.svg');
+	}
+}
+
+if ( ! function_exists('store_product_images'))
+{
+	/**
+	 * Galería de imágenes de un producto (la principal primero).
+	 * Si no hay registros en product_images, usa products.image como respaldo.
+	 *
+	 * @param object $product
+	 * @return array Nombres de archivo
+	 */
+	function store_product_images($product)
+	{
+		if ( ! $product)
+		{
+			return array();
+		}
+		$ci = store_ci();
+		$rows = $ci->db->select('filename')
+			->where('product_id', (int) $product->id)
+			->order_by('is_main', 'DESC')
+			->order_by('sort_order', 'ASC')
+			->order_by('id', 'ASC')
+			->get('product_images')->result();
+
+		$out = array();
+		foreach ($rows as $row)
+		{
+			if ( ! empty($row->filename))
+			{
+				$out[] = $row->filename;
+			}
+		}
+		if (empty($out) && ! empty($product->image))
+		{
+			$out[] = $product->image;
+		}
+		return $out;
 	}
 }
 

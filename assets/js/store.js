@@ -464,6 +464,21 @@
     });
   }
 
+  function bindProductGallery() {
+    var main = document.getElementById('pdMainImage');
+    var thumbs = Array.prototype.slice.call(document.querySelectorAll('.pd-thumb'));
+    if (!main || !thumbs.length) { return; }
+    thumbs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var src = btn.getAttribute('data-src');
+        if (!src) { return; }
+        main.src = src;
+        thumbs.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+  }
+
   function bindProductZoom() {
     var media = document.querySelector('.pd-media');
     if (!media) { return; }
@@ -534,6 +549,7 @@
     bindHeroParallax();
     bindCheckoutWhatsApp();
     bindDropdowns();
+    bindProductGallery();
     bindProductZoom();
   });
 

@@ -108,6 +108,16 @@ class Order_model extends CI_Model
 			->where('p.order_id', $id)->order_by('p.created_at', 'ASC')->get()->result();
 		$order->history = $this->db->where('order_id', $id)->order_by('created_at', 'ASC')->get('order_status_history')->result();
 		$order->attachments = $this->db->where('order_id', $id)->order_by('created_at', 'DESC')->get('attachments')->result();
+		$order->deliveries = $this->db->select('d.*, fr.name AS failure_reason_name, u.first_name AS courier_first_name, u.last_name AS courier_last_name, p.amount AS payment_amount, pm.name AS payment_method_name, pm.code AS payment_method_code')
+			->from('delivery_attempts d')
+			->join('delivery_failure_reasons fr', 'fr.id = d.failure_reason_id', 'left')
+			->join('users u', 'u.id = d.courier_user_id', 'left')
+			->join('payments p', 'p.delivery_attempt_id = d.id', 'left')
+			->join('payment_methods pm', 'pm.id = p.payment_method_id', 'left')
+			->where('d.order_id', $id)
+			->order_by('d.attempted_at', 'ASC')
+			->order_by('d.id', 'ASC')
+			->get()->result();
 		return $order;
 	}
 

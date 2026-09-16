@@ -96,6 +96,11 @@ class Checkout extends MY_Controller
 		$shipping = $this->store_cart->shipping($subtotal, $country->id);
 		$total = $subtotal + $shipping;
 
+		// Bodega por defecto (la marcada en el admin) y fecha solicitada = hoy.
+		$warehouse = store_default_warehouse($country->id);
+		$timezone = ! empty($country->timezone) ? $country->timezone : date_default_timezone_get();
+		$requested_date = (new DateTime('now', new DateTimeZone($timezone)))->format('Y-m-d');
+
 		// Homologación: el usuario registrado queda como cliente del backoffice.
 		$this->load->model('Client_model');
 		$client_id = $this->Client_model->find_or_create_for_user((int) $user->id, $country->id, array(
@@ -117,12 +122,14 @@ class Checkout extends MY_Controller
 			'client_id'         => $client_id ?: NULL,
 			'order_number'      => $this->Store_order_model->next_number($country->id),
 			'origin'            => 'web',
+			'warehouse_id'      => $warehouse ? (int) $warehouse->id : NULL,
 			'customer_name'     => $this->input->post('customer_name', TRUE),
 			'customer_email'    => $user->email,
 			'customer_phone'    => $this->input->post('customer_phone', TRUE),
 			'customer_phone2'   => $this->input->post('customer_phone2', TRUE),
 			'delivery_zone'     => $this->input->post('delivery_zone', TRUE),
 			'delivery_address'  => $this->input->post('delivery_address', TRUE),
+			'requested_delivery_date' => $requested_date,
 			'subtotal'          => $subtotal,
 			'shipping'          => $shipping,
 			'discount'          => 0,

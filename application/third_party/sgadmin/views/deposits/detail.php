@@ -102,7 +102,7 @@ $isImage = function ($mime) {
                     <div class="fw-semibold mb-1"><i class="bi bi-person-badge me-1"></i>Depósito del mensajero (<?php echo html_escape($deposit->courier_name); ?>)</div>
                     <?php if ($deposit->courier_receipt_file): ?>
                         <?php if ($isImage($deposit->courier_receipt_mime)): ?>
-                            <a href="<?php echo base_url('uploads/deposit_receipts/' . $deposit->courier_receipt_file); ?>" target="_blank">
+                            <a href="<?php echo base_url('uploads/deposit_receipts/' . $deposit->courier_receipt_file); ?>" data-lightbox>
                                 <img src="<?php echo base_url('uploads/deposit_receipts/' . $deposit->courier_receipt_file); ?>" class="img-fluid rounded border" style="max-height:260px;" alt="Comprobante del mensajero">
                             </a>
                         <?php else: ?>
@@ -117,7 +117,7 @@ $isImage = function ($mime) {
                     <div class="fw-semibold mb-1"><i class="bi bi-person-check me-1"></i>Entrega al administrador<?php echo $deposit->admin_receiver_user_id ? ' (' . html_escape($deposit->admin_receiver_name) . ')' : ''; ?></div>
                     <?php if ($deposit->aux_receipt_file): ?>
                         <?php if ($isImage($deposit->aux_receipt_mime)): ?>
-                            <a href="<?php echo base_url('uploads/deposit_receipts/' . $deposit->aux_receipt_file); ?>" target="_blank">
+                            <a href="<?php echo base_url('uploads/deposit_receipts/' . $deposit->aux_receipt_file); ?>" data-lightbox>
                                 <img src="<?php echo base_url('uploads/deposit_receipts/' . $deposit->aux_receipt_file); ?>" class="img-fluid rounded border" style="max-height:260px;" alt="Comprobante de entrega">
                             </a>
                         <?php else: ?>

@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $available = store_product_available($product);
 $stock = store_product_stock($product);
 $threshold = store_availability_min_stock();
+$lowStockOn = store_low_stock_notice_enabled();
+$showQty = store_stock_quantity_visible();
 $wa = store_product_whatsapp_url($product);
 $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
 ?>
@@ -17,8 +19,20 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
     </nav>
 
     <div class="pd-layout mt-4">
-      <div class="pd-media">
-        <img src="<?php echo store_product_image($product); ?>" alt="<?php echo html_escape($product->name); ?>" width="480" height="360">
+      <?php $gallery = store_product_images($product); ?>
+      <div class="pd-media-col">
+        <div class="pd-media">
+          <img id="pdMainImage" src="<?php echo ! empty($gallery) ? base_url('assets/img/products/' . rawurlencode($gallery[0])) : store_product_image($product); ?>" alt="<?php echo html_escape($product->name); ?>" width="480" height="360">
+        </div>
+        <?php if (count($gallery) > 1): ?>
+        <div class="pd-thumbs">
+          <?php foreach ($gallery as $i => $fn): ?>
+            <button type="button" class="pd-thumb<?php echo $i === 0 ? ' active' : ''; ?>" data-src="<?php echo base_url('assets/img/products/' . rawurlencode($fn)); ?>" aria-label="Ver imagen <?php echo $i + 1; ?>">
+              <img src="<?php echo base_url('assets/img/products/' . rawurlencode($fn)); ?>" alt="" loading="lazy">
+            </button>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
       </div>
 
       <div>
@@ -33,10 +47,10 @@ $max = ($stock !== NULL && $stock > 0) ? $stock : 99;
         <p>
           <?php if ( ! $available): ?>
             <span class="status status-cancelado">Agotado</span>
-          <?php elseif ($stock === NULL || $stock >= $threshold): ?>
+          <?php elseif ($stock === NULL || ! $lowStockOn || $stock >= $threshold): ?>
             <span class="status status-pagado">Disponible</span>
           <?php else: ?>
-            <span class="status status-pendiente">Pocas unidades: <?php echo (int) $stock; ?></span>
+            <span class="status status-pendiente">Pocas unidades<?php echo $showQty ? ': ' . (int) $stock : ''; ?></span>
           <?php endif; ?>
         </p>
 

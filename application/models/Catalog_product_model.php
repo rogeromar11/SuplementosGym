@@ -76,5 +76,98 @@ class Catalog_product_model extends MY_Model
 			->where('country_id', current_country_id())
 			->delete($this->table);
 	}
+
+	/**
+	 * Galeria de imagenes de un producto (la principal primero).
+	 *
+	 * @param int $product_id
+	 * @return array
+	 */
+	public function images($product_id)
+	{
+		return $this->db->where('product_id', (int) $product_id)
+			->order_by('is_main', 'DESC')
+			->order_by('sort_order', 'ASC')
+			->order_by('id', 'ASC')
+			->get('product_images')->result();
+	}
+
+	/**
+	 * Agrega una imagen a la galeria del producto.
+	 *
+	 * @param int $product_id
+	 * @param string $filename
+	 * @param bool $is_main
+	 * @return int
+	 */
+	public function add_image($product_id, $filename, $is_main = false)
+	{
+		$this->db->insert('product_images', array(
+			'product_id' => (int) $product_id,
+			'filename'   => $filename,
+			'is_main'    => $is_main ? 1 : 0,
+			'sort_order' => 0,
+			'created_at' => date('Y-m-d H:i:s'),
+		));
+		return (int) $this->db->insert_id();
+	}
+
+	/**
+	 * Marca una imagen como principal (y quita la marca a las demas).
+	 *
+	 * @param int $product_id
+	 * @param int $image_id
+	 * @return bool
+	 */
+	public function set_main_image($product_id, $image_id)
+	{
+		$this->db->trans_start();
+		$this->db->where('product_id', (int) $product_id)->update('product_images', array('is_main' => 0));
+		$this->db->where('id', (int) $image_id)->where('product_id', (int) $product_id)->update('product_images', array('is_main' => 1));
+		$this->db->trans_complete();
+		return $this->db->trans_status();
+	}
+
+	/**
+	 * Elimina el registro de una imagen (no borra el archivo).
+	 *
+	 * @param int $image_id
+	 * @param int $product_id
+	 * @return bool
+	 */
+	public function delete_image($image_id, $product_id)
+	{
+		return $this->db->where('id', (int) $image_id)
+			->where('product_id', (int) $product_id)
+			->delete('product_images');
+	}
+
+	/**
+	 * Asegura que exista una imagen principal (si no, toma la primera) y
+	 * sincroniza products.image con la imagen principal de la galeria.
+	 *
+	 * @param int $product_id
+	 * @return string|null Nombre de archivo de la imagen principal
+	 */
+	public function sync_main_image($product_id)
+	{
+		$main = $this->db->where('product_id', (int) $product_id)
+			->order_by('is_main', 'DESC')
+			->order_by('sort_order', 'ASC')
+			->order_by('id', 'ASC')
+			->get('product_images')->row();
+
+		$filename = null;
+		if ($main) {
+			$filename = $main->filename;
+			if (!(int) $main->is_main) {
+				$this->db->where('product_id', (int) $product_id)->update('product_images', array('is_main' => 0));
+				$this->db->where('id', $main->id)->update('product_images', array('is_main' => 1));
+			}
+		}
+
+		$this->db->where('id', (int) $product_id)->update($this->table, array('image' => $filename));
+		return $filename;
+	}
 }
 

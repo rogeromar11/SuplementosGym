@@ -420,3 +420,11 @@ a:hover { color: var(--sg-brand-hover); }
 @media (hover: hover) and (pointer: fine) {
     .btn-take-photo { display: none !important; }
 }
+
+/* Vista previa de imagenes (lightbox) */
+.sg-lightbox { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; background: rgba(8,8,12,.92); padding: 2.5rem; }
+.sg-lightbox.is-open { display: flex; }
+.sg-lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 12px; box-shadow: 0 30px 80px rgba(0,0,0,.7); }
+.sg-lightbox-close { position: fixed; top: 16px; right: 20px; width: 46px; height: 46px; border: 0; border-radius: 50%; background: rgba(255,255,255,.16); color: #fff; font-size: 1.9rem; line-height: 1; cursor: pointer; }
+.sg-lightbox-close:hover { background: rgba(255,255,255,.3); }
+body.sg-lightbox-open { overflow: hidden; }

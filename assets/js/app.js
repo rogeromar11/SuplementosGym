@@ -187,4 +187,42 @@
         $('.sg-sidebar').removeClass('show');
         $(this).remove();
     });
+
+    // --- Previsualizacion de imagenes (lightbox) ---------------------------
+    // Cualquier <a data-lightbox href="imagen"> abre la imagen en grande en la
+    // misma pagina, sin abrir otra ventana.
+    var lightbox = null;
+    function closeLightbox() {
+        if (!lightbox) { return; }
+        lightbox.removeClass('is-open');
+        $('body').removeClass('sg-lightbox-open');
+    }
+    function openLightbox(src) {
+        if (!lightbox) {
+            lightbox = $(
+                '<div class="sg-lightbox" role="dialog" aria-modal="true" aria-label="Vista previa de imagen">' +
+                '<button type="button" class="sg-lightbox-close" aria-label="Cerrar">&times;</button>' +
+                '<img alt="Vista previa">' +
+                '</div>'
+            );
+            $('body').append(lightbox);
+            lightbox.on('click', function (e) {
+                if (e.target === this || $(e.target).hasClass('sg-lightbox-close')) {
+                    closeLightbox();
+                }
+            });
+            $(document).on('keydown.sglightbox', function (e) {
+                if (e.key === 'Escape') { closeLightbox(); }
+            });
+        }
+        lightbox.find('img').attr('src', src);
+        lightbox.addClass('is-open');
+        $('body').addClass('sg-lightbox-open');
+    }
+    $(document).on('click', 'a[data-lightbox]', function (e) {
+        var href = $(this).attr('href');
+        if (!href) { return; }
+        e.preventDefault();
+        openLightbox(href);
+    });
 })(jQuery);

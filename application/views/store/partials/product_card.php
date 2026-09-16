@@ -28,8 +28,8 @@ $default_id = (int) $default->id;
       <span class="product-badge badge-out">Agotado</span>
     <?php elseif ((int) $product->featured === 1): ?>
       <span class="product-badge badge-featured">Destacado</span>
-    <?php elseif ((int) $default->stock_enabled === 1 && (int) $default->stock_qty < store_availability_min_stock()): ?>
-      <span class="product-badge badge-low">Pocas unidades: <?php echo (int) $default->stock_qty; ?></span>
+    <?php elseif (store_low_stock_notice_enabled() && (int) $default->stock_enabled === 1 && (int) $default->stock_qty < store_availability_min_stock()): ?>
+      <span class="product-badge badge-low">Pocas unidades<?php echo store_stock_quantity_visible() ? ': ' . (int) $default->stock_qty : ''; ?></span>
     <?php endif; ?>
     <a href="<?php echo store_product_url($product); ?>" aria-label="<?php echo html_escape($product->name); ?>">
       <?php if ( ! empty($webp)): ?>

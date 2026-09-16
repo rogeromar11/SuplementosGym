@@ -10,7 +10,10 @@ class Store_order_model extends CI_Model
 	{
 		$country = $this->db->where('id', (int) $country_id)->get('countries')->row();
 		$code = $country ? $country->code : 'XX';
-		$prefix = 'SG-' . $code . '-' . date('Ym') . '-';
+		// La fecha del número usa la zona horaria del país (no la del servidor).
+		$timezone = ($country && ! empty($country->timezone)) ? $country->timezone : date_default_timezone_get();
+		$ymd = (new DateTime('now', new DateTimeZone($timezone)))->format('Ymd');
+		$prefix = 'SG-' . $code . '-' . $ymd . '-';
 		$row = $this->db->select('order_number')
 			->like('order_number', $prefix, 'after')
 			->order_by('order_number', 'DESC')

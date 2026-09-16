@@ -181,26 +181,36 @@ $importPreview = isset($importPreview) ? $importPreview : null;
                         <input type="number" step="0.01" min="0" class="form-control" id="cost_price" name="cost_price" value="<?php echo set_value('cost_price', $isEdit ? $product->cost_price : ''); ?>" required>
                     </div>
                 </div>
+                <?php if (!$isEdit): ?>
                 <div class="col-12">
-                    <label class="form-label" for="image">Imagen del producto</label>
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <?php if ($isEdit && !empty($product->image)): ?>
-                            <img src="<?php echo base_url('assets/img/products/' . rawurlencode($product->image)); ?>" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid #e5e7eb;">
-                        <?php else: ?>
-                            <div style="width:96px;height:96px;border-radius:12px;border:1px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#9ca3af;"><i class="bi bi-image" style="font-size:1.6rem;"></i></div>
-                        <?php endif; ?>
-                        <div class="flex-grow-1" style="min-width:240px;">
-                            <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/webp">
-                            <div class="form-text">JPG, PNG o WEBP, máximo 3 MB. Es la foto que se muestra en la tienda.</div>
-                            <?php if ($isEdit && !empty($product->image)): ?>
-                                <div class="form-check mt-1">
-                                    <input class="form-check-input" type="checkbox" id="remove_image" name="remove_image" value="1">
-                                    <label class="form-check-label" for="remove_image">Quitar imagen actual</label>
-                                </div>
-                            <?php endif; ?>
+                    <label class="form-label" for="images">Imágenes del producto</label>
+                    <input type="file" class="form-control" id="images" name="images[]" accept="image/jpeg,image/png,image/webp" multiple>
+                    <div class="form-text">JPG, PNG o WEBP, máximo 3 MB cada una. Puedes subir varias; la primera será la principal.</div>
+                </div>
+                <?php else: ?>
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0">Imágenes del producto</label>
+                        <div>
+                            <input type="file" id="galleryInput" class="d-none" accept="image/jpeg,image/png,image/webp" multiple>
+                            <button type="button" class="btn btn-sm btn-brand" id="galleryPick"><i class="bi bi-plus-lg me-1"></i>Agregar imágenes</button>
                         </div>
                     </div>
+                    <div class="form-text">JPG, PNG o WEBP, máximo 3 MB cada una. Clic en la <i class="bi bi-star"></i> para marcar la principal y en la <i class="bi bi-trash"></i> para eliminarla. Se guardan al instante.</div>
+                    <div id="galleryProgress" class="text-muted-2 small mt-2" style="display:none;"><span class="spinner-border spinner-border-sm me-1"></span>Subiendo imágenes...</div>
+                    <div id="galleryEmpty" class="text-muted-2 small mt-2" style="display:none;">Sin imágenes.</div>
+                    <div id="galleryGrid" class="row g-2 mt-2"></div>
                 </div>
+                <script>
+                window.sgmsProductGallery = {
+                    productId: <?php echo (int)$product->id; ?>,
+                    uploadUrl: '<?php echo base_url('products/upload_images/' . $product->id); ?>',
+                    deleteUrlBase: '<?php echo base_url('products/delete_image/' . $product->id . '/'); ?>',
+                    mainUrlBase: '<?php echo base_url('products/set_main_image/' . $product->id . '/'); ?>',
+                    images: <?php echo json_encode(array_map(function ($im) { return array('id' => (int)$im->id, 'url' => base_url('assets/img/products/' . rawurlencode($im->filename)), 'is_main' => (int)$im->is_main === 1); }, $images)); ?>
+                };
+                </script>
+                <?php endif; ?>
                 <div class="col-12">
                     <label class="form-label" for="description">Descripción</label>
                     <textarea class="form-control" id="description" name="description" rows="3"><?php echo set_value('description', $isEdit ? $product->description : ''); ?></textarea>

@@ -32,7 +32,7 @@ class Settings extends Admin_Controller
 		$storeFields = array(
 			'whatsapp_number', 'contact_email', 'business_hours',
 			'instagram_url', 'facebook_url', 'tiktok_url',
-			'availability_min_stock',
+			'availability_low_stock', 'availability_min_stock', 'availability_show_qty',
 		);
 		$storeValues = array();
 		foreach ($storeFields as $field) {

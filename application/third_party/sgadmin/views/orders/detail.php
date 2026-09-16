@@ -175,7 +175,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                                         <i class="bi bi-file-earmark-pdf me-1"></i>Ver PDF
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?php echo base_url('uploads/payment_receipts/' . $att->filename); ?>" target="_blank">
+                                    <a href="<?php echo base_url('uploads/payment_receipts/' . $att->filename); ?>" data-lightbox>
                                         <img src="<?php echo base_url('uploads/payment_receipts/' . $att->filename); ?>" class="img-fluid rounded border" alt="Comprobante" style="height:120px;width:100%;object-fit:cover;">
                                     </a>
                                 <?php endif; ?>
@@ -202,7 +202,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                     <div class="row g-2">
                         <?php foreach ($evidences as $att): ?>
                             <div class="col-6 col-md-3">
-                                <a href="<?php echo base_url('uploads/delivery_evidence/' . $att->filename); ?>" target="_blank">
+                                <a href="<?php echo base_url('uploads/delivery_evidence/' . $att->filename); ?>" data-lightbox>
                                     <img src="<?php echo base_url('uploads/delivery_evidence/' . $att->filename); ?>" class="img-fluid rounded border" alt="Evidencia" style="height:120px;width:100%;object-fit:cover;">
                                 </a>
                             </div>
@@ -225,9 +225,47 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                             <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
                                 <div>
                                     <div class="fw-semibold"><?php echo money($p->amount); ?></div>
-                                    <div class="small text-muted-2"><?php echo fmt_datetime($p->received_at); ?></div>
+                                    <div class="small text-muted-2"><?php echo html_escape($p->method_name ?: '—'); ?> · <?php echo fmt_datetime($p->received_at); ?></div>
                                 </div>
                                 <span class="badge text-bg-dark"><?php echo html_escape($p->reference ?: 'Pago'); ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="card sg-card mb-3">
+            <div class="sg-card-header"><h5><i class="bi bi-truck me-2 text-danger"></i>Seguimiento de entrega</h5></div>
+            <div class="sg-card-body">
+                <?php if (empty($o->deliveries)): ?>
+                    <p class="text-muted-2 mb-0">Sin intentos de entrega registrados.</p>
+                <?php else: ?>
+                    <ul class="list-group list-group-flush">
+                        <?php foreach ($o->deliveries as $d): ?>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="fw-semibold"><?php echo html_escape(delivery_status_label($d->status)); ?></div>
+                                    <small class="text-muted-2"><?php echo fmt_datetime($d->attempted_at ?: $d->created_at); ?></small>
+                                </div>
+                                <?php if ( ! empty($d->courier_first_name)): ?>
+                                    <div class="small text-muted-2"><i class="bi bi-person-badge me-1"></i><?php echo html_escape(trim($d->courier_first_name . ' ' . $d->courier_last_name)); ?></div>
+                                <?php endif; ?>
+                                <?php if ($d->received_by_name): ?>
+                                    <div class="small">Recibió: <?php echo html_escape($d->received_by_name); ?></div>
+                                <?php endif; ?>
+                                <?php if ($d->payment_method_name): ?>
+                                    <div class="small text-success"><i class="bi bi-cash-coin me-1"></i>Forma de pago: <?php echo html_escape($d->payment_method_name); ?><?php echo $d->payment_amount !== null ? ' (' . money($d->payment_amount) . ')' : ''; ?></div>
+                                <?php endif; ?>
+                                <?php if ($d->failure_reason_name): ?>
+                                    <div class="small text-danger">Motivo: <?php echo html_escape($d->failure_reason_name); ?><?php echo $d->failure_other ? ' — ' . html_escape($d->failure_other) : ''; ?></div>
+                                <?php endif; ?>
+                                <?php if ($d->notes): ?>
+                                    <div class="small"><i class="bi bi-chat-left-text me-1"></i><?php echo html_escape($d->notes); ?></div>
+                                <?php endif; ?>
+                                <?php if ($d->reschedule_requested && $d->rescheduled_date): ?>
+                                    <div class="small text-warning">Reprogramar para: <?php echo fmt_date($d->rescheduled_date); ?></div>
+                                <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

@@ -99,9 +99,17 @@
                         <input type="text" class="form-control" id="business_hours" name="business_hours" value="<?php echo html_escape($storeSettings['business_hours'] ?? ''); ?>" placeholder="Lun a Vie, 8:00 a 18:00">
                     </div>
                     <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch mt-4 mb-2">
+                            <input class="form-check-input" type="checkbox" id="availability_low_stock" name="availability_low_stock" value="1" <?php echo ((string)($storeSettings['availability_low_stock'] ?? '1') === '1') ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="availability_low_stock">Mostrar aviso de pocas unidades</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="availability_show_qty" name="availability_show_qty" value="1" <?php echo ((string)($storeSettings['availability_show_qty'] ?? '1') === '1') ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="availability_show_qty">Mostrar el número de unidades disponible</label>
+                        </div>
                         <label class="form-label" for="availability_min_stock">Existencias mínimas para mostrar "Disponible"</label>
                         <input type="number" min="1" class="form-control" id="availability_min_stock" name="availability_min_stock" value="<?php echo html_escape($storeSettings['availability_min_stock'] ?? '5'); ?>" style="max-width:180px;">
-                        <div class="form-text">Si un producto tiene menos existencias que este valor, la tienda muestra "Pocas unidades" en vez de "Disponible". No aplica a productos sin control de inventario.</div>
+                        <div class="form-text">Si "Mostrar aviso de pocas unidades" está activo y un producto tiene menos existencias que este valor, la tienda muestra "Pocas unidades" (con la cantidad solo si "Mostrar el número de unidades" está activo) en vez de "Disponible". Si el primer aviso se desactiva, solo se muestra "Disponible" o "Agotado". No aplica a productos sin control de inventario.</div>
                     </div>
                 </div>
                 <hr>
@@ -127,4 +135,19 @@
 
 <script>
 window.sgmsSettings = { saveUrl: '<?php echo base_url('settings/save'); ?>' };
+</script>
+<script>
+(function () {
+    var cb = document.getElementById('availability_low_stock');
+    var input = document.getElementById('availability_min_stock');
+    var qtyCb = document.getElementById('availability_show_qty');
+    if (!cb || !input) { return; }
+    function sync() {
+        var on = cb.checked;
+        input.disabled = !on;
+        if (qtyCb) { qtyCb.disabled = !on; }
+    }
+    cb.addEventListener('change', sync);
+    sync();
+})();
 </script>

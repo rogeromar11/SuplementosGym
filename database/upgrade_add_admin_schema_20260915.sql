@@ -654,6 +654,32 @@ CREATE TABLE IF NOT EXISTS `store_visits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
+-- product_images (galeria de imagenes por producto; una es principal)
+-- products.image se conserva como la imagen principal (denormalizada)
+-- para la tienda.
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `product_images` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` int(10) unsigned NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `is_main` tinyint(1) NOT NULL DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_product_images_product` (`product_id`),
+  KEY `idx_product_images_main` (`product_id`,`is_main`),
+  CONSTRAINT `fk_product_images_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Migra la imagen unica existente (products.image) a la galeria.
+INSERT INTO `product_images` (`product_id`, `filename`, `is_main`, `sort_order`)
+SELECT p.`id`, p.`image`, 1, 0
+FROM `products` p
+WHERE p.`image` IS NOT NULL
+  AND p.`image` <> ''
+  AND NOT EXISTS (SELECT 1 FROM `product_images` pi WHERE pi.`product_id` = p.`id`);
+
+-- -------------------------------------------------------------
 -- store_orders: columnas de origen, saldo, logistica y geo
 -- -------------------------------------------------------------
 ALTER TABLE `store_orders`
