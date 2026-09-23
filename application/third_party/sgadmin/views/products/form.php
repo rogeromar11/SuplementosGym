@@ -18,7 +18,10 @@ $importPreview = isset($importPreview) ? $importPreview : null;
                 <h2 class="h5 mb-1">Importar inventario desde Excel</h2>
                 <p class="text-muted-2 mb-0">Carga un archivo .xlsx. El sistema detecta automáticamente la hoja que contiene los encabezados; no es obligatorio que se llame <strong>Sheet1</strong>. Primero se mostrará una vista previa y no se guardará nada hasta confirmar.</p>
             </div>
-            <a href="<?php echo base_url('products/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+            <div class="d-flex gap-2">
+                <a href="<?php echo base_url('products/export'); ?>" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Exportar productos</a>
+                <a href="<?php echo base_url('products/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+            </div>
         </div>
 
         <?php if (isset($importMessage) && $importMessage): ?>

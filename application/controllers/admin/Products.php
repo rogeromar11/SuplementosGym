@@ -71,6 +71,55 @@ class Products extends Authenticated_Controller
 	}
 
 	/**
+	 * Exporta el catalogo de productos en el mismo formato de la plantilla
+	 * de importacion, para poder editarlo y volver a importarlo.
+	 */
+	public function export()
+	{
+		$this->require_permission('productos.ver');
+		$this->load->library('Excel_service');
+
+		$headers = array(
+			'product_type' => 'Producto',
+			'laboratory' => 'Laboratorio',
+			'name' => 'Nombre',
+			'weight' => 'Peso',
+			'servings' => 'Servidas',
+			'flavor' => 'Sabor',
+			'stock_qty' => 'Cantidad disponible',
+			'unit_price' => 'Venta',
+			'cost_price' => 'Costo',
+		);
+
+		$products = $this->db->where('country_id', current_country_id())
+			->order_by('name', 'ASC')
+			->get('products')->result();
+
+		$data = array();
+		foreach ($products as $product) {
+			$data[] = array(
+				'product_type' => $product->product_type,
+				'laboratory' => (string) $product->laboratory,
+				'name' => ($product->name !== null && $product->name !== '') ? $product->name : $product->product_type,
+				'weight' => (string) $product->weight,
+				'servings' => (string) $product->servings,
+				'flavor' => (string) $product->flavor,
+				'stock_qty' => (int) $product->stock_qty,
+				'unit_price' => (float) $product->unit_price,
+				'cost_price' => (float) $product->cost_price,
+			);
+		}
+
+		$this->audit_service->log('product.export', 'productos', 'products', null, array(
+			'exported' => count($data),
+		));
+
+		$this->excel_service->export('productos-' . date('Ymd') . '.xlsx', $headers, $data, array(
+			'sheet_name' => 'Sheet1',
+		));
+	}
+
+	/**
 	 * Lee y valida un Excel antes de habilitar su importacion.
 	 */
 	public function import_preview()

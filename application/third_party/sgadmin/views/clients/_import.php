@@ -6,7 +6,10 @@
                 <h2 class="h5 mb-1">Importar clientes desde Excel</h2>
                 <p class="text-muted-2 mb-0">Carga un archivo .xlsx. El sistema detecta automáticamente la hoja que contiene los encabezados; no es obligatorio que se llame <strong>Lista de Clientes</strong>. Se mostrará una vista previa antes de guardar.</p>
             </div>
-            <a href="<?php echo base_url('clients/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+            <div class="d-flex gap-2">
+                <a href="<?php echo base_url('clients/export'); ?>" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Exportar clientes</a>
+                <a href="<?php echo base_url('clients/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+            </div>
         </div>
 
         <?php if (isset($importMessage) && $importMessage): ?>

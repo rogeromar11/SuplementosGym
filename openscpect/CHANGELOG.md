@@ -88,6 +88,14 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - La logica ya existia en `Store_cart::shipping()`; ahora es editable desde el panel.
 - Valores por **pais del admin** (store_settings es por `country_id`).
 
+### Added — Exportacion de productos y clientes (Excel)
+- Portado desde SGMensajeria: `admin/Products::export()` y `admin/Clients::export()` generan un
+  `.xlsx` con **el mismo formato que la plantilla de importacion** (exportar -> editar -> reimportar).
+- Boton **Exportar** en `products/form` y `clients/_import`, junto a "Descargar plantilla"
+  (segun permiso `productos.ver` / `clientes.ver`).
+- Exporta el pais activo del admin (`current_country_id()`), ordenado por nombre; registra auditoria
+  (`product.export` / `client.export`).
+
 ## 2026-09-12
 
 ### Added — Fase 1 (Auditoria)

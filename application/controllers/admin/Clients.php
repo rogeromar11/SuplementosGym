@@ -84,6 +84,51 @@ class Clients extends Authenticated_Controller
 	}
 
 	/**
+	 * Exporta el directorio de clientes en el mismo formato de la plantilla
+	 * de importacion, para poder editarlo y volver a importarlo.
+	 */
+	public function export()
+	{
+		$this->require_permission('clientes.ver');
+		$this->load->library('Excel_service');
+
+		$headers = array(
+			'name' => 'Cliente',
+			'phone' => 'Celular',
+			'phone2' => 'Celular secundario',
+			'zone' => 'Zona',
+			'address' => 'Dirección',
+			'delivery_type' => 'Tipo de entrega',
+			'notes' => 'Notas',
+		);
+
+		$clients = $this->db->where('country_id', current_country_id())
+			->order_by('name', 'ASC')
+			->get('clients')->result();
+
+		$data = array();
+		foreach ($clients as $client) {
+			$data[] = array(
+				'name' => $client->name,
+				'phone' => (string) $client->phone,
+				'phone2' => (string) $client->phone2,
+				'zone' => (string) $client->zone,
+				'address' => (string) $client->address,
+				'delivery_type' => (string) $client->delivery_type,
+				'notes' => (string) $client->notes,
+			);
+		}
+
+		$this->audit_service->log('client.export', 'clientes', 'clients', null, array(
+			'exported' => count($data),
+		));
+
+		$this->excel_service->export('clientes-' . date('Ymd') . '.xlsx', $headers, $data, array(
+			'sheet_name' => 'Lista de Clientes',
+		));
+	}
+
+	/**
 	 * Lee y valida la hoja Lista de Clientes antes de guardar.
 	 */
 	public function import_preview()
