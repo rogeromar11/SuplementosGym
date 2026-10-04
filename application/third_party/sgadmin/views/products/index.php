@@ -7,6 +7,8 @@
     <div>
         <?php if (has_permission('productos.crear')): ?>
             <a href="<?php echo base_url('products/create'); ?>" class="btn btn-brand"><i class="bi bi-plus-lg me-1"></i>Nuevo producto</a>
+        <?php elseif (has_permission('productos.importar') || has_permission('productos.exportar')): ?>
+            <a href="<?php echo base_url('products/create'); ?>" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Importar / exportar</a>
         <?php endif; ?>
     </div>
 </div>

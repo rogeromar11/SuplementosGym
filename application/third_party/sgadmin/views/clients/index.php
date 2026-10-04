@@ -45,7 +45,7 @@ $formFields = array(
 );
 $saveEndpoint = base_url('clients/save');
 $deleteEndpoint = base_url('clients/delete/{id}');
-$afterHeaderView = has_permission('clientes.crear') ? 'clients/_import' : null;
+$afterHeaderView = (has_permission('clientes.importar') || has_permission('clientes.exportar')) ? 'clients/_import' : null;
 $canAdd = has_permission('clientes.crear');
 $canEdit = has_permission('clientes.editar');
 $canDelete = has_permission('clientes.eliminar');

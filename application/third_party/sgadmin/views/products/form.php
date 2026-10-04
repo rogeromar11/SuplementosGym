@@ -10,17 +10,21 @@ $importPreview = isset($importPreview) ? $importPreview : null;
     </div>
 </div>
 
-<?php if (!$isEdit): ?>
+<?php if (!$isEdit && (has_permission('productos.importar') || has_permission('productos.exportar'))): ?>
 <div class="card sg-card mb-4">
     <div class="sg-card-body">
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
             <div>
-                <h2 class="h5 mb-1">Importar inventario desde Excel</h2>
-                <p class="text-muted-2 mb-0">Carga un archivo .xlsx. El sistema detecta automáticamente la hoja que contiene los encabezados; no es obligatorio que se llame <strong>Sheet1</strong>. Primero se mostrará una vista previa y no se guardará nada hasta confirmar.</p>
+                <h2 class="h5 mb-1">Importar / exportar inventario desde Excel</h2>
+                <p class="text-muted-2 mb-0">Exporta el catálogo o carga un archivo .xlsx. El sistema detecta automáticamente la hoja que contiene los encabezados; no es obligatorio que se llame <strong>Sheet1</strong>. Primero se mostrará una vista previa y no se guardará nada hasta confirmar.</p>
             </div>
             <div class="d-flex gap-2">
-                <a href="<?php echo base_url('products/export'); ?>" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Exportar productos</a>
-                <a href="<?php echo base_url('products/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+                <?php if (has_permission('productos.exportar')): ?>
+                    <a href="<?php echo base_url('products/export'); ?>" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Exportar productos</a>
+                <?php endif; ?>
+                <?php if (has_permission('productos.importar')): ?>
+                    <a href="<?php echo base_url('products/import_template'); ?>" class="btn btn-outline-brand"><i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla</a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -28,6 +32,7 @@ $importPreview = isset($importPreview) ? $importPreview : null;
             <div class="alert alert-danger" role="alert"><?php echo html_escape($importMessage); ?></div>
         <?php endif; ?>
 
+        <?php if (has_permission('productos.importar')): ?>
         <?php echo form_open_multipart(base_url('products/import_preview'), array('class' => 'row g-3 align-items-end')); ?>
             <div class="col-md-8">
                 <label class="form-label" for="inventory_file">Archivo de inventario *</label>
@@ -38,6 +43,7 @@ $importPreview = isset($importPreview) ? $importPreview : null;
                 <button type="submit" class="btn btn-outline-brand w-100"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Revisar archivo</button>
             </div>
         <?php echo form_close(); ?>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -127,6 +133,7 @@ $importPreview = isset($importPreview) ? $importPreview : null;
 <?php endif; ?>
 <?php endif; ?>
 
+<?php if ($isEdit || has_permission('productos.crear')): ?>
 <div class="card sg-card mx-auto" style="max-width:1100px;">
     <div class="sg-card-body">
         <h2 class="h5 mb-3"><?php echo $isEdit ? 'Datos del producto' : 'Crear producto manualmente'; ?></h2>
@@ -248,3 +255,4 @@ $importPreview = isset($importPreview) ? $importPreview : null;
         <?php echo form_close(); ?>
     </div>
 </div>
+<?php endif; ?>

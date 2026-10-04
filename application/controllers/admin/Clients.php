@@ -67,7 +67,7 @@ class Clients extends Authenticated_Controller
 	 */
 	public function import_template()
 	{
-		$this->require_permission('clientes.crear');
+		$this->require_permission('clientes.importar');
 		$this->load->library('Excel_service');
 
 		$columns = array(
@@ -89,7 +89,7 @@ class Clients extends Authenticated_Controller
 	 */
 	public function export()
 	{
-		$this->require_permission('clientes.ver');
+		$this->require_permission('clientes.exportar');
 		$this->load->library('Excel_service');
 
 		$headers = array(
@@ -133,7 +133,7 @@ class Clients extends Authenticated_Controller
 	 */
 	public function import_preview()
 	{
-		$this->require_permission('clientes.crear');
+		$this->require_permission('clientes.importar');
 		if ($this->input->method(TRUE) !== 'POST') {
 			redirect('clients');
 		}
@@ -190,7 +190,7 @@ class Clients extends Authenticated_Controller
 	 */
 	public function import_commit()
 	{
-		$this->require_permission('clientes.crear');
+		$this->require_permission('clientes.importar');
 		if ($this->input->method(TRUE) !== 'POST') {
 			redirect('clients');
 		}

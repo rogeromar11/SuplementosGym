@@ -60,7 +60,7 @@ Configurada en `application/config/database.php`.
 > **Datos iniciales (semilla del instalador):**
 > - `countries`: 2 (CR, SV).
 > - `groups`: 6 (admin, customer, vendedor, bodeguero, mensajero, auxiliar_admin).
-> - `permissions`: 45 claves; `group_permissions`: 88 filas (admin tiene todas).
+> - `permissions`: 49 claves; `group_permissions`: 92 filas (admin tiene todas).
 > - `payment_methods`: 8 (4 por pais).
 > - `store_settings`: 22 (11 claves por pais); `system_settings`: 22.
 > - Catalogos: `route_shifts` 4, `delivery_failure_reasons` 14, `transports` 6, `warehouses` 2.

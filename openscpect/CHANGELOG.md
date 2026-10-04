@@ -96,6 +96,20 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
 - Exporta el pais activo del admin (`current_country_id()`), ordenado por nombre; registra auditoria
   (`product.export` / `client.export`).
 
+### Added — Permisos para importar/exportar
+- Nuevos permisos granulares: `productos.importar`, `productos.exportar`, `clientes.importar`,
+  `clientes.exportar` (solo el grupo `admin` por defecto; asignables en Roles).
+- `admin/Products` y `admin/Clients`: `import_template`/`import_preview`/`import_commit` usan
+  `*.importar`; `export` usa `*.exportar` (antes `*.crear` / `*.ver`).
+- Vistas: botones y formularios de importar/exportar visibles solo con el permiso correspondiente.
+- `Products::create()` accesible tambien con `productos.importar`/`productos.exportar`; el formulario
+  de **crear manual** se oculta (y no se procesa) si no tiene `productos.crear`. En la lista se
+  muestra "Importar / exportar" a quien no puede crear.
+- `database/suplementosgym.sql`: permisos 46-49 en el seed + bloque idempotente al final
+  (ejecutable sobre una base existente) que los crea y los concede a `admin`.
+- `database/migracion_permisos_importar_exportar.sql`: script idempotente para **bases existentes**
+  (crea los 4 permisos, los concede a `admin` y muestra una verificacion).
+
 ## 2026-09-12
 
 ### Added — Fase 1 (Auditoria)

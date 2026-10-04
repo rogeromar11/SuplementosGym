@@ -42,9 +42,16 @@ class Products extends Authenticated_Controller
 
 	public function create()
 	{
-		$this->require_permission('productos.crear');
+		// Acceso si puede crear, importar o exportar (la vista muestra solo lo permitido).
+		$can_create = $this->has_permission('productos.crear');
+		if (!$can_create
+			&& !$this->has_permission('productos.importar')
+			&& !$this->has_permission('productos.exportar')) {
+			return $this->deny_access();
+		}
+
 		$this->_set_create_page_data();
-		$this->_save_form(null);
+		$this->_save_form(null, $can_create);
 	}
 
 	/**
@@ -52,7 +59,7 @@ class Products extends Authenticated_Controller
 	 */
 	public function import_template()
 	{
-		$this->require_permission('productos.crear');
+		$this->require_permission('productos.importar');
 		$this->load->library('Excel_service');
 
 		$columns = array(
@@ -76,7 +83,7 @@ class Products extends Authenticated_Controller
 	 */
 	public function export()
 	{
-		$this->require_permission('productos.ver');
+		$this->require_permission('productos.exportar');
 		$this->load->library('Excel_service');
 
 		$headers = array(
@@ -124,7 +131,7 @@ class Products extends Authenticated_Controller
 	 */
 	public function import_preview()
 	{
-		$this->require_permission('productos.crear');
+		$this->require_permission('productos.importar');
 		if ($this->input->method(TRUE) !== 'POST') {
 			redirect('products/create');
 		}
@@ -182,7 +189,7 @@ class Products extends Authenticated_Controller
 	 */
 	public function import_commit()
 	{
-		$this->require_permission('productos.crear');
+		$this->require_permission('productos.importar');
 		if ($this->input->method(TRUE) !== 'POST') {
 			redirect('products/create');
 		}
@@ -258,14 +265,14 @@ class Products extends Authenticated_Controller
 		$this->_save_form($product);
 	}
 
-	private function _save_form($product)
+	private function _save_form($product, $can_submit = TRUE)
 	{
 		$this->load->library('form_validation');
 
 		$this->data['images'] = $product ? $this->Catalog_product_model->images($product->id) : array();
 		$this->data['pageScripts'] = array('assets/js/pages/product_gallery.js');
 
-		if ($this->input->post()) {
+		if ($can_submit && $this->input->post()) {
 			$this->form_validation->set_rules('product_type', 'Producto', 'trim|required|max_length[100]');
 			$this->form_validation->set_rules('laboratory', 'Laboratorio', 'trim|max_length[120]');
 			$this->form_validation->set_rules('name', 'Nombre', 'trim|max_length[150]');

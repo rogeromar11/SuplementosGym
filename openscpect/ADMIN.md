@@ -14,7 +14,7 @@ misma base de datos que el storefront. `store_orders` es la **única fuente de v
   - `Admin_Controller` — exige grupo IonAuth `admin`.
   - `Courier_Controller` — exige grupo `mensajero`.
 - **Grupos** (semilla): `admin`, `customer`, `vendedor`, `bodeguero`, `mensajero`, `auxiliar_admin`.
-- **Permisos granulares**: tablas `permissions` (45 claves) y `group_permissions`, resueltos con
+- **Permisos granulares**: tablas `permissions` (49 claves) y `group_permissions`, resueltos con
   `Permission_service`, `has_permission()` y `require_permission()`. El grupo `admin` omite todas
   las comprobaciones.
 

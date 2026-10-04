@@ -844,7 +844,11 @@ INSERT INTO `permissions` (`id`, `name`, `module`, `action`, `description`, `is_
   (42,'depositos.ver','depositos','ver','Ver depositos de efectivo',1),
   (43,'depositos.confirmar','depositos','confirmar','Confirmar recepcion de depositos del mensajero',1),
   (44,'depositos.entregar','depositos','entregar','Entregar efectivo al administrador con comprobante',1),
-  (45,'depositos.aprobar','depositos','aprobar','Visto bueno final de depositos',1)
+  (45,'depositos.aprobar','depositos','aprobar','Visto bueno final de depositos',1),
+  (46,'productos.importar','productos','importar','Importar productos desde Excel',1),
+  (47,'productos.exportar','productos','exportar','Exportar productos a Excel',1),
+  (48,'clientes.importar','clientes','importar','Importar clientes desde Excel',1),
+  (49,'clientes.exportar','clientes','exportar','Exportar clientes a Excel',1)
 ON DUPLICATE KEY UPDATE `description` = VALUES(`description`);
 
 CREATE TABLE IF NOT EXISTS `group_permissions` (
@@ -1311,3 +1315,28 @@ WHERE NOT EXISTS (
     SELECT 1 FROM `store_settings` d
     WHERE d.`country_id` = c.`id` AND d.`key` = t.`key`
 );
+
+-- =============================================================
+-- Permisos de importar/exportar (productos y clientes)
+-- Idempotente: se puede ejecutar sobre una base existente.
+-- Solo el grupo 'admin' los recibe; los demas grupos no.
+-- =============================================================
+INSERT INTO `permissions` (`name`, `module`, `action`, `description`, `is_active`)
+SELECT t.`name`, t.`module`, t.`action`, t.`description`, 1
+FROM (
+    SELECT 'productos.importar' AS `name`, 'productos' AS `module`, 'importar' AS `action`, 'Importar productos desde Excel' AS `description`
+    UNION ALL SELECT 'productos.exportar', 'productos', 'exportar', 'Exportar productos a Excel'
+    UNION ALL SELECT 'clientes.importar', 'clientes', 'importar', 'Importar clientes desde Excel'
+    UNION ALL SELECT 'clientes.exportar', 'clientes', 'exportar', 'Exportar clientes a Excel'
+) t
+WHERE NOT EXISTS (SELECT 1 FROM `permissions` p WHERE p.`name` = t.`name`);
+
+INSERT INTO `group_permissions` (`group_id`, `permission_id`)
+SELECT g.`id`, p.`id`
+FROM `groups` g
+CROSS JOIN `permissions` p
+WHERE g.`name` = 'admin'
+  AND NOT EXISTS (
+      SELECT 1 FROM `group_permissions` gp
+      WHERE gp.`group_id` = g.`id` AND gp.`permission_id` = p.`id`
+  );

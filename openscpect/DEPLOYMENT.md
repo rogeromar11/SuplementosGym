@@ -43,6 +43,18 @@ SG Tienda es una aplicacion **CodeIgniter 3** clasica: HTML servido por el servi
 9. **Verificar** `/`, `/productos`, `/carrito`, `/cuenta`, `/ingresar`, `/auth/login`,
    `/dashboard`, `/robots.txt`, `/sitemap.xml` y `/api/ping`.
 
+## Migraciones de base de datos
+
+`database/suplementosgym.sql` es un instalador **desde cero** (recrea todas las tablas): **no** lo
+re-ejecutes en una base con datos. Para aplicar cambios a una base existente usa los scripts
+`database/migracion_*.sql` (idempotentes):
+
+- `database/migracion_permisos_importar_exportar.sql` — agrega `productos.importar`,
+  `productos.exportar`, `clientes.importar`, `clientes.exportar` y los concede a `admin`.
+
+Ejecutar en phpMyAdmin (seleccionando la base) o por CLI:
+`mysql -u root suplementosgym < database/migracion_permisos_importar_exportar.sql`
+
 ## Que subir al hosting
 
 **Generar el paquete** (recomendado) para no subir `.git`, docs ni datos de prueba:
