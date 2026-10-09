@@ -323,6 +323,14 @@ Formato: `Added`, `Changed`, `Fixed`, `Security`.
   "borrosos" por usar la fuente display **Anton** en tamaño pequeno; ahora usan
   la fuente de texto **Manrope** en negrita y color blanco (mas nitidos).
 
+### Removed — Seccion "10% OFF en tu primer pedido" (2026-09-12)
+- Se elimino la seccion promocional de la pagina de inicio.
+
+### Changed — Porciones en el buscador de productos (admin) (2026-09-12)
+- `product_display_name()` ahora incluye las **porciones (servings)** cuando el
+  producto las tiene, por lo que aparecen en el buscador de productos al crear
+  un pedido en el backoffice (y en el listado de productos del admin).
+
 ## Notas
 - No se modifico SGMensajeria.
 - La base quedo en estado limpio: 54 productos (SV), 0 pedidos, 0 movimientos.

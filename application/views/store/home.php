@@ -151,22 +151,6 @@ $wa_pedido = $whatsapp_url ?: base_url('contacto');
   </div>
 </section>
 
-<section class="section" style="padding-top:0;">
-  <div class="container-x">
-    <div class="promo card spot" data-reveal>
-      <div class="promo-left">
-        <p class="eyebrow">Primera compra</p>
-        <h2 class="promo-title">10% OFF EN TU <em>PRIMER PEDIDO</em></h2>
-        <p class="promo-sub">Válido en tu primer pedido con envío a cualquier parte del país.</p>
-      </div>
-      <div class="promo-right">
-        <a class="btn btn-dark" href="<?php echo html_escape($wa_pedido); ?>" target="_blank" rel="noopener"><i class="bi bi-whatsapp" aria-hidden="true"></i> Reclamar descuento</a>
-        <p class="promo-small">Sin código: solo decisnos que es tu primera compra.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="section" id="beneficios" style="padding-top:0;">
   <div class="container-x">
     <div class="section-head" data-reveal>

@@ -14,6 +14,9 @@ composer.lock
 # Paquete de despliegue generado por deploy/package.ps1
 /build/
 
+# Config local de opencode (skill de deploy global, no se versiona)
+/.opencode/
+
 # IDE Files
 #-------------------------
 /nbproject/

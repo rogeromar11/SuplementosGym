@@ -157,7 +157,7 @@ if (!function_exists('product_display_name')) {
 		if ($name === '') {
 			$name = $get('product_type');
 		}
-		$details = array_filter(array($get('laboratory'), $get('weight'), $get('flavor')), 'strlen');
+		$details = array_filter(array($get('laboratory'), $get('weight'), $get('servings'), $get('flavor')), 'strlen');
 		return $name . (!empty($details) ? ' — ' . implode(' · ', $details) : '');
 	}
 }
