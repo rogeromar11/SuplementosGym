@@ -534,10 +534,27 @@ class Reports extends Authenticated_Controller
 		$this->require_permission('reportes.ver');
 
 		$f = $this->orders_filters_from_input();
+
+		$per_page = (int) $this->input->get('per_page');
+		if (!in_array($per_page, array(50, 200, 500), true)) {
+			$per_page = 50;
+		}
+		$page = max(1, (int) $this->input->get('page'));
+		$total = $this->Report_model->orders_count($f);
+		$pages = max(1, (int) ceil($total / $per_page));
+		if ($page > $pages) {
+			$page = $pages;
+		}
+
 		$this->data['pageTitle'] = 'Reporte de pedidos';
 		$this->data['breadcrumbs'] = array(array('label' => 'Reportes'), array('label' => 'Pedidos'));
 		$this->data['filters'] = $f;
-		$this->data['rows'] = $this->Report_model->orders($f);
+		$this->data['rows'] = $this->Report_model->orders($f, $per_page, ($page - 1) * $per_page);
+		$this->data['totals'] = $this->Report_model->orders_totals($f);
+		$this->data['per_page'] = $per_page;
+		$this->data['page'] = $page;
+		$this->data['pages'] = $pages;
+		$this->data['total'] = $total;
 		$this->data['statuses'] = $this->order_statuses();
 		$this->data['paymentMethods'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('payment_methods')->result();
 		$this->data['warehouses'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('name')->get('warehouses')->result();

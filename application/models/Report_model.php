@@ -315,21 +315,13 @@ class Report_model extends CI_Model
 	}
 
 	/**
-	 * Reporte de pedidos (web y manuales) con filtros.
+	 * Aplica las condiciones del reporte de pedidos (sin select/limit).
 	 *
-	 * @param array $f date_from, date_to, status, origin, warehouse_id,
-	 *               seller_user_id, payment_method_id, search
-	 * @return array
+	 * @param array $f
 	 */
-	public function orders($f = array())
+	private function _orders_apply_filters($f)
 	{
-		$this->db->select('o.id, o.order_number, o.created_at, o.origin, o.status,
-				o.customer_name, o.customer_phone, o.delivery_zone,
-				w.name AS warehouse_name,
-				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
-				pm.name AS payment_name,
-				o.total, o.paid_amount, o.balance_amount, o.payment_status', false)
-			->from('store_orders o')
+		$this->db->from('store_orders o')
 			->join('warehouses w', 'w.id = o.warehouse_id', 'left')
 			->join('users u', 'u.id = o.seller_user_id', 'left')
 			->join('payment_methods pm', 'pm.id = o.payment_method_id', 'left')
@@ -364,7 +356,64 @@ class Report_model extends CI_Model
 				->or_like('o.customer_phone', $term)
 				->group_end();
 		}
+	}
 
-		return $this->db->order_by('o.created_at', 'DESC')->order_by('o.id', 'DESC')->get()->result();
+	/**
+	 * Reporte de pedidos (web y manuales) con filtros, paginado.
+	 *
+	 * @param array $f date_from, date_to, status, origin, warehouse_id,
+	 *               seller_user_id, payment_method_id, search
+	 * @param int|null $limit
+	 * @param int $offset
+	 * @return array
+	 */
+	public function orders($f = array(), $limit = null, $offset = 0)
+	{
+		$this->db->select('o.id, o.order_number, o.created_at, o.origin, o.status,
+				o.customer_name, o.customer_phone, o.delivery_zone,
+				w.name AS warehouse_name,
+				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
+				pm.name AS payment_name,
+				o.total, o.paid_amount, o.balance_amount, o.payment_status', false);
+
+		$this->_orders_apply_filters($f);
+
+		$this->db->order_by('o.created_at', 'DESC')->order_by('o.id', 'DESC');
+		if ($limit !== null) {
+			$this->db->limit((int) $limit, (int) $offset);
+		}
+		return $this->db->get()->result();
+	}
+
+	/**
+	 * Total de pedidos que cumplen los filtros (para paginacion).
+	 *
+	 * @param array $f
+	 * @return int
+	 */
+	public function orders_count($f = array())
+	{
+		$this->_orders_apply_filters($f);
+		return (int) $this->db->count_all_results();
+	}
+
+	/**
+	 * Totales del conjunto filtrado (para las tarjetas de resumen).
+	 *
+	 * @param array $f
+	 * @return object|null
+	 */
+	public function orders_totals($f = array())
+	{
+		$this->db->select('COUNT(*) AS total_orders,
+				COALESCE(SUM(o.status = "entregado"), 0) AS delivered,
+				COALESCE(SUM(o.status = "no_entregado"), 0) AS not_delivered,
+				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.total ELSE 0 END), 0) AS sold,
+				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.paid_amount ELSE 0 END), 0) AS collected,
+				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.balance_amount ELSE 0 END), 0) AS balance', false);
+
+		$this->_orders_apply_filters($f);
+
+		return $this->db->get()->row();
 	}
 }

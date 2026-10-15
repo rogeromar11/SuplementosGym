@@ -1,15 +1,15 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-$totals = array('orders' => 0, 'delivered' => 0, 'not_delivered' => 0, 'sold' => 0, 'collected' => 0, 'balance' => 0);
-foreach ($rows as $row) {
-    $totals['orders']++;
-    if ($row->status === 'entregado') { $totals['delivered']++; }
-    if ($row->status === 'no_entregado') { $totals['not_delivered']++; }
-    if ($row->status !== 'cancelado') {
-        $totals['sold'] += (float)$row->total;
-        $totals['collected'] += (float)$row->paid_amount;
-        $totals['balance'] += (float)$row->balance_amount;
-    }
-}
+$totals = isset($totals) && $totals ? $totals : (object) array(
+    'total_orders' => 0, 'delivered' => 0, 'not_delivered' => 0, 'sold' => 0, 'collected' => 0, 'balance' => 0,
+);
+$pageUrl = function ($p) use ($filters, $per_page) {
+    $q = $filters;
+    $q['per_page'] = $per_page;
+    $q['page'] = $p;
+    return base_url('reports/orders') . '?' . http_build_query($q);
+};
+$from = $total > 0 ? (($page - 1) * $per_page) + 1 : 0;
+$to = min($total, $page * $per_page);
 ?>
 <div class="sg-page-header">
     <div>
@@ -101,18 +101,32 @@ foreach ($rows as $row) {
 </div>
 
 <div class="row g-3 mb-3">
-    <div class="col-6 col-md-2"><div class="card sg-card"><div class="card-body"><div class="sg-stat-label">Pedidos</div><div class="sg-stat-value fs-4"><?php echo (int)$totals['orders']; ?></div></div></div></div>
-    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#16A34A;"><div class="card-body"><div class="sg-stat-label">Entregados</div><div class="sg-stat-value fs-4 text-success"><?php echo (int)$totals['delivered']; ?></div></div></div></div>
-    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#DC2626;"><div class="card-body"><div class="sg-stat-label">No entregados</div><div class="sg-stat-value fs-4 text-danger"><?php echo (int)$totals['not_delivered']; ?></div></div></div></div>
-    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#2563EB;"><div class="card-body"><div class="sg-stat-label">Total vendido</div><div class="sg-stat-value fs-4"><?php echo money($totals['sold']); ?></div></div></div></div>
-    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#16A34A;"><div class="card-body"><div class="sg-stat-label">Cobrado</div><div class="sg-stat-value fs-4 text-success"><?php echo money($totals['collected']); ?></div></div></div></div>
-    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#F59E0B;"><div class="card-body"><div class="sg-stat-label">Saldo pendiente</div><div class="sg-stat-value fs-4 text-danger"><?php echo money($totals['balance']); ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card"><div class="card-body"><div class="sg-stat-label">Pedidos</div><div class="sg-stat-value fs-4"><?php echo (int)$totals->total_orders; ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#16A34A;"><div class="card-body"><div class="sg-stat-label">Entregados</div><div class="sg-stat-value fs-4 text-success"><?php echo (int)$totals->delivered; ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#DC2626;"><div class="card-body"><div class="sg-stat-label">No entregados</div><div class="sg-stat-value fs-4 text-danger"><?php echo (int)$totals->not_delivered; ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#2563EB;"><div class="card-body"><div class="sg-stat-label">Total vendido</div><div class="sg-stat-value fs-4"><?php echo money($totals->sold); ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#16A34A;"><div class="card-body"><div class="sg-stat-label">Cobrado</div><div class="sg-stat-value fs-4 text-success"><?php echo money($totals->collected); ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#F59E0B;"><div class="card-body"><div class="sg-stat-label">Saldo pendiente</div><div class="sg-stat-value fs-4 text-danger"><?php echo money($totals->balance); ?></div></div></div></div>
 </div>
 
 <div class="card sg-card">
     <div class="sg-card-body">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <form method="get" action="<?php echo base_url('reports/orders'); ?>" class="d-flex align-items-center gap-2 mb-0">
+                <?php foreach ($filters as $fk => $fv): if ($fv !== null && $fv !== ''): ?>
+                    <input type="hidden" name="<?php echo html_escape($fk); ?>" value="<?php echo html_escape($fv); ?>">
+                <?php endif; endforeach; ?>
+                <span class="text-muted-2">Mostrar</span>
+                <select class="form-select form-select-sm" name="per_page" style="width:auto;" onchange="this.form.submit()" aria-label="Registros por página">
+                    <?php foreach (array(50, 200, 500) as $n): ?>
+                        <option value="<?php echo $n; ?>" <?php echo ($per_page == $n) ? 'selected' : ''; ?>><?php echo $n; ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <span class="text-muted-2">registros</span>
+            </form>
+        </div>
         <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle data-table" data-lang-url="<?php echo base_url('assets/vendor/datatables/lang/es-ES.json'); ?>" data-order="[[1, 'desc']]">
+            <table class="table table-sm table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Pedido</th>
@@ -134,7 +148,7 @@ foreach ($rows as $row) {
                     <?php foreach ($rows as $row): ?>
                         <tr>
                             <td><a href="<?php echo base_url('orders/detail/' . $row->id); ?>" class="fw-semibold"><code><?php echo html_escape($row->order_number); ?></code></a></td>
-                            <td data-order="<?php echo $row->created_at; ?>"><?php echo fmt_datetime($row->created_at); ?></td>
+                            <td><?php echo fmt_datetime($row->created_at); ?></td>
                             <td>
                                 <?php if ($row->origin === 'web'): ?><span class="badge text-bg-info">Web</span>
                                 <?php else: ?><span class="badge text-bg-secondary">Manual</span><?php endif; ?>
@@ -157,3 +171,26 @@ foreach ($rows as $row) {
         <?php if (empty($rows)): ?><p class="text-muted-2 mb-0">Sin resultados para los filtros.</p><?php endif; ?>
     </div>
 </div>
+
+<?php if ($total > 0): ?>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+    <div class="text-muted-2 small">Mostrando <?php echo $from; ?>–<?php echo $to; ?> de <?php echo $total; ?> pedidos</div>
+    <?php if ($pages > 1): ?>
+    <nav aria-label="Paginación de pedidos">
+        <ul class="pagination mb-0">
+            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>"><a class="page-link" href="<?php echo $pageUrl(1); ?>">« Primera</a></li>
+            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>"><a class="page-link" href="<?php echo $pageUrl(max(1, $page - 1)); ?>">Anterior</a></li>
+            <?php
+            $start = max(1, $page - 2);
+            $end = min($pages, $page + 2);
+            for ($p = $start; $p <= $end; $p++):
+            ?>
+                <li class="page-item <?php echo $p === $page ? 'active' : ''; ?>"><a class="page-link" href="<?php echo $pageUrl($p); ?>"><?php echo $p; ?></a></li>
+            <?php endfor; ?>
+            <li class="page-item <?php echo $page >= $pages ? 'disabled' : ''; ?>"><a class="page-link" href="<?php echo $pageUrl(min($pages, $page + 1)); ?>">Siguiente</a></li>
+            <li class="page-item <?php echo $page >= $pages ? 'disabled' : ''; ?>"><a class="page-link" href="<?php echo $pageUrl($pages); ?>">Última »</a></li>
+        </ul>
+    </nav>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
