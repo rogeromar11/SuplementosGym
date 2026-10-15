@@ -313,4 +313,58 @@ class Report_model extends CI_Model
 
 		return $this->db->get()->result();
 	}
+
+	/**
+	 * Reporte de pedidos (web y manuales) con filtros.
+	 *
+	 * @param array $f date_from, date_to, status, origin, warehouse_id,
+	 *               seller_user_id, payment_method_id, search
+	 * @return array
+	 */
+	public function orders($f = array())
+	{
+		$this->db->select('o.id, o.order_number, o.created_at, o.origin, o.status,
+				o.customer_name, o.customer_phone, o.delivery_zone,
+				w.name AS warehouse_name,
+				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
+				pm.name AS payment_name,
+				o.total, o.paid_amount, o.balance_amount, o.payment_status', false)
+			->from('store_orders o')
+			->join('warehouses w', 'w.id = o.warehouse_id', 'left')
+			->join('users u', 'u.id = o.seller_user_id', 'left')
+			->join('payment_methods pm', 'pm.id = o.payment_method_id', 'left')
+			->where('o.country_id', current_country_id());
+
+		if (!empty($f['date_from'])) {
+			$this->db->where('DATE(o.created_at) >=', $f['date_from']);
+		}
+		if (!empty($f['date_to'])) {
+			$this->db->where('DATE(o.created_at) <=', $f['date_to']);
+		}
+		if (!empty($f['status'])) {
+			$this->db->where('o.status', $f['status']);
+		}
+		if (!empty($f['origin'])) {
+			$this->db->where('o.origin', $f['origin']);
+		}
+		if (!empty($f['warehouse_id'])) {
+			$this->db->where('o.warehouse_id', $f['warehouse_id']);
+		}
+		if (!empty($f['seller_user_id'])) {
+			$this->db->where('o.seller_user_id', $f['seller_user_id']);
+		}
+		if (!empty($f['payment_method_id'])) {
+			$this->db->where('o.payment_method_id', $f['payment_method_id']);
+		}
+		if (!empty($f['search'])) {
+			$term = $f['search'];
+			$this->db->group_start()
+				->like('o.order_number', $term)
+				->or_like('o.customer_name', $term)
+				->or_like('o.customer_phone', $term)
+				->group_end();
+		}
+
+		return $this->db->order_by('o.created_at', 'DESC')->order_by('o.id', 'DESC')->get()->result();
+	}
 }

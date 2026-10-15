@@ -49,6 +49,44 @@ class Reports extends Authenticated_Controller
 		return $f;
 	}
 
+	/**
+	 * Estados canonicos de pedido para el filtro.
+	 *
+	 * @return array
+	 */
+	private function order_statuses()
+	{
+		return array(
+			'registrado' => 'Registrado',
+			'confirmado' => 'Confirmado',
+			'pendiente_preparacion' => 'Pendiente de preparación',
+			'en_preparacion' => 'En preparación',
+			'preparado' => 'Preparado',
+			'asignado_ruta' => 'Asignado a ruta',
+			'en_ruta' => 'En ruta',
+			'entregado' => 'Entregado',
+			'no_entregado' => 'No entregado',
+			'reprogramado' => 'Reprogramado',
+			'cancelado' => 'Cancelado',
+		);
+	}
+
+	/**
+	 * Filtros del reporte de pedidos (incluye rango de fechas por defecto).
+	 *
+	 * @return array
+	 */
+	private function orders_filters_from_input()
+	{
+		$f = $this->filters_from_input();
+		$f['status'] = $this->input->get('status') ?: null;
+		$f['origin'] = $this->input->get('origin') ?: null;
+		$f['seller_user_id'] = $this->input->get('seller_user_id') ?: null;
+		$f['payment_method_id'] = $this->input->get('payment_method_id') ?: null;
+		$f['search'] = $this->input->get('search') ?: null;
+		return $f;
+	}
+
 	public function index()
 	{
 		$this->require_permission('reportes.ver');
@@ -483,6 +521,93 @@ class Reports extends Authenticated_Controller
 		$this->load->library('Excel_service');
 		$this->excel_service->export('reporte-productos-' . date('Ymd') . '.xlsx', $headers, $data, array(
 			'title' => 'Reporte de productos vendidos',
+			'summary' => array(
+				'Desde' => fmt_date($f['date_from']),
+				'Hasta' => fmt_date($f['date_to']),
+				'Generado' => date('d/m/Y H:i'),
+			),
+		));
+	}
+
+	public function orders()
+	{
+		$this->require_permission('reportes.ver');
+
+		$f = $this->orders_filters_from_input();
+		$this->data['pageTitle'] = 'Reporte de pedidos';
+		$this->data['breadcrumbs'] = array(array('label' => 'Reportes'), array('label' => 'Pedidos'));
+		$this->data['filters'] = $f;
+		$this->data['rows'] = $this->Report_model->orders($f);
+		$this->data['statuses'] = $this->order_statuses();
+		$this->data['paymentMethods'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('payment_methods')->result();
+		$this->data['warehouses'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('name')->get('warehouses')->result();
+		$this->data['sellers'] = $this->User_model->by_group('vendedor');
+		$this->data['activeTab'] = 'orders';
+
+		$this->render('reports/orders', $this->data);
+	}
+
+	public function export_orders_pdf()
+	{
+		$this->require_permission('reportes.exportar');
+		$f = $this->orders_filters_from_input();
+		$rows = $this->Report_model->orders($f);
+
+		$this->load->library('Pdf_service');
+		$html = $this->load->view('reports/pdf_orders', array(
+			'rows' => $rows,
+			'filters' => $f,
+			'statuses' => $this->order_statuses(),
+			'settings' => $this->settings,
+		), true);
+
+		$this->pdf_service->render($html, 'reporte-pedidos-' . date('Ymd') . '.pdf', array('orientation' => 'landscape'));
+	}
+
+	public function export_orders_excel()
+	{
+		$this->require_permission('reportes.exportar');
+		$f = $this->orders_filters_from_input();
+		$rows = $this->Report_model->orders($f);
+
+		$headers = array(
+			'order_number' => 'Pedido',
+			'created_at' => 'Fecha',
+			'origin' => 'Origen',
+			'customer_name' => 'Cliente',
+			'customer_phone' => 'Teléfono',
+			'delivery_zone' => 'Zona',
+			'warehouse_name' => 'Bodega',
+			'seller_name' => 'Vendedor',
+			'payment_name' => 'Forma de pago',
+			'status' => 'Estado',
+			'total' => 'Total',
+			'paid_amount' => 'Pagado',
+			'balance_amount' => 'Saldo',
+		);
+
+		$data = array();
+		foreach ($rows as $row) {
+			$data[] = array(
+				'order_number' => $row->order_number,
+				'created_at' => fmt_datetime($row->created_at),
+				'origin' => $row->origin === 'web' ? 'Web' : 'Manual',
+				'customer_name' => $row->customer_name,
+				'customer_phone' => $row->customer_phone,
+				'delivery_zone' => $row->delivery_zone,
+				'warehouse_name' => $row->warehouse_name,
+				'seller_name' => $row->seller_name,
+				'payment_name' => $row->payment_name,
+				'status' => order_status_label($row->status),
+				'total' => round((float)$row->total, 2),
+				'paid_amount' => round((float)$row->paid_amount, 2),
+				'balance_amount' => round((float)$row->balance_amount, 2),
+			);
+		}
+
+		$this->load->library('Excel_service');
+		$this->excel_service->export('reporte-pedidos-' . date('Ymd') . '.xlsx', $headers, $data, array(
+			'title' => 'Reporte de pedidos',
 			'summary' => array(
 				'Desde' => fmt_date($f['date_from']),
 				'Hasta' => fmt_date($f['date_to']),
