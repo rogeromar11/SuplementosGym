@@ -26,7 +26,10 @@
                 <?php foreach ($lowStock as $lp): ?>
                     <tr>
                         <td><code><?php echo html_escape($lp->sku); ?></code></td>
-                        <td><?php echo html_escape($lp->name); ?></td>
+                        <td>
+                            <?php $details = array_filter(array($lp->laboratory, $lp->weight, $lp->servings, $lp->flavor), function ($v) { return trim((string)$v) !== ''; }); ?>
+                            <span class="fw-semibold"><?php echo html_escape($lp->name); ?></span><?php if (!empty($details)): ?> <span class="text-muted-2">— <?php echo html_escape(implode(' · ', $details)); ?></span><?php endif; ?>
+                        </td>
                         <td class="text-end fw-bold text-danger"><?php echo (int)$lp->stock_qty; ?></td>
                     </tr>
                 <?php endforeach; ?>
@@ -46,7 +49,7 @@
 						<th>Producto</th>
 						<th>Detalle</th>
 						<th class="text-end">Venta</th>
-						<th class="text-end">Costo</th>
+						<?php if ($this->ion_auth->is_admin()): ?><th class="text-end">Costo</th><?php endif; ?>
                         <th class="text-end">Existencias</th>
                         <th>Estado</th>
                         <th class="text-end">Acciones</th>
@@ -73,7 +76,7 @@
 								<?php echo html_escape(implode(' · ', array_filter(array($p->servings, $p->description), function ($value) { return trim((string)$value) !== ''; }))); ?>
 							</td>
 							<td class="text-end fw-semibold"><?php echo money($p->unit_price); ?></td>
-							<td class="text-end"><?php echo money($p->cost_price); ?></td>
+							<?php if ($this->ion_auth->is_admin()): ?><td class="text-end"><?php echo money($p->cost_price); ?></td><?php endif; ?>
                             <td class="text-end">
                                 <?php echo (int)$p->stock_qty; ?>
                                 <?php if ((int)$p->is_active === 1 && (int)$p->stock_enabled === 1 && (int)$p->stock_qty <= (int)$lowStockThreshold): ?>

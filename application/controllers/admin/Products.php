@@ -27,7 +27,7 @@ class Products extends Authenticated_Controller
 		// Alerta de pocos productos: umbral configurable en Configuracion
 		$threshold = (int)app_setting('low_stock_threshold', 5);
 		$this->data['lowStockThreshold'] = $threshold;
-		$this->data['lowStock'] = $this->db->select('id, sku, name, stock_qty')
+		$this->data['lowStock'] = $this->db->select('id, sku, name, laboratory, weight, servings, flavor, stock_qty')
 			->where('country_id', current_country_id())
 			->where('is_active', 1)
 			->where('stock_enabled', 1)
@@ -279,7 +279,9 @@ class Products extends Authenticated_Controller
 			$this->form_validation->set_rules('weight', 'Peso', 'trim|max_length[50]');
 			$this->form_validation->set_rules('servings', 'Servidas', 'trim|max_length[50]');
 			$this->form_validation->set_rules('flavor', 'Sabor', 'trim|max_length[120]');
-			$this->form_validation->set_rules('cost_price', 'Costo', 'trim|required|numeric|greater_than_equal_to[0]');
+			if ($this->ion_auth->is_admin()) {
+				$this->form_validation->set_rules('cost_price', 'Costo', 'trim|required|numeric|greater_than_equal_to[0]');
+			}
 			$this->form_validation->set_rules('unit_price', 'Venta', 'trim|required|numeric|greater_than_equal_to[0]');
 			$this->form_validation->set_rules('stock_qty', 'Cantidad disponible', 'trim|required|integer|greater_than_equal_to[0]');
 
@@ -309,7 +311,7 @@ class Products extends Authenticated_Controller
 					'description' => $this->input->post('description'),
 					'store_description' => $this->input->post('store_description'),
 					'featured' => $this->input->post('featured') ? 1 : 0,
-					'cost_price' => round((float)$this->input->post('cost_price'), 2),
+					'cost_price' => $this->ion_auth->is_admin() ? round((float)$this->input->post('cost_price'), 2) : ($product ? $product->cost_price : 0),
 					'unit_price' => round((float)$this->input->post('unit_price'), 2),
 					'is_active' => $this->input->post('is_active') ? 1 : 0,
 					'stock_enabled' => 1,

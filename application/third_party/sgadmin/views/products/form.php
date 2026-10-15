@@ -184,6 +184,7 @@ $importPreview = isset($importPreview) ? $importPreview : null;
                         <input type="number" step="0.01" min="0" class="form-control" id="unit_price" name="unit_price" value="<?php echo set_value('unit_price', $isEdit ? $product->unit_price : ''); ?>" required>
                     </div>
                 </div>
+                <?php if ($this->ion_auth->is_admin()): ?>
                 <div class="col-md-3">
                     <label class="form-label" for="cost_price">Costo *</label>
                     <div class="input-group">
@@ -191,6 +192,7 @@ $importPreview = isset($importPreview) ? $importPreview : null;
                         <input type="number" step="0.01" min="0" class="form-control" id="cost_price" name="cost_price" value="<?php echo set_value('cost_price', $isEdit ? $product->cost_price : ''); ?>" required>
                     </div>
                 </div>
+                <?php endif; ?>
                 <?php if (!$isEdit): ?>
                 <div class="col-12">
                     <label class="form-label" for="images">Imágenes del producto</label>
