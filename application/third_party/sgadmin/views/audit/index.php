@@ -41,7 +41,7 @@
 <div class="card sg-card">
     <div class="sg-card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle data-table" data-lang-url="<?php echo base_url('assets/vendor/datatables/lang/es-ES.json'); ?>">
+            <table class="table table-hover align-middle data-table" data-lang-url="<?php echo base_url('assets/vendor/datatables/lang/es-ES.json'); ?>" data-order="[[0, 'desc']]">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -55,7 +55,7 @@
                 <tbody>
                     <?php foreach ($logs as $log): ?>
                         <tr>
-                            <td><?php echo fmt_datetime($log->created_at); ?></td>
+                            <td data-order="<?php echo $log->created_at; ?>"><?php echo fmt_datetime($log->created_at); ?></td>
                             <td><?php echo html_escape($log->user_name ?: 'Sistema'); ?></td>
                             <td><span class="badge text-bg-dark"><?php echo html_escape($log->module ?: '—'); ?></span></td>
                             <td><code><?php echo html_escape($log->action); ?></code></td>

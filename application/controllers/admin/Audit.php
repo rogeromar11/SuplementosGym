@@ -14,9 +14,27 @@ class Audit extends Admin_Controller
 
 	public function index()
 	{
+		$today = date('Y-m-d');
+		$date_from = $this->input->get('date_from');
+		$date_to = $this->input->get('date_to');
+
+		// Por defecto: desde la fecha más antigua registrada hasta hoy.
+		if (!$date_from || !$date_to) {
+			$oldest = $this->db->select('MIN(DATE(created_at)) AS min_date', false)
+				->where('country_id', current_country_id())
+				->get('audit_logs')->row();
+			$oldest_date = ($oldest && !empty($oldest->min_date)) ? $oldest->min_date : $today;
+			if (!$date_from) {
+				$date_from = $oldest_date;
+			}
+			if (!$date_to) {
+				$date_to = $today;
+			}
+		}
+
 		$f = array(
-			'date_from' => $this->input->get('date_from'),
-			'date_to' => $this->input->get('date_to'),
+			'date_from' => $date_from,
+			'date_to' => $date_to,
 			'module' => $this->input->get('module'),
 			'user_id' => $this->input->get('user_id'),
 			'action' => $this->input->get('action'),
