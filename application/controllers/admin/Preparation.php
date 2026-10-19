@@ -18,14 +18,23 @@ class Preparation extends Authenticated_Controller
 	public function index()
 	{
 		$warehouseId = $this->input->get('warehouse_id');
-		$date = $this->input->get('date') ?: date('Y-m-d');
-		$status = $this->input->get('status');
+		$dateFrom = $this->input->get('date_from') ?: date('Y-m-d');
+		$dateTo = $this->input->get('date_to') ?: date('Y-m-d');
 		$search = $this->input->get('search');
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateFrom)) {
+			$dateFrom = date('Y-m-d');
+		}
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTo)) {
+			$dateTo = date('Y-m-d');
+		}
+		if ($dateFrom > $dateTo) {
+			$tmpDate = $dateFrom;
+			$dateFrom = $dateTo;
+			$dateTo = $tmpDate;
+		}
 
 		$this->data['pageTitle'] = 'Preparación';
 		$this->data['breadcrumbs'] = array(array('label' => 'Preparación'));
-
-		$pendingStatuses = array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion');
 
 		$this->db->select('o.*, w.name AS warehouse_name')
 			->from('store_orders o')
@@ -33,7 +42,12 @@ class Preparation extends Authenticated_Controller
 		$this->db->where('o.country_id', current_country_id());
 		$this->db->group_start();
 		$this->db->where_in('o.status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion'));
-		$this->db->or_group_start()->where('o.status', 'preparado')->where('DATE(o.created_at)', $date)->group_end();
+		$this->db->or_group_start()->where('o.status', 'preparado');
+		$preparedDateSql = 'EXISTS (SELECT 1 FROM warehouse_preparation_history wph'
+			. ' WHERE wph.order_id = o.id AND wph.to_status = "preparado"'
+			. ' AND DATE(wph.created_at) >= ' . $this->db->escape($dateFrom)
+			. ' AND DATE(wph.created_at) <= ' . $this->db->escape($dateTo) . ')';
+		$this->db->where($preparedDateSql, null, false)->group_end();
 		$this->db->group_end();
 		if ($warehouseId) {
 			$this->db->where('o.warehouse_id', $warehouseId);
@@ -63,7 +77,8 @@ class Preparation extends Authenticated_Controller
 			->limit(50)
 			->get()->result();
 		$this->data['warehouses'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('name')->get('warehouses')->result();
-		$this->data['date'] = $date;
+		$this->data['dateFrom'] = $dateFrom;
+		$this->data['dateTo'] = $dateTo;
 		$this->data['pageScripts'] = array('assets/js/pages/preparation.js');
 
 		$this->render('preparation/index', $this->data);

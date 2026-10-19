@@ -73,11 +73,11 @@
 <div class="card sg-card mb-3">
     <div class="sg-card-body">
         <form method="get" action="<?php echo base_url('preparation'); ?>" class="row g-2 align-items-end">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label" for="search">Buscar</label>
                 <input type="text" class="form-control" id="search" name="search" placeholder="Número o cliente" value="<?php echo html_escape($this->input->get('search')); ?>">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label" for="warehouse_id">Bodega</label>
                 <select class="form-select" id="warehouse_id" name="warehouse_id">
                     <option value="">Todas</option>
@@ -86,11 +86,15 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label" for="date">Fecha</label>
-                <input type="date" class="form-control" id="date" name="date" value="<?php echo html_escape($date); ?>">
+            <div class="col-md-2">
+                <label class="form-label" for="date_from">Preparados desde</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="<?php echo html_escape($dateFrom); ?>">
             </div>
-            <div class="col-md-3 d-flex gap-2">
+            <div class="col-md-2">
+                <label class="form-label" for="date_to">Hasta</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="<?php echo html_escape($dateTo); ?>">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
                 <button type="submit" class="btn btn-brand flex-fill"><i class="bi bi-funnel me-1"></i>Filtrar</button>
                 <a href="<?php echo base_url('preparation'); ?>" class="btn btn-light"><i class="bi bi-x-lg"></i></a>
             </div>
@@ -133,7 +137,7 @@
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="<?php echo base_url('orders/print_view/' . $o->id); ?>" target="_blank" class="btn btn-sm btn-outline-dark" title="Comprobante"><i class="bi bi-printer"></i></a>
-                        <?php if ($o->status === 'registrado' || $o->status === 'pendiente_preparacion'): ?>
+                        <?php if (in_array($o->status, array('confirmado', 'registrado', 'pendiente_preparacion'), true)): ?>
                             <button type="button" class="btn btn-sm btn-brand btn-prep-action" data-url="<?php echo base_url('preparation/start_prep/' . $o->id); ?>" data-action="start">Iniciar preparación</button>
                         <?php elseif ($o->status === 'en_preparacion'): ?>
                             <button type="button" class="btn btn-sm btn-success btn-prep-action" data-url="<?php echo base_url('preparation/mark_prepared/' . $o->id); ?>" data-action="prepared">Marcar preparado</button>

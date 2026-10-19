@@ -172,7 +172,12 @@ class Route_model extends CI_Model
 			->group_end()
 			->group_end();
 		if ($warehouseId) {
-			$this->db->where('o.warehouse_id', $warehouseId);
+			// Pedidos antiguos o creados antes de asignar bodega pueden tener
+			// warehouse_id NULL. Permitir asignarlos desde una ruta de bodega.
+			$this->db->group_start()
+				->where('o.warehouse_id', $warehouseId)
+				->or_where('o.warehouse_id IS NULL', null, false)
+				->group_end();
 		}
 		$this->db->order_by('o.order_number', 'ASC');
 		return $this->db->get()->result();
