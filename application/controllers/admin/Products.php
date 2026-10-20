@@ -87,6 +87,8 @@ class Products extends Authenticated_Controller
 		$this->load->library('Excel_service');
 
 		$headers = array(
+			'sku' => 'SKU',
+			'full_name' => 'Producto completo',
 			'product_type' => 'Producto',
 			'laboratory' => 'Laboratorio',
 			'name' => 'Nombre',
@@ -99,12 +101,14 @@ class Products extends Authenticated_Controller
 		);
 
 		$products = $this->db->where('country_id', current_country_id())
-			->order_by('name', 'ASC')
+			->order_by('sku', 'ASC')
 			->get('products')->result();
 
 		$data = array();
 		foreach ($products as $product) {
 			$data[] = array(
+				'sku' => $product->sku,
+				'full_name' => product_display_name($product),
 				'product_type' => $product->product_type,
 				'laboratory' => (string) $product->laboratory,
 				'name' => ($product->name !== null && $product->name !== '') ? $product->name : $product->product_type,

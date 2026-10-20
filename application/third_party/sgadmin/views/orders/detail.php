@@ -103,7 +103,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                     <?php if ($o->notes): ?>
                         <div class="col-12">
                             <div class="small text-muted-2">Notas</div>
-                            <div><?php echo html_escape($o->notes); ?></div>
+                            <div><?php echo nl2br(html_escape($o->notes)); ?></div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -261,7 +261,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                                     <div class="small text-danger">Motivo: <?php echo html_escape($d->failure_reason_name); ?><?php echo $d->failure_other ? ' — ' . html_escape($d->failure_other) : ''; ?></div>
                                 <?php endif; ?>
                                 <?php if ($d->notes): ?>
-                                    <div class="small"><i class="bi bi-chat-left-text me-1"></i><?php echo html_escape($d->notes); ?></div>
+                                    <div class="small"><i class="bi bi-chat-left-text me-1"></i><?php echo nl2br(html_escape($d->notes)); ?></div>
                                 <?php endif; ?>
                                 <?php if ($d->reschedule_requested && $d->rescheduled_date): ?>
                                     <div class="small text-warning">Reprogramar para: <?php echo fmt_date($d->rescheduled_date); ?></div>
@@ -287,7 +287,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                                     <?php echo $h->from_status ? order_status_label($h->from_status) . ' → ' : ''; ?><?php echo order_status_label($h->to_status); ?>
                                 </div>
                                 <div class="small text-muted-2"><?php echo fmt_datetime($h->created_at); ?></div>
-                                <?php if ($h->notes): ?><div class="small"><?php echo html_escape($h->notes); ?></div><?php endif; ?>
+                                <?php if ($h->notes): ?><div class="small"><?php echo nl2br(html_escape($h->notes)); ?></div><?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

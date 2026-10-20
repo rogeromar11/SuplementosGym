@@ -93,7 +93,7 @@ foreach ($routeOrders as $ro) {
                 <div class="d-flex justify-content-between"><span class="d-label">Tel. secundario</span><span><?php echo html_escape($ro->customer_phone2); ?></span></div>
             <?php endif; ?>
             <?php if ($ro->notes): ?>
-                <div class="d-flex justify-content-between"><span class="d-label">Nota del pedido</span><span class="text-end ms-2"><?php echo html_escape($ro->notes); ?></span></div>
+                        <div class="d-flex justify-content-between"><span class="d-label">Nota del pedido</span><span class="text-end ms-2"><?php echo nl2br(html_escape($ro->notes)); ?></span></div>
             <?php endif; ?>
         </div>
         <?php if ($routeActive && in_array($ro->route_status, array('pendiente', 'en_proceso'), true)): ?>

@@ -103,7 +103,7 @@ class Clients extends Authenticated_Controller
 		);
 
 		$clients = $this->db->where('country_id', current_country_id())
-			->order_by('name', 'ASC')
+			->order_by('code', 'ASC')
 			->get('clients')->result();
 
 		$data = array();
