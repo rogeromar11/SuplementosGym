@@ -251,11 +251,17 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                                 <?php if ( ! empty($d->courier_first_name)): ?>
                                     <div class="small text-muted-2"><i class="bi bi-person-badge me-1"></i><?php echo html_escape(trim($d->courier_first_name . ' ' . $d->courier_last_name)); ?></div>
                                 <?php endif; ?>
+                                <?php if (!empty($d->route_number)): ?>
+                                    <div class="small text-muted-2"><i class="bi bi-signpost-split me-1"></i>Ruta: <?php echo html_escape($d->route_number); ?></div>
+                                <?php endif; ?>
                                 <?php if ($d->received_by_name): ?>
                                     <div class="small">Recibió: <?php echo html_escape($d->received_by_name); ?></div>
                                 <?php endif; ?>
                                 <?php if ($d->payment_method_name): ?>
                                     <div class="small text-success"><i class="bi bi-cash-coin me-1"></i>Forma de pago: <?php echo html_escape($d->payment_method_name); ?><?php echo $d->payment_amount !== null ? ' (' . money($d->payment_amount) . ')' : ''; ?></div>
+                                <?php endif; ?>
+                                <?php if ((float)$d->extra_expense > 0): ?>
+                                    <div class="small text-danger"><i class="bi bi-cash-coin me-1"></i>Otros gastos: <?php echo money($d->extra_expense); ?><?php echo $d->extra_expense_detail ? ' — ' . nl2br(html_escape($d->extra_expense_detail)) : ''; ?></div>
                                 <?php endif; ?>
                                 <?php if ($d->failure_reason_name): ?>
                                     <div class="small text-danger">Motivo: <?php echo html_escape($d->failure_reason_name); ?><?php echo $d->failure_other ? ' — ' . html_escape($d->failure_other) : ''; ?></div>

@@ -17,16 +17,35 @@ $statusColors = array('pendiente' => 'warning', 'recibido' => 'info', 'entregado
         <small>Depósito #<?php echo (int)$deposit->id; ?> · <?php echo fmt_datetime($deposit->created_at); ?></small>
         <h2><?php echo money($deposit->amount); ?></h2>
         <small><?php echo (int)$deposit->route_count; ?> ruta(s) · Recibió: <?php echo html_escape($deposit->receiver_name); ?></small>
+        <?php if ((float)$deposit->expenses_total > 0): ?>
+            <small class="text-danger">Otros gastos: <?php echo money($deposit->expenses_total); ?></small>
+        <?php endif; ?>
     </div>
     <div class="card-body py-2">
         <?php foreach ($deposit->routes as $r): ?>
             <div class="d-flex justify-content-between py-1" style="border-bottom:1px solid #E4E4E7;">
                 <div><code><?php echo html_escape($r->route_number); ?></code></div>
-                <div class="fw-semibold"><?php echo money($r->amount); ?></div>
+                <div class="fw-semibold text-end"><?php echo money($r->amount); ?><?php if ((float)$r->expenses_total > 0): ?><br><small class="text-danger">Gastos: <?php echo money($r->expenses_total); ?></small><?php endif; ?></div>
             </div>
         <?php endforeach; ?>
     </div>
 </div>
+
+<?php if ((float)$deposit->expenses_total > 0): ?>
+<div class="courier-delivery mb-3">
+    <div class="d-body py-3">
+        <div class="d-label mb-1">Detalle de gastos adicionales</div>
+        <?php foreach ($deposit->routes as $r): ?>
+            <?php foreach ($r->expenses as $e): ?>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="small"><?php echo html_escape($e->order_number ?: 'Pedido'); ?></span>
+                    <span class="text-end small"><?php echo money($e->extra_expense); ?><?php echo $e->extra_expense_detail ? '<br><small class="text-muted">' . nl2br(html_escape($e->extra_expense_detail)) . '</small>' : ''; ?></span>
+                </div>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
 
 <div class="courier-delivery mb-3">
     <div class="d-body py-3">

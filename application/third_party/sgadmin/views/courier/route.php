@@ -47,6 +47,12 @@ foreach ($routeOrders as $ro) {
             <div class="d-label">Faltante</div>
             <div class="d-value <?php echo (float)$summary->pending_amount > 0.009 ? 'text-warning' : 'text-success'; ?>"><?php echo money($summary->pending_amount); ?></div>
         </div>
+        <?php if ((float)$summary->expenses > 0): ?>
+        <div class="d-flex justify-content-between mb-1">
+            <div class="d-label">Otros gastos</div>
+            <div class="d-value text-danger"><?php echo money($summary->expenses); ?></div>
+        </div>
+        <?php endif; ?>
         <?php if ($r->status === 'planificada'): ?>
             <button type="button" class="btn btn-brand w-100 courier-btn mt-2 btn-route-start" data-url="<?php echo base_url('courier/route/' . $r->id . '/start'); ?>"><i class="bi bi-play-fill me-1"></i>Iniciar ruta</button>
         <?php endif; ?>
@@ -91,6 +97,25 @@ foreach ($routeOrders as $ro) {
             <div class="d-flex justify-content-between"><span class="d-label">Teléfono</span><span><?php echo html_escape($ro->customer_phone); ?></span></div>
             <?php if ($ro->customer_phone2): ?>
                 <div class="d-flex justify-content-between"><span class="d-label">Tel. secundario</span><span><?php echo html_escape($ro->customer_phone2); ?></span></div>
+            <?php endif; ?>
+            <?php if (!empty($ro->items)): ?>
+                <div class="d-flex justify-content-between mt-1">
+                    <span class="d-label">Productos</span>
+                    <span class="text-end ms-2">
+                        <?php foreach ($ro->items as $item): ?>
+                            <div><strong><?php echo (int)$item->quantity; ?>×</strong> <?php echo html_escape($item->item_name); ?><?php echo !empty($item->item_flavor) ? ' <small class="text-muted">(' . html_escape($item->item_flavor) . ')</small>' : ''; ?></div>
+                        <?php endforeach; ?>
+                    </span>
+                </div>
+            <?php endif; ?>
+            <?php if ((float)$ro->extra_expense > 0): ?>
+                <div class="d-flex justify-content-between mt-1">
+                    <span class="d-label">Otros gastos</span>
+                    <span class="text-end ms-2">
+                        <strong class="text-danger"><?php echo money($ro->extra_expense); ?></strong>
+                        <?php if (!empty($ro->extra_expense_detail)): ?><br><small class="text-muted"><?php echo nl2br(html_escape($ro->extra_expense_detail)); ?></small><?php endif; ?>
+                    </span>
+                </div>
             <?php endif; ?>
             <?php if ($ro->notes): ?>
                         <div class="d-flex justify-content-between"><span class="d-label">Nota del pedido</span><span class="text-end ms-2"><?php echo nl2br(html_escape($ro->notes)); ?></span></div>
@@ -173,6 +198,18 @@ foreach ($routeOrders as $ro) {
                             <label class="form-label" for="deliverReceivedBy">Nombre de quien recibe</label>
                             <input type="text" class="form-control" id="deliverReceivedBy" name="received_by_name">
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="deliverExtraExpense">Otros gastos</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><?php echo html_escape(app_setting('currency_symbol', '₡')); ?></span>
+                            <input type="number" step="0.01" min="0" class="form-control" id="deliverExtraExpense" name="extra_expense" placeholder="0.00">
+                        </div>
+                        <div class="form-text">Gastos adicionales de la ruta (inconvenientes, transporte, etc.).</div>
+                    </div>
+                    <div class="mb-3" id="deliverExtraExpenseDetailWrap" style="display:none;">
+                        <label class="form-label" for="deliverExtraExpenseDetail">Detalle de gastos adicionales</label>
+                        <textarea class="form-control" id="deliverExtraExpenseDetail" name="extra_expense_detail" rows="2" placeholder="Ej: transporte $3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="deliverNotes">Nota</label>

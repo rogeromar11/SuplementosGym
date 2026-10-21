@@ -87,6 +87,10 @@ class Route_model extends CI_Model
 					WHERE da.route_order_id = ro.id ORDER BY da.id DESC LIMIT 1) AS failure_reason,
 				(SELECT COALESCE(da.notes, "") FROM delivery_attempts da
 					WHERE da.route_order_id = ro.id ORDER BY da.id DESC LIMIT 1) AS failure_notes,
+				(SELECT COALESCE(da.extra_expense, 0) FROM delivery_attempts da
+					WHERE da.route_order_id = ro.id ORDER BY da.id DESC LIMIT 1) AS extra_expense,
+				(SELECT COALESCE(da.extra_expense_detail, "") FROM delivery_attempts da
+					WHERE da.route_order_id = ro.id ORDER BY da.id DESC LIMIT 1) AS extra_expense_detail,
 				COALESCE((SELECT pm2.name FROM payments p
 					JOIN delivery_attempts da2 ON da2.id = p.delivery_attempt_id
 					JOIN payment_methods pm2 ON pm2.id = p.payment_method_id
@@ -103,6 +107,29 @@ class Route_model extends CI_Model
 			->where('ro.active_key', 1)
 			->order_by('ro.delivery_order', 'ASC')
 			->get()->result();
+	}
+
+	/**
+	 * Lineas de producto de un conjunto de pedidos, agrupadas por order_id.
+	 *
+	 * @param array $orderIds
+	 * @return array [order_id => [items...]]
+	 */
+	public function items_for_orders($orderIds)
+	{
+		$orderIds = array_values(array_filter(array_map('intval', (array) $orderIds)));
+		if (empty($orderIds)) {
+			return array();
+		}
+		$rows = $this->db->select('order_id, item_name, item_flavor, quantity, unit_price, line_total')
+			->where_in('order_id', $orderIds)
+			->order_by('id', 'ASC')
+			->get('store_order_items')->result();
+		$out = array();
+		foreach ($rows as $row) {
+			$out[(int) $row->order_id][] = $row;
+		}
+		return $out;
 	}
 
 	/**
@@ -143,6 +170,13 @@ class Route_model extends CI_Model
 		$row = $this->db->get()->row();
 
 		$row->pending_amount = round((float)$row->expected_amount - (float)$row->collected_amount, 2);
+
+		$exp = $this->db->select('COALESCE(SUM(extra_expense), 0) AS expenses', false)
+			->where('route_id', $routeId)
+			->where('extra_expense >', 0)
+			->get('delivery_attempts')->row();
+		$row->expenses = round((float)($exp ? $exp->expenses : 0), 2);
+
 		return $row;
 	}
 

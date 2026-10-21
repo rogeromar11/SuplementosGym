@@ -51,6 +51,12 @@ $canStart = in_array($r->status, array('planificada', 'borrador'), true) && $r->
             <div class="sg-stat-value fs-4 <?php echo (float)$summary->pending_amount > 0.009 ? 'text-danger' : 'text-success'; ?>"><?php echo money($summary->pending_amount); ?></div>
         </div></div>
     </div>
+    <div class="col-6 col-md">
+        <div class="card sg-card" style="border-left-color:#9333EA;"><div class="card-body">
+            <div class="sg-stat-label">Otros gastos</div>
+            <div class="sg-stat-value fs-4 text-danger"><?php echo money($summary->expenses); ?></div>
+        </div></div>
+    </div>
 </div>
 
 <?php if ($r->notes): ?>
@@ -88,7 +94,10 @@ $canStart = in_array($r->status, array('planificada', 'borrador'), true) && $r->
                                     </div>
                                         <div class="fw-semibold"><?php echo html_escape($ro->customer_name); ?></div>
                                         <div class="small"><i class="bi bi-geo-alt me-1"></i><strong>Zona:</strong> <?php echo html_escape($ro->delivery_zone ?: '—'); ?></div>
-                                        <div class="small text-muted-2 text-truncate route-order-address"><?php echo html_escape($ro->delivery_address); ?></div>
+				<div class="small text-muted-2 text-truncate route-order-address"><?php echo html_escape($ro->delivery_address); ?></div>
+				<?php if ((float)$ro->extra_expense > 0): ?>
+				<div class="small text-danger mt-1"><i class="bi bi-cash-coin me-1"></i><strong>Otros gastos:</strong> <?php echo money($ro->extra_expense); ?><?php echo $ro->extra_expense_detail ? ' - ' . nl2br(html_escape($ro->extra_expense_detail)) : ''; ?></div>
+				<?php endif; ?>
                                         <?php if ($ro->route_status === 'no_entregado' && ($ro->failure_reason || $ro->failure_notes)): ?>
                                             <div class="small text-danger mt-1"><i class="bi bi-x-octagon me-1"></i><strong><?php echo html_escape($ro->failure_reason ?: 'No entregado'); ?></strong><?php echo $ro->failure_notes ? ' — ' . html_escape($ro->failure_notes) : ''; ?></div>
                                         <?php endif; ?>

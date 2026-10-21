@@ -374,6 +374,16 @@ class Report_model extends CI_Model
 				w.name AS warehouse_name,
 				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
 				pm.name AS payment_name,
+				(SELECT r2.route_number FROM route_orders ro2
+					JOIN routes r2 ON r2.id = ro2.route_id
+					WHERE ro2.order_id = o.id
+					ORDER BY ro2.id DESC LIMIT 1) AS route_number,
+				(SELECT CONCAT(cu.first_name, " ", cu.last_name) FROM route_orders ro2
+					JOIN routes r2 ON r2.id = ro2.route_id
+					LEFT JOIN users cu ON cu.id = r2.courier_user_id
+					WHERE ro2.order_id = o.id
+					ORDER BY ro2.id DESC LIMIT 1) AS courier_name,
+				COALESCE((SELECT SUM(da.extra_expense) FROM delivery_attempts da WHERE da.order_id = o.id), 0) AS extra_expenses,
 				o.total, o.paid_amount, o.balance_amount, o.payment_status', false);
 
 		$this->_orders_apply_filters($f);
@@ -410,7 +420,8 @@ class Report_model extends CI_Model
 				COALESCE(SUM(o.status = "no_entregado"), 0) AS not_delivered,
 				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.total ELSE 0 END), 0) AS sold,
 				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.paid_amount ELSE 0 END), 0) AS collected,
-				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.balance_amount ELSE 0 END), 0) AS balance', false);
+				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.balance_amount ELSE 0 END), 0) AS balance,
+				COALESCE(SUM((SELECT COALESCE(SUM(da.extra_expense), 0) FROM delivery_attempts da WHERE da.order_id = o.id)), 0) AS expenses', false);
 
 		$this->_orders_apply_filters($f);
 

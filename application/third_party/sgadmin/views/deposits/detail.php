@@ -36,6 +36,12 @@ $isImage = function ($mime) {
     </div>
     <div class="col-6 col-md">
         <div class="card sg-card"><div class="card-body">
+            <div class="sg-stat-label">Otros gastos</div>
+            <div class="sg-stat-value fs-4 text-danger"><?php echo money($deposit->expenses_total); ?></div>
+        </div></div>
+    </div>
+    <div class="col-6 col-md">
+        <div class="card sg-card"><div class="card-body">
             <div class="sg-stat-label">Recibió del mensajero</div>
             <div class="sg-stat-value fs-6"><?php echo html_escape($deposit->receiver_name); ?></div>
         </div></div>
@@ -54,7 +60,7 @@ $isImage = function ($mime) {
             <div class="sg-card-header"><h5><i class="bi bi-signpost-split me-2 text-danger"></i>Rutas incluidas en el depósito</h5></div>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
-                    <thead><tr><th>Ruta</th><th>Fecha</th><th>Turno</th><th class="text-end">Efectivo</th></tr></thead>
+                    <thead><tr><th>Ruta</th><th>Fecha</th><th>Turno</th><th class="text-end">Efectivo</th><th class="text-end">Gastos</th></tr></thead>
                     <tbody>
                         <?php foreach ($deposit->routes as $r): ?>
                             <tr>
@@ -62,13 +68,35 @@ $isImage = function ($mime) {
                                 <td><?php echo fmt_date($r->route_date); ?></td>
                                 <td><?php echo html_escape($r->shift_name); ?></td>
                                 <td class="text-end fw-semibold"><?php echo money($r->amount); ?></td>
+                                <td class="text-end <?php echo (float)$r->expenses_total > 0 ? 'text-danger' : 'text-muted-2'; ?>"><?php echo money($r->expenses_total); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
-                        <tr class="fw-semibold"><td colspan="3" class="text-end">Total</td><td class="text-end"><?php echo money($deposit->amount); ?></td></tr>
+                        <tr class="fw-semibold"><td colspan="3" class="text-end">Total</td><td class="text-end"><?php echo money($deposit->amount); ?></td><td class="text-end text-danger"><?php echo money($deposit->expenses_total); ?></td></tr>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+
+        <div class="card sg-card mb-3">
+            <div class="sg-card-header"><h5><i class="bi bi-cash-coin me-2 text-danger"></i>Gastos adicionales</h5></div>
+            <div class="card-body">
+                <?php if (empty($deposit->expenses_total) || (float)$deposit->expenses_total <= 0): ?>
+                    <p class="text-muted-2 mb-0">Sin gastos adicionales reportados.</p>
+                <?php else: ?>
+                    <?php foreach ($deposit->routes as $r): ?>
+                        <?php if (empty($r->expenses)) { continue; } ?>
+                        <div class="mb-2">
+                            <div class="fw-semibold"><?php echo html_escape($r->route_number); ?> · <?php echo money($r->expenses_total); ?></div>
+                            <ul class="mb-0 ps-3">
+                                <?php foreach ($r->expenses as $e): ?>
+                                    <li class="small"><?php echo html_escape($e->order_number ?: 'Pedido'); ?>: <?php echo money($e->extra_expense); ?><?php echo $e->extra_expense_detail ? ' — ' . nl2br(html_escape($e->extra_expense_detail)) : ''; ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 

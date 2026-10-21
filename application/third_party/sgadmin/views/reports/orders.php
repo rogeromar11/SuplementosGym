@@ -107,6 +107,7 @@ $to = min($total, $page * $per_page);
     <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#2563EB;"><div class="card-body"><div class="sg-stat-label">Total vendido</div><div class="sg-stat-value fs-4"><?php echo money($totals->sold); ?></div></div></div></div>
     <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#16A34A;"><div class="card-body"><div class="sg-stat-label">Cobrado</div><div class="sg-stat-value fs-4 text-success"><?php echo money($totals->collected); ?></div></div></div></div>
     <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#F59E0B;"><div class="card-body"><div class="sg-stat-label">Saldo pendiente</div><div class="sg-stat-value fs-4 text-danger"><?php echo money($totals->balance); ?></div></div></div></div>
+    <div class="col-6 col-md-2"><div class="card sg-card" style="border-left-color:#9333EA;"><div class="card-body"><div class="sg-stat-label">Otros gastos</div><div class="sg-stat-value fs-4 text-danger"><?php echo money($totals->expenses); ?></div></div></div></div>
 </div>
 
 <div class="card sg-card">
@@ -138,6 +139,9 @@ $to = min($total, $page * $per_page);
                         <th>Bodega</th>
                         <th>Vendedor</th>
                         <th>Forma de pago</th>
+                        <th>Ruta</th>
+                        <th>Mensajero</th>
+                        <th class="text-end">Otros gastos</th>
                         <th>Estado</th>
                         <th class="text-end">Total</th>
                         <th class="text-end">Pagado</th>
@@ -159,6 +163,9 @@ $to = min($total, $page * $per_page);
                             <td><?php echo html_escape($row->warehouse_name ?: '—'); ?></td>
                             <td><?php echo html_escape(trim((string)$row->seller_name) ?: '—'); ?></td>
                             <td><?php echo html_escape($row->payment_name ?: '—'); ?></td>
+                            <td><?php echo html_escape($row->route_number ?: '—'); ?></td>
+                            <td><?php echo html_escape(trim((string)$row->courier_name) ?: '—'); ?></td>
+                            <td class="text-end <?php echo (float)$row->extra_expenses > 0 ? 'text-danger fw-semibold' : 'text-muted-2'; ?>"><?php echo money($row->extra_expenses); ?></td>
                             <td><?php echo order_status_badge($row->status); ?></td>
                             <td class="text-end fw-semibold"><?php echo money($row->total); ?></td>
                             <td class="text-end text-success"><?php echo money($row->paid_amount); ?></td>

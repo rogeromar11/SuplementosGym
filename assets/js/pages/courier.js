@@ -62,6 +62,11 @@ $(document).ready(function () {
 
     $('#deliverPayment').on('change', updateCashEvidence);
 
+    $('#deliverExtraExpense').on('input change', function () {
+        var extra = parseFloat($(this).val());
+        $('#deliverExtraExpenseDetailWrap').toggle(!isNaN(extra) && extra > 0);
+    });
+
     $('.btn-open-deliver').on('click', function () {
         deliverBtn = $(this);
         var balance = parseFloat($(this).data('balance'));
@@ -89,6 +94,9 @@ $(document).ready(function () {
             $('#deliverBalanceHint').text('Saldo pendiente: ' + (window.moneyFmt ? window.moneyFmt(balance) : balance.toFixed(2)));
         }
         $('#deliverNotes').val('');
+        $('#deliverExtraExpense').val('');
+        $('#deliverExtraExpenseDetail').val('');
+        $('#deliverExtraExpenseDetailWrap').hide();
         $('#deliverEvidence').val('');
         updateCashEvidence();
         captureLocation($('#deliverLat'), $('#deliverLng'));
@@ -109,6 +117,12 @@ $(document).ready(function () {
 
     $('#deliverForm').on('submit', function (e) {
         e.preventDefault();
+        var extraExpense = parseFloat($('#deliverExtraExpense').val());
+        if (!isNaN(extraExpense) && extraExpense > 0 && $.trim($('#deliverExtraExpenseDetail').val()) === '') {
+            sgms.toast('error', 'Detalle requerido', 'Indique en qué se gastó el monto adicional.');
+            $('#deliverExtraExpenseDetail').focus();
+            return;
+        }
         if (!deliverSkipCollection && isCashSelected() && !document.getElementById('deliverEvidence').files.length) {
             sgms.toast('error', 'Evidencia requerida', 'Adjunte la foto del efectivo recibido para continuar.');
             $('#deliverEvidence').focus();

@@ -616,6 +616,8 @@ CREATE TABLE IF NOT EXISTS `delivery_attempts` (
   `received_by_name` varchar(150) DEFAULT NULL,
   `latitude` decimal(10,8) DEFAULT NULL,
   `longitude` decimal(11,8) DEFAULT NULL,
+  `extra_expense` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `extra_expense_detail` text DEFAULT NULL,
   `reschedule_requested` tinyint(1) NOT NULL DEFAULT 0,
   `rescheduled_date` date DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),

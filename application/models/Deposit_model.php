@@ -246,6 +246,24 @@ class Deposit_model extends CI_Model
 			->where('cdr.deposit_id', $id)
 			->order_by('r.route_date', 'ASC')
 			->get()->result();
+
+		// Gastos adicionales reportados por el mensajero en cada ruta.
+		$deposit->expenses_total = 0.0;
+		foreach ($deposit->routes as $route) {
+			$route->expenses = $this->db->select('da.extra_expense, da.extra_expense_detail, o.order_number')
+				->from('delivery_attempts da')
+				->join('store_orders o', 'o.id = da.order_id', 'left')
+				->where('da.route_id', $route->route_id)
+				->where('da.extra_expense >', 0)
+				->order_by('da.id', 'ASC')
+				->get()->result();
+			$route->expenses_total = 0.0;
+			foreach ($route->expenses as $expense) {
+				$route->expenses_total += (float) $expense->extra_expense;
+			}
+			$deposit->expenses_total += $route->expenses_total;
+		}
+
 		return $deposit;
 	}
 

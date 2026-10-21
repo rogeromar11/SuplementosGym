@@ -112,6 +112,15 @@ class Delivery_service
 			return array('success' => false, 'error' => $uploadProblem);
 		}
 
+		$extraExpense = isset($payment['extra_expense']) ? round((float)$payment['extra_expense'], 2) : 0.0;
+		$extraExpenseDetail = isset($payment['extra_expense_detail']) ? trim((string)$payment['extra_expense_detail']) : '';
+		if ($extraExpense < 0) {
+			return array('success' => false, 'error' => 'El monto de otros gastos no puede ser negativo.');
+		}
+		if ($extraExpense > 0 && $extraExpenseDetail === '') {
+			return array('success' => false, 'error' => 'Indique el detalle de los gastos adicionales.');
+		}
+
 		$ci->db->trans_start();
 
 		// Evidencia (si aplica)
@@ -135,6 +144,8 @@ class Delivery_service
 			'received_by_name' => isset($payment['received_by_name']) ? $payment['received_by_name'] : null,
 			'latitude' => isset($payment['latitude']) ? $payment['latitude'] : null,
 			'longitude' => isset($payment['longitude']) ? $payment['longitude'] : null,
+			'extra_expense' => $extraExpense,
+			'extra_expense_detail' => ($extraExpenseDetail !== '') ? $extraExpenseDetail : null,
 			'created_at' => date('Y-m-d H:i:s'),
 		));
 		$attemptId = $ci->db->insert_id();

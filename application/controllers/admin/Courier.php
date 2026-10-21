@@ -103,7 +103,17 @@ class Courier extends Authenticated_Controller
 
 		$this->data['pageTitle'] = 'Ruta ' . $route->route_number;
 		$this->data['route'] = $route;
-		$this->data['routeOrders'] = $this->Route_model->orders_for_route($routeId);
+
+		$routeOrders = $this->Route_model->orders_for_route($routeId);
+		$orderIds = array();
+		foreach ($routeOrders as $ro) {
+			$orderIds[] = (int) $ro->order_id;
+		}
+		$itemsByOrder = $this->Route_model->items_for_orders($orderIds);
+		foreach ($routeOrders as $ro) {
+			$ro->items = isset($itemsByOrder[(int) $ro->order_id]) ? $itemsByOrder[(int) $ro->order_id] : array();
+		}
+		$this->data['routeOrders'] = $routeOrders;
 		$this->data['summary'] = $this->Route_model->summary($routeId);
 		$this->data['paymentMethods'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('payment_methods')->result();
 		$this->data['failureReasons'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('delivery_failure_reasons')->result();
@@ -209,6 +219,8 @@ class Courier extends Authenticated_Controller
 			'received_by_name' => $this->input->post('received_by_name'),
 			'latitude' => $this->input->post('latitude'),
 			'longitude' => $this->input->post('longitude'),
+			'extra_expense' => $this->input->post('extra_expense'),
+			'extra_expense_detail' => $this->input->post('extra_expense_detail'),
 			'idempotency_key' => $this->input->post('idempotency_key'),
 		);
 

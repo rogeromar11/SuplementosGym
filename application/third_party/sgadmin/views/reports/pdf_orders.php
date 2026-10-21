@@ -60,6 +60,9 @@ foreach ($rows as $row) {
                 <th>Bodega</th>
                 <th>Vendedor</th>
                 <th>Forma de pago</th>
+                <th>Ruta</th>
+                <th>Mensajero</th>
+                <th class="num">Otros gastos</th>
                 <th>Estado</th>
                 <th class="num">Total</th>
                 <th class="num">Pagado</th>
@@ -78,6 +81,9 @@ foreach ($rows as $row) {
                     <td><?php echo html_escape($row->warehouse_name); ?></td>
                     <td><?php echo html_escape(trim((string)$row->seller_name)); ?></td>
                     <td><?php echo html_escape($row->payment_name); ?></td>
+                    <td><?php echo html_escape($row->route_number); ?></td>
+                    <td><?php echo html_escape(trim((string)$row->courier_name)); ?></td>
+                    <td class="num"><?php echo number_format((float)$row->extra_expenses, 2); ?></td>
                     <td><?php echo order_status_label($row->status); ?></td>
                     <td class="num"><?php echo number_format((float)$row->total, 2); ?></td>
                     <td class="num"><?php echo number_format((float)$row->paid_amount, 2); ?></td>
