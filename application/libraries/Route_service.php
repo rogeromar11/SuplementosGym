@@ -116,7 +116,7 @@ class Route_service
 		if (in_array($order->status, array('cancelado', 'entregado', 'no_entregado'), true)) {
 			return array('success' => false, 'error' => 'El pedido no puede asignarse a una ruta.');
 		}
-		if (!in_array($route->status, array('borrador', 'planificada'), true)) {
+		if (!in_array($route->status, array('borrador', 'planificada', 'en_progreso'), true)) {
 			return array('success' => false, 'error' => 'La ruta no admite cambios en su estado actual.');
 		}
 
@@ -167,7 +167,9 @@ class Route_service
 			));
 		}
 
-		$orderUpdate = array('status' => 'asignado_ruta', 'updated_at' => date('Y-m-d H:i:s'));
+		// Si la ruta ya está en progreso, el pedido entra directo "en ruta".
+		$newOrderStatus = ($route->status === 'en_progreso') ? 'en_ruta' : 'asignado_ruta';
+		$orderUpdate = array('status' => $newOrderStatus, 'updated_at' => date('Y-m-d H:i:s'));
 		if ($transportId) {
 			$orderUpdate['transport_id'] = $transportId;
 		}
@@ -176,7 +178,7 @@ class Route_service
 		}
 		$ci->db->where('id', $orderId)->update('store_orders', $orderUpdate);
 
-		$this->order_service()->record_status_change($orderId, $order->status, 'asignado_ruta', $userId, null, null, $routeId);
+		$this->order_service()->record_status_change($orderId, $order->status, $newOrderStatus, $userId, null, null, $routeId);
 
 		$ci->db->trans_complete();
 

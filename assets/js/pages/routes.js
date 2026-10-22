@@ -104,8 +104,7 @@ $(document).ready(function () {
     }
 
     // Agregar pedido
-    $('.btn-add-order').on('click', function () {
-        var btn = $(this);
+    function addOrderRequest(btn) {
         sgms.loading('Asignando...');
         $.ajax({
             url: btn.data('url'),
@@ -121,6 +120,24 @@ $(document).ready(function () {
                 sgms.toast('error', 'Error', res.message);
             }
         }).fail(function (xhr) { sgms.stopLoading(); sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'Error'); });
+    }
+    $('.btn-add-order').on('click', function () {
+        var btn = $(this);
+        if (C && C.status === 'en_progreso') {
+            Swal.fire({
+                title: 'Ruta ya iniciada',
+                html: 'Esta ruta ya fue <strong>iniciada</strong>. El pedido se agregará como <strong>“en ruta”</strong> y <strong>no podrá eliminarse</strong> después.<br><br>¿Deseas agregarlo de todas formas?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, agregar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#DC2626'
+            }).then(function (r) {
+                if (r.isConfirmed) { addOrderRequest(btn); }
+            });
+            return;
+        }
+        addOrderRequest(btn);
     });
 
     // Asignar encomienda (transporte requerido)
@@ -134,12 +151,7 @@ $(document).ready(function () {
         assignParcelModal.show();
     });
 
-    $('#assignParcelConfirm').on('click', function () {
-        var transportId = $('#assignParcelTransport').val();
-        if (!transportId) {
-            sgms.toast('error', 'Atención', 'Debe indicar el transporte de la encomienda.');
-            return;
-        }
+    function sendAssignParcel(transportId) {
         sgms.loading('Asignando...');
         $.ajax({
             url: assignParcelBtn.data('url'),
@@ -160,6 +172,29 @@ $(document).ready(function () {
                 sgms.toast('error', 'Error', res.message);
             }
         }).fail(function (xhr) { sgms.stopLoading(); sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'Error'); });
+    }
+
+    $('#assignParcelConfirm').on('click', function () {
+        var transportId = $('#assignParcelTransport').val();
+        if (!transportId) {
+            sgms.toast('error', 'Atención', 'Debe indicar el transporte de la encomienda.');
+            return;
+        }
+        if (C && C.status === 'en_progreso') {
+            Swal.fire({
+                title: 'Ruta ya iniciada',
+                html: 'Esta ruta ya fue <strong>iniciada</strong>. La encomienda se agregará como <strong>“en ruta”</strong> y <strong>no podrá eliminarse</strong> después.<br><br>¿Deseas agregarla de todas formas?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, agregar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#DC2626'
+            }).then(function (r) {
+                if (r.isConfirmed) { sendAssignParcel(transportId); }
+            });
+            return;
+        }
+        sendAssignParcel(transportId);
     });
 
     // Quitar pedido

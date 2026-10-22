@@ -2,6 +2,7 @@
 $r = $route;
 $canModify = in_array($r->status, array('borrador', 'planificada'), true);
 $canStart = in_array($r->status, array('planificada', 'borrador'), true) && $r->courier_user_id;
+$canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progreso'), true) && has_permission('rutas.editar');
 ?>
 <div class="sg-page-header">
     <div>
@@ -139,10 +140,13 @@ $canStart = in_array($r->status, array('planificada', 'borrador'), true) && $r->
             </div>
         </div>
 
-        <?php if ($canModify && has_permission('rutas.editar')): ?>
+        <?php if ($canAddOrders): ?>
         <div class="card sg-card">
             <div class="sg-card-header"><h5><i class="bi bi-plus-circle me-2 text-danger"></i>Agregar pedidos a la ruta</h5></div>
             <div class="sg-card-body">
+                <?php if ($r->status === 'en_progreso'): ?>
+                    <div class="alert alert-warning py-2"><i class="bi bi-exclamation-triangle me-1"></i>La ruta ya está <strong>iniciada</strong>. Los pedidos que agregue quedarán <strong>“en ruta”</strong> y no podrán retirarse.</div>
+                <?php endif; ?>
                 <?php if (empty($availableOrders)): ?>
                     <p class="text-muted-2 mb-0">No hay pedidos disponibles para asignar.</p>
                 <?php else: ?>
@@ -294,6 +298,7 @@ $canStart = in_array($r->status, array('planificada', 'borrador'), true) && $r->
 <script>
 window.sgmsRoute = {
     routeId: <?php echo $r->id; ?>,
+    status: '<?php echo html_escape($r->status); ?>',
     startUrl: '<?php echo base_url('routes/start/' . $r->id); ?>',
     reorderUrl: '<?php echo base_url('routes/reorder'); ?>',
     transferUrl: '<?php echo base_url('routes/transfer'); ?>',
