@@ -93,6 +93,7 @@ class Clients extends Authenticated_Controller
 		$this->load->library('Excel_service');
 
 		$headers = array(
+			'code' => 'Número',
 			'name' => 'Cliente',
 			'phone' => 'Celular',
 			'phone2' => 'Celular secundario',
@@ -109,6 +110,7 @@ class Clients extends Authenticated_Controller
 		$data = array();
 		foreach ($clients as $client) {
 			$data[] = array(
+				'code' => $client->code,
 				'name' => $client->name,
 				'phone' => (string) $client->phone,
 				'phone2' => (string) $client->phone2,
