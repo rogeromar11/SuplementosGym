@@ -1,6 +1,26 @@
 $(document).ready(function () {
     var C = window.sgmsRoute;
 
+    // Buscador de pedidos disponibles (número, cliente o zona).
+    var availSearch = document.getElementById('availableOrdersSearch');
+    if (availSearch) {
+        var normText = function (s) {
+            return (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        };
+        var availRows = Array.prototype.slice.call(document.querySelectorAll('.available-order-row'));
+        var availEmpty = document.getElementById('availableOrdersEmpty');
+        availSearch.addEventListener('input', function () {
+            var q = normText(this.value.trim());
+            var visible = 0;
+            availRows.forEach(function (row) {
+                var match = q === '' || normText(row.getAttribute('data-search')).indexOf(q) !== -1;
+                row.style.display = match ? '' : 'none';
+                if (match) { visible++; }
+            });
+            if (availEmpty) { availEmpty.style.display = visible === 0 ? '' : 'none'; }
+        });
+    }
+
     // Eliminar ruta (funciona en lista y detalle, sin depender de sgmsRoute)
     $('.btn-delete-route').on('click', function () {
         var btn = $(this);

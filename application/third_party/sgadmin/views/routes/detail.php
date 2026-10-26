@@ -150,6 +150,9 @@ $canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progre
                 <?php if (empty($availableOrders)): ?>
                     <p class="text-muted-2 mb-0">No hay pedidos disponibles para asignar.</p>
                 <?php else: ?>
+                    <div class="mb-2">
+                        <input type="search" class="form-control form-control-sm" id="availableOrdersSearch" placeholder="Buscar por número, cliente o zona..." autocomplete="off">
+                    </div>
                     <div class="table-responsive" style="max-height:300px;">
                         <table class="table table-sm table-hover align-middle mb-0">
                             <thead>
@@ -163,7 +166,7 @@ $canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progre
                             </thead>
                             <tbody>
                                 <?php foreach ($availableOrders as $ao): ?>
-                                    <tr>
+                                    <tr class="available-order-row" data-search="<?php echo html_escape(mb_strtolower(trim($ao->order_number . ' ' . $ao->customer_name . ' ' . $ao->delivery_zone), 'UTF-8')); ?>">
                                         <td><code><?php echo html_escape($ao->order_number); ?></code> <?php if ((int)$ao->is_parcel === 1): ?><span class="badge text-bg-info">Encomienda</span><?php endif; ?> <?php if ($ao->status === 'reprogramado'): ?><span class="badge text-bg-warning">Reprogramado</span><?php endif; ?></td>
                                         <td>
                                             <div class="fw-semibold"><?php echo html_escape($ao->customer_name); ?></div>
@@ -183,6 +186,7 @@ $canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progre
                             </tbody>
                         </table>
                     </div>
+                    <p class="text-muted-2 small mt-2 mb-0" id="availableOrdersEmpty" style="display:none;">No se encontraron pedidos con esa búsqueda.</p>
                 <?php endif; ?>
             </div>
         </div>
