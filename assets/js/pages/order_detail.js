@@ -145,4 +145,42 @@ $(document).ready(function () {
             sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'No fue posible adjuntar el comprobante.');
         });
     });
+
+    // Forma de pago y nota del pedido (editable solo hasta antes de la entrega)
+    var paymentNoteForm = document.getElementById('paymentNoteForm');
+    if (paymentNoteForm) {
+        paymentNoteForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var method = $('#paymentNoteMethod').val();
+            if (!method) {
+                sgms.toast('error', 'Atención', 'Seleccione una forma de pago.');
+                return;
+            }
+            sgms.loading('Guardando...');
+            $.ajax({
+                url: $(paymentNoteForm).data('url'),
+                type: 'POST',
+                data: {
+                    payment_method_id: method,
+                    notes: $('#paymentNoteNotes').val()
+                },
+                dataType: 'json'
+            }).done(function (res) {
+                sgms.stopLoading();
+                if (res.success) {
+                    var modalEl = document.getElementById('paymentNoteModal');
+                    if (modalEl) {
+                        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    }
+                    sgms.toast('success', 'Correcto', res.message);
+                    setTimeout(function () { window.location.reload(); }, 700);
+                } else {
+                    sgms.toast('error', 'Error', res.message);
+                }
+            }).fail(function (xhr) {
+                sgms.stopLoading();
+                sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'No fue posible guardar los cambios.');
+            });
+        });
+    }
 });

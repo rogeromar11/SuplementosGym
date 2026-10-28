@@ -534,6 +534,71 @@ class Orders extends Authenticated_Controller
 	}
 
 	/**
+	 * AJAX: actualiza la forma de pago y la nota del pedido.
+	 * Solo se permite hasta antes de la entrega; una vez entregado (o anulado)
+	 * ambos datos quedan bloqueados.
+	 */
+	public function update_payment_note($id)
+	{
+		$this->require_permission('pedidos.editar');
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+
+		$order = $this->db->where('id', $id)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			$this->json_response(false, 'El pedido no existe.', null, null, 404);
+			return;
+		}
+		if (in_array($order->status, array('entregado', 'cancelado'), true)) {
+			$motivo = $order->status === 'entregado' ? 'ya fue entregado' : 'fue anulado';
+			$this->json_response(false, 'La forma de pago y la nota no pueden modificarse porque el pedido ' . $motivo . '.');
+			return;
+		}
+
+		$paymentMethodId = (int)$this->input->post('payment_method_id');
+		$method = $this->db->where('id', $paymentMethodId)
+			->where('country_id', current_country_id())
+			->where('is_active', 1)
+			->get('payment_methods')->row();
+		if (!$method) {
+			$this->json_response(false, 'Seleccione una forma de pago válida.');
+			return;
+		}
+
+		$notes = trim((string)$this->input->post('notes'));
+		$notes = $notes === '' ? null : $notes;
+
+		$this->db->trans_start();
+		$this->db->where('id', $order->id)->update('store_orders', array(
+			'payment_method_id' => (int)$method->id,
+			'notes' => $notes,
+			'updated_by' => $this->currentUser->id,
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
+		$this->db->trans_complete();
+
+		if (!$this->db->trans_status()) {
+			$this->json_response(false, 'No fue posible actualizar el pedido.');
+			return;
+		}
+
+		$this->audit_service->log('order.payment_note_update', 'pedidos', 'orders', $order->id, array(
+			'order_number' => $order->order_number,
+			'payment_method_id' => (int)$method->id,
+			'payment_method' => $method->name,
+			'notes' => $notes,
+			'status' => $order->status,
+		));
+
+		$this->json_response(true, 'Forma de pago y nota actualizadas.', array(
+			'payment_method_id' => (int)$method->id,
+			'payment_method' => $method->name,
+			'notes' => $notes,
+		));
+	}
+
+	/**
 	 * AJAX: anula (cancela) un pedido.
 	 */
 	public function cancel($id)

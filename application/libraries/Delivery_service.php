@@ -171,6 +171,12 @@ class Delivery_service
 				$ci->db->trans_rollback();
 				return array('success' => false, 'error' => $payResult['error']);
 			}
+
+			// La forma de pago recibida pasa a ser la forma de pago del pedido.
+			$ci->db->where('id', $ro->order_id)->update('store_orders', array(
+				'payment_method_id' => (int)$payment['payment_method_id'],
+				'updated_at' => date('Y-m-d H:i:s'),
+			));
 		}
 
 		// Estado de la entrega y del pedido

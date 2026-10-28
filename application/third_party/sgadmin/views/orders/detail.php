@@ -3,6 +3,7 @@ $o = $order;
 $canEdit = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'asignado_ruta', 'no_entregado', 'reprogramado')) && has_permission('pedidos.editar');
 $canCancel = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'asignado_ruta', 'no_entregado', 'reprogramado')) && has_permission('pedidos.anular');
 $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'no_entregado', 'reprogramado', 'cancelado')) && has_permission('pedidos.eliminar');
+$canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), true) && has_permission('pedidos.editar');
 ?>
 <div class="sg-page-header">
     <div>
@@ -31,7 +32,14 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
 <div class="row g-3">
     <div class="col-lg-7">
         <div class="card sg-card mb-3">
-            <div class="sg-card-header"><h5><i class="bi bi-person me-2 text-danger"></i>Cliente y entrega</h5></div>
+            <div class="sg-card-header">
+                <h5><i class="bi bi-person me-2 text-danger"></i>Cliente y entrega</h5>
+                <?php if ($canEditPaymentNote): ?>
+                    <button type="button" class="btn btn-sm btn-outline-brand" data-bs-toggle="modal" data-bs-target="#paymentNoteModal">
+                        <i class="bi bi-pencil-square me-1"></i>Forma de pago y nota
+                    </button>
+                <?php endif; ?>
+            </div>
             <div class="sg-card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -100,10 +108,10 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
                     <?php if ($o->includes_gifts): ?>
                         <div class="col-md-6"><span class="badge text-bg-warning">Incluye regalías</span> <small><?php echo html_escape($o->gift_description); ?></small></div>
                     <?php endif; ?>
-                    <?php if ($o->notes): ?>
+                    <?php if ($o->notes || $canEditPaymentNote): ?>
                         <div class="col-12">
                             <div class="small text-muted-2">Notas</div>
-                            <div><?php echo nl2br(html_escape($o->notes)); ?></div>
+                            <div><?php echo $o->notes ? nl2br(html_escape($o->notes)) : '<span class="text-muted-2">—</span>'; ?></div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -302,3 +310,39 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
         </div>
     </div>
 </div>
+
+<?php if ($canEditPaymentNote): ?>
+<div class="modal fade" id="paymentNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="paymentNoteForm" data-url="<?php echo base_url('orders/update_payment_note/' . $o->id); ?>">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Forma de pago y nota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="paymentNoteMethod">Forma de pago</label>
+                        <select class="form-select" id="paymentNoteMethod" name="payment_method_id" required>
+                            <?php foreach ($paymentMethods as $pm): ?>
+                                <option value="<?php echo (int)$pm->id; ?>" <?php echo (int)$o->payment_method_id === (int)$pm->id ? 'selected' : ''; ?>><?php echo html_escape($pm->name); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="paymentNoteNotes">Nota del pedido</label>
+                        <textarea class="form-control" id="paymentNoteNotes" name="notes" rows="4" placeholder="Nota visible para el equipo y el mensajero."><?php echo html_escape($o->notes); ?></textarea>
+                    </div>
+                    <div class="alert alert-info py-2 mt-3 mb-0 small">
+                        <i class="bi bi-info-circle me-1"></i>Puedes modificar estos datos hasta antes de confirmar la entrega. Una vez entregado el pedido, quedarán bloqueados.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-brand">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
