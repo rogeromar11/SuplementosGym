@@ -115,7 +115,7 @@ $canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progre
                                     </div>
                                     <div class="d-flex gap-1 route-order-actions">
                                         <?php if ($ro->customer_phone_whatsapp): ?>
-                                            <a href="https://wa.me/<?php echo html_escape($ro->customer_phone_whatsapp); ?>" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                                            <a href="<?php echo base_url('courier/wa/' . $ro->order_id); ?>" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
                                         <?php endif; ?>
                                         <?php if ($ro->customer_phone2_whatsapp): ?>
                                             <a href="<?php echo base_url('courier/wa2/' . $ro->order_id); ?>" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp secundario"><i class="bi bi-whatsapp"></i></a>

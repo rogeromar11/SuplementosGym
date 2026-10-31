@@ -131,13 +131,26 @@ class Courier extends Authenticated_Controller
 		return $ci->route_service;
 	}
 
+	/**
+	 * Mensaje que envía el mensajero al cliente para coordinar la entrega.
+	 *
+	 * @return string
+	 */
+	private function _delivery_whatsapp_message()
+	{
+		return "Hola gusto en saludarte!\n\n"
+			. "Te contacta el mensajero de Suplementos Gym El Salvador para coordinar la entrega de su pedido.\n\n"
+			. "En los próximos minutos estaré llegando a la zona de entrega.\n\n"
+			. "Podrías enviarme la ubicación para facilitar la llegada al punto exacto?";
+	}
+
 	public function wa($orderId)
 	{
 		$order = $this->db->where('id', $orderId)->where('country_id', current_country_id())->get('store_orders')->row();
 		if (!$order) {
 			show_404();
 		}
-		$msg = 'Hola, le contactamos por la entrega del pedido ' . $order->order_number . '.';
+		$msg = $this->_delivery_whatsapp_message();
 		redirect($this->map_link_parser->whatsapp_link($order->customer_phone_whatsapp ?: $order->customer_phone, $msg));
 	}
 
@@ -159,7 +172,7 @@ class Courier extends Authenticated_Controller
 		if (!$order || !$order->customer_phone2_whatsapp) {
 			show_404();
 		}
-		$msg = 'Hola, le contactamos por la entrega del pedido ' . $order->order_number . '.';
+		$msg = $this->_delivery_whatsapp_message();
 		redirect($this->map_link_parser->whatsapp_link($order->customer_phone2_whatsapp ?: $order->customer_phone2, $msg));
 	}
 
@@ -226,7 +239,14 @@ class Courier extends Authenticated_Controller
 
 		$evidence = isset($_FILES['evidence']) ? $_FILES['evidence'] : null;
 		$result = $this->delivery_service->deliver((int)$routeOrderId, $courierId, $payment, $evidence);
-		$this->json_response($result['success'], $result['error'] ?: 'Entrega registrada exitosamente.');
+		$message = $result['error'] ?: 'Entrega registrada exitosamente.';
+		if ($result['success'] && !empty($result['route_finished'])) {
+			$message .= ' Ruta finalizada automáticamente.';
+			if (!empty($result['released_orders'])) {
+				$message .= ' ' . (int)$result['released_orders'] . ' pedido(s) no entregado(s) quedaron disponibles para reprogramar.';
+			}
+		}
+		$this->json_response($result['success'], $message);
 	}
 
 	public function not_delivered($routeOrderId)
@@ -252,7 +272,14 @@ class Courier extends Authenticated_Controller
 
 		$evidence = isset($_FILES['evidence']) ? $_FILES['evidence'] : null;
 		$result = $this->delivery_service->not_delivered((int)$routeOrderId, $courierId, $data, $evidence);
-		$this->json_response($result['success'], $result['error'] ?: 'Entrega registrada como no realizada.');
+		$message = $result['error'] ?: 'Entrega registrada como no realizada.';
+		if ($result['success'] && !empty($result['route_finished'])) {
+			$message .= ' Ruta finalizada automáticamente.';
+			if (!empty($result['released_orders'])) {
+				$message .= ' ' . (int)$result['released_orders'] . ' pedido(s) no entregado(s) quedaron disponibles para reprogramar.';
+			}
+		}
+		$this->json_response($result['success'], $message);
 	}
 }
 

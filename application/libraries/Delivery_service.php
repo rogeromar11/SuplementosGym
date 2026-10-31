@@ -201,7 +201,19 @@ class Delivery_service
 			'route_id' => $ro->route_id,
 		));
 
-		return array('success' => true, 'error' => null, 'attempt_id' => $attemptId);
+		// Si ya no quedan entregas pendientes, la ruta se finaliza sola.
+		$autoFinish = $this->route_service()->auto_finish_if_complete($ro->route_id, $courierUserId);
+		if (!empty($autoFinish['error'])) {
+			log_message('error', 'No se pudo finalizar automaticamente la ruta ' . $ro->route_id . ': ' . $autoFinish['error']);
+		}
+
+		return array(
+			'success' => true,
+			'error' => null,
+			'attempt_id' => $attemptId,
+			'route_finished' => !empty($autoFinish['finished']),
+			'released_orders' => isset($autoFinish['released_orders']) ? (int)$autoFinish['released_orders'] : 0,
+		);
 	}
 
 	/**
@@ -313,7 +325,19 @@ class Delivery_service
 			'reschedule' => $reschedule,
 		));
 
-		return array('success' => true, 'error' => null, 'attempt_id' => $attemptId);
+		// Si ya no quedan entregas pendientes, la ruta se finaliza sola.
+		$autoFinish = $this->route_service()->auto_finish_if_complete($ro->route_id, $courierUserId);
+		if (!empty($autoFinish['error'])) {
+			log_message('error', 'No se pudo finalizar automaticamente la ruta ' . $ro->route_id . ': ' . $autoFinish['error']);
+		}
+
+		return array(
+			'success' => true,
+			'error' => null,
+			'attempt_id' => $attemptId,
+			'route_finished' => !empty($autoFinish['finished']),
+			'released_orders' => isset($autoFinish['released_orders']) ? (int)$autoFinish['released_orders'] : 0,
+		);
 	}
 
 	/**
@@ -455,5 +479,14 @@ class Delivery_service
 			$ci->load->library('Audit_service');
 		}
 		return $ci->audit_service;
+	}
+
+	private function route_service()
+	{
+		$ci =& get_instance();
+		if (!isset($ci->route_service)) {
+			$ci->load->library('Route_service');
+		}
+		return $ci->route_service;
 	}
 }

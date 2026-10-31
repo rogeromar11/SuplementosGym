@@ -370,13 +370,19 @@ class Route_service
 			'updated_at' => date('Y-m-d H:i:s'),
 		));
 
-		// Pedidos de la ruta pasan a en_ruta
-		$ci->db->where('route_id', $routeId)->where('active_key', 1)->update('route_orders', array(
-			'route_status' => 'pendiente',
-			'started_at' => date('Y-m-d H:i:s'),
-		));
+		// Solo los pedidos aun pendientes pasan a en_ruta; si el mensajero ya
+		// entrego o inicio alguno antes de pulsar "Iniciar ruta", se respeta.
+		$ci->db->where('route_id', $routeId)
+			->where('active_key', 1)
+			->where('route_status', 'pendiente')
+			->update('route_orders', array(
+				'started_at' => date('Y-m-d H:i:s'),
+			));
 
-		$ci->db->select('order_id')->from('route_orders')->where('route_id', $routeId)->where('active_key', 1);
+		$ci->db->select('order_id')->from('route_orders')
+			->where('route_id', $routeId)
+			->where('active_key', 1)
+			->where('route_status', 'pendiente');
 		$orderIds = array_column($ci->db->get()->result(), 'order_id');
 		foreach ($orderIds as $oid) {
 			$this->order_service()->change_status($oid, 'en_ruta', $userId, 'Ruta iniciada', null, $routeId);
@@ -395,16 +401,18 @@ class Route_service
 	 * @param int $routeId
 	 * @param int $userId
 	 * @param bool $force Omitir la validacion de entregas pendientes (admin)
+	 * @param bool $allowPlanificada Permitir finalizar una ruta aun no iniciada
 	 * @return array
 	 */
-	public function finish_route($routeId, $userId, $force = false)
+	public function finish_route($routeId, $userId, $force = false, $allowPlanificada = false)
 	{
 		$ci =& get_instance();
 		$route = $ci->db->where('id', $routeId)->where('country_id', current_country_id())->get('routes')->row();
 		if (!$route) {
 			return array('success' => false, 'error' => 'La ruta no existe.');
 		}
-		if ($route->status !== 'en_progreso') {
+		$allowedStatuses = $allowPlanificada ? array('planificada', 'en_progreso') : array('en_progreso');
+		if (!in_array($route->status, $allowedStatuses, true)) {
 			return array('success' => false, 'error' => 'La ruta no está en progreso.');
 		}
 
@@ -426,12 +434,16 @@ class Route_service
 
 		$ci->db->trans_start();
 
-		$ci->db->where('id', $routeId)->update('routes', array(
+		$routeUpdate = array(
 			'status' => 'finalizada',
 			'finished_at' => date('Y-m-d H:i:s'),
 			'updated_by' => $userId,
 			'updated_at' => date('Y-m-d H:i:s'),
-		));
+		);
+		if (empty($route->started_at)) {
+			$routeUpdate['started_at'] = date('Y-m-d H:i:s');
+		}
+		$ci->db->where('id', $routeId)->update('routes', $routeUpdate);
 
 		// Pedidos que quedaron sin entregar en la ruta: se liberan (active_key -> null)
 		// y vuelven a "preparado" para reaparecer en la planificacion y reprogramar.
@@ -458,6 +470,46 @@ class Route_service
 		$this->audit_service()->log('route.finish', 'rutas', 'routes', $routeId, array('released_orders' => count($pending)));
 
 		return array('success' => true, 'error' => null, 'released_orders' => count($pending));
+	}
+
+	/**
+	 * Finaliza automaticamente una ruta cuando todas sus entregas ya fueron
+	 * procesadas (entregado o no entregado). Devuelve si se finalizo.
+	 *
+	 * @param int $routeId
+	 * @param int $userId
+	 * @return array ['success'=>bool,'finished'=>bool,'released_orders'=>int,'error'=>string|null]
+	 */
+	public function auto_finish_if_complete($routeId, $userId)
+	{
+		$ci =& get_instance();
+		$route = $ci->db->where('id', $routeId)->where('country_id', current_country_id())->get('routes')->row();
+		if (!$route || !in_array($route->status, array('planificada', 'en_progreso'), true)) {
+			return array('success' => false, 'finished' => false, 'released_orders' => 0, 'error' => null);
+		}
+
+		// Debe existir al menos un pedido en la ruta (activo o ya procesado).
+		$totalOrders = (int)$ci->db->where('route_id', $routeId)->count_all_results('route_orders');
+		if ($totalOrders === 0) {
+			return array('success' => false, 'finished' => false, 'released_orders' => 0, 'error' => null);
+		}
+
+		// Si queda alguna entrega activa sin procesar, aun no se finaliza.
+		$pending = (int)$ci->db->where('route_id', $routeId)
+			->where('active_key', 1)
+			->where_in('route_status', array('pendiente', 'en_proceso'))
+			->count_all_results('route_orders');
+		if ($pending > 0) {
+			return array('success' => false, 'finished' => false, 'released_orders' => 0, 'error' => null);
+		}
+
+		$result = $this->finish_route($routeId, $userId, false, true);
+		return array(
+			'success' => $result['success'],
+			'finished' => !empty($result['success']),
+			'released_orders' => isset($result['released_orders']) ? (int)$result['released_orders'] : 0,
+			'error' => $result['error'],
+		);
 	}
 
 	/**
