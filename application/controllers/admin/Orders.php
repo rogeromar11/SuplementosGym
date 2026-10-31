@@ -599,6 +599,201 @@ class Orders extends Authenticated_Controller
 	}
 
 	/**
+	 * AJAX: corrige datos de un pedido ya entregado (solo administrador).
+	 * Permite ajustar forma de pago, nota, precio unitario de cada producto y
+	 * descuento general. Recalcula subtotal, total, saldo y estado de pago.
+	 */
+	public function admin_correct_delivered($id)
+	{
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		if (!$this->ion_auth->is_admin()) {
+			$this->json_response(false, 'Solo el administrador puede corregir un pedido entregado.', null, null, 403);
+			return;
+		}
+
+		$order = $this->db->where('id', $id)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			$this->json_response(false, 'El pedido no existe.', null, null, 404);
+			return;
+		}
+		if ($order->status !== 'entregado') {
+			$this->json_response(false, 'Solo se pueden corregir pedidos entregados.');
+			return;
+		}
+
+		$paymentMethodId = (int)$this->input->post('payment_method_id');
+		$method = $this->db->where('id', $paymentMethodId)
+			->where('country_id', current_country_id())
+			->where('is_active', 1)
+			->get('payment_methods')->row();
+		if (!$method) {
+			$this->json_response(false, 'Seleccione una forma de pago válida.');
+			return;
+		}
+
+		$notes = trim((string)$this->input->post('notes'));
+		$notes = $notes === '' ? null : $notes;
+
+		$items = $this->db->where('order_id', $order->id)->order_by('id')->get('store_order_items')->result();
+		if (empty($items)) {
+			$this->json_response(false, 'El pedido no tiene productos para corregir.');
+			return;
+		}
+
+		$prices = (array)$this->input->post('price');
+		$newSubtotal = 0.0;
+		$lineUpdates = array();
+		foreach ($items as $item) {
+			if (!array_key_exists($item->id, $prices)) {
+				$this->json_response(false, 'Indique el precio de todos los productos.');
+				return;
+			}
+			$price = (float)$prices[$item->id];
+			if ($price < 0) {
+				$this->json_response(false, 'Los precios no pueden ser negativos.');
+				return;
+			}
+			$qty = max(1, (int)$item->quantity);
+			$line = round($qty * $price, 2);
+			$newSubtotal += $line;
+			$lineUpdates[] = array(
+				'id' => (int)$item->id,
+				'unit_price' => round($price, 2),
+				'line_total' => $line,
+			);
+		}
+		$newSubtotal = round($newSubtotal, 2);
+
+		$discount = round((float)$this->input->post('discount'), 2);
+		if ($discount < 0) {
+			$this->json_response(false, 'El descuento no puede ser negativo.');
+			return;
+		}
+		if ($discount > $newSubtotal + 0.001) {
+			$this->json_response(false, 'El descuento no puede superar el subtotal.');
+			return;
+		}
+
+		$shipping = round((float)$order->shipping, 2);
+		$total = round($newSubtotal + $shipping - $discount, 2);
+		$paid = round((float)$this->input->post('paid_amount'), 2);
+		if ($paid < 0) {
+			$this->json_response(false, 'El monto pagado no puede ser negativo.');
+			return;
+		}
+		$balance = max(0, round($total - $paid, 2));
+		if ($balance <= 0.01) {
+			$paymentStatus = 'pagado';
+		} elseif ($paid > 0) {
+			$paymentStatus = 'parcial';
+		} else {
+			$paymentStatus = 'pendiente';
+		}
+
+		$this->db->trans_start();
+		foreach ($lineUpdates as $line) {
+			$this->db->where('id', $line['id'])->where('order_id', $order->id)->update('store_order_items', array(
+				'unit_price' => $line['unit_price'],
+				'line_total' => $line['line_total'],
+			));
+		}
+		$this->db->where('id', $order->id)->update('store_orders', array(
+			'payment_method_id' => (int)$method->id,
+			'notes' => $notes,
+			'subtotal' => $newSubtotal,
+			'discount' => $discount,
+			'total' => $total,
+			'paid_amount' => $paid,
+			'balance_amount' => $balance,
+			'payment_status' => $paymentStatus,
+			'updated_by' => $this->currentUser->id,
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
+
+		// Mantiene sincronizada la forma de pago del pago mas reciente.
+		$lastPayment = $this->db->where('order_id', $order->id)->order_by('id', 'DESC')->limit(1)->get('payments')->row();
+		if ($lastPayment) {
+			$this->db->where('id', $lastPayment->id)->update('payments', array(
+				'payment_method_id' => (int)$method->id,
+			));
+		}
+		$this->db->trans_complete();
+
+		if (!$this->db->trans_status()) {
+			$this->json_response(false, 'No fue posible corregir el pedido.');
+			return;
+		}
+
+		$this->audit_service->log('order.delivered_correction', 'pedidos', 'orders', $order->id, array(
+			'order_number' => $order->order_number,
+			'payment_method_from' => (int)$order->payment_method_id,
+			'payment_method_to' => (int)$method->id,
+			'payment_method' => $method->name,
+			'notes_from' => $order->notes,
+			'notes_to' => $notes,
+			'subtotal_from' => (float)$order->subtotal,
+			'subtotal_to' => $newSubtotal,
+			'discount_from' => (float)$order->discount,
+			'discount_to' => $discount,
+			'total_from' => (float)$order->total,
+			'total_to' => $total,
+			'paid_from' => (float)$order->paid_amount,
+			'paid_to' => $paid,
+			'shipping' => $shipping,
+			'balance_to' => $balance,
+			'last_payment_id' => $lastPayment ? (int)$lastPayment->id : null,
+		));
+
+		$this->json_response(true, 'Pedido entregado corregido.', array(
+			'payment_method_id' => (int)$method->id,
+			'payment_method' => $method->name,
+			'notes' => $notes,
+			'subtotal' => $newSubtotal,
+			'discount' => $discount,
+			'total' => $total,
+			'paid_amount' => $paid,
+			'balance_amount' => $balance,
+			'payment_status' => $paymentStatus,
+			'shipping' => $shipping,
+		));
+	}
+
+	/**
+	 * AJAX: registra la devolución post venta de productos (solo administrador).
+	 * Elimina o reduce las líneas devueltas y repone el inventario.
+	 */
+	public function admin_return_items($id)
+	{
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		if (!$this->ion_auth->is_admin()) {
+			$this->json_response(false, 'Solo el administrador puede registrar devoluciones.', null, null, 403);
+			return;
+		}
+
+		$order = $this->db->where('id', $id)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			$this->json_response(false, 'El pedido no existe.', null, null, 404);
+			return;
+		}
+		if ($order->status !== 'entregado') {
+			$this->json_response(false, 'Solo se pueden devolver productos de pedidos entregados.');
+			return;
+		}
+
+		$returns = (array)$this->input->post('return_qty');
+		$result = $this->order_service->return_items($order->id, $returns, $this->currentUser->id);
+		$this->json_response(
+			$result['success'],
+			$result['success'] ? 'Devolución registrada correctamente.' : $result['error'],
+			$result['success'] ? $result['data'] : null
+		);
+	}
+
+	/**
 	 * AJAX: anula (cancela) un pedido.
 	 */
 	public function cancel($id)

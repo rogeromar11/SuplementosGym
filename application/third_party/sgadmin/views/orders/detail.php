@@ -4,6 +4,8 @@ $canEdit = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en
 $canCancel = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'asignado_ruta', 'no_entregado', 'reprogramado')) && has_permission('pedidos.anular');
 $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'no_entregado', 'reprogramado', 'cancelado')) && has_permission('pedidos.eliminar');
 $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), true) && has_permission('pedidos.editar');
+$isAdmin = $this->ion_auth->is_admin();
+$canCorrectDelivered = $o->status === 'entregado' && $isAdmin;
 ?>
 <div class="sg-page-header">
     <div>
@@ -37,6 +39,10 @@ $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), tru
                 <?php if ($canEditPaymentNote): ?>
                     <button type="button" class="btn btn-sm btn-outline-brand" data-bs-toggle="modal" data-bs-target="#paymentNoteModal">
                         <i class="bi bi-pencil-square me-1"></i>Forma de pago y nota
+                    </button>
+                <?php elseif ($canCorrectDelivered): ?>
+                    <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#deliveredCorrectionModal">
+                        <i class="bi bi-shield-lock me-1"></i>Corregir detalles (admin)
                     </button>
                 <?php endif; ?>
             </div>
@@ -119,7 +125,14 @@ $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), tru
         </div>
 
         <div class="card sg-card mb-3">
-            <div class="sg-card-header"><h5><i class="bi bi-boxes me-2 text-danger"></i>Detalle</h5></div>
+            <div class="sg-card-header">
+                <h5><i class="bi bi-boxes me-2 text-danger"></i>Detalle</h5>
+                <?php if ($canCorrectDelivered): ?>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#returnItemsModal">
+                        <i class="bi bi-arrow-return-left me-1"></i>Devolución
+                    </button>
+                <?php endif; ?>
+            </div>
             <div class="sg-card-body">
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
@@ -148,6 +161,9 @@ $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), tru
                             <tr><td colspan="3" class="text-end text-muted-2">Subtotal</td><td class="text-end"><?php echo money($o->subtotal); ?></td></tr>
                             <?php if ((float)$o->discount > 0): ?>
                                 <tr><td colspan="3" class="text-end text-muted-2">Descuento</td><td class="text-end text-danger">- <?php echo money($o->discount); ?></td></tr>
+                            <?php endif; ?>
+                            <?php if ((float)$o->shipping > 0): ?>
+                                <tr><td colspan="3" class="text-end text-muted-2">Envío</td><td class="text-end"><?php echo money($o->shipping); ?></td></tr>
                             <?php endif; ?>
                             <tr><td colspan="3" class="text-end fw-bold">Total</td><td class="text-end fw-bold fs-5"><?php echo money($o->total); ?></td></tr>
                             <tr><td colspan="3" class="text-end text-muted-2">Pagado</td><td class="text-end text-success fw-semibold"><?php echo money($o->paid_amount); ?></td></tr>
@@ -340,6 +356,158 @@ $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), tru
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-brand">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($canCorrectDelivered): ?>
+<div class="modal fade" id="deliveredCorrectionModal" tabindex="-1" aria-hidden="true" data-currency="<?php echo html_escape(app_setting('currency_symbol', '₡')); ?>">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form id="deliveredCorrectionForm" class="d-flex flex-column" style="min-height:0;" data-url="<?php echo base_url('orders/admin_correct_delivered/' . $o->id); ?>">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Corregir pedido entregado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning py-2 small">
+                        <i class="bi bi-exclamation-triangle me-1"></i>Solo el administrador puede corregir un pedido entregado. Los totales y el saldo se recalculan automáticamente.
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="correctionPaymentMethod">Forma de pago</label>
+                            <select class="form-select" id="correctionPaymentMethod" name="payment_method_id" required>
+                                <?php foreach ($paymentMethods as $pm): ?>
+                                    <option value="<?php echo (int)$pm->id; ?>" <?php echo (int)$o->payment_method_id === (int)$pm->id ? 'selected' : ''; ?>><?php echo html_escape($pm->name); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="correctionDiscount">Descuento general</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><?php echo html_escape(app_setting('currency_symbol', '₡')); ?></span>
+                                <input type="number" step="0.01" min="0" class="form-control" id="correctionDiscount" name="discount" value="<?php echo number_format((float)$o->discount, 2, '.', ''); ?>">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="correctionNotes">Nota del pedido</label>
+                            <textarea class="form-control" id="correctionNotes" name="notes" rows="3"><?php echo html_escape($o->notes); ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-end" style="width:80px;">Cant.</th>
+                                    <th class="text-end" style="width:150px;">Precio unitario</th>
+                                    <th class="text-end" style="width:130px;">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($o->items as $item): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold"><?php echo html_escape($item->item_name); ?></div>
+                                            <?php if ($item->item_sku): ?><small class="text-muted-2"><code><?php echo html_escape($item->item_sku); ?></code></small><?php endif; ?>
+                                        </td>
+                                        <td class="text-end"><?php echo number_format((int)$item->quantity); ?></td>
+                                        <td class="text-end">
+                                            <input type="number" step="0.01" min="0" class="form-control form-control-sm text-end correction-price" name="price[<?php echo (int)$item->id; ?>]" value="<?php echo number_format((float)$item->unit_price, 2, '.', ''); ?>" data-qty="<?php echo max(1, (int)$item->quantity); ?>">
+                                        </td>
+                                        <td class="text-end correction-line-total"><?php echo money($item->line_total); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between"><span class="text-muted-2">Subtotal</span><span id="correctionSubtotal"><?php echo money($o->subtotal); ?></span></div>
+                        <div class="d-flex justify-content-between"><span class="text-muted-2">Descuento</span><span id="correctionDiscountOut"><?php echo money($o->discount); ?></span></div>
+                        <?php if ((float)$o->shipping > 0): ?>
+                            <div class="d-flex justify-content-between"><span class="text-muted-2">Envío</span><span><?php echo money($o->shipping); ?></span></div>
+                        <?php endif; ?>
+                        <div class="d-flex justify-content-between fw-bold"><span>Total</span><span id="correctionTotal"><?php echo money($o->total); ?></span></div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted-2">Pagado</span>
+                            <div class="input-group input-group-sm" style="max-width:180px;width:100%;">
+                                <span class="input-group-text"><?php echo html_escape(app_setting('currency_symbol', '₡')); ?></span>
+                                <input type="number" step="0.01" min="0" class="form-control text-end" id="correctionPaid" name="paid_amount" value="<?php echo number_format((float)$o->paid_amount, 2, '.', ''); ?>">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between"><span class="text-muted-2">Saldo</span><span id="correctionBalance"><?php echo money($o->balance_amount); ?></span></div>
+                        <div class="form-text mt-1">Ajusta el pagado si hubo una devolución o una corrección de precio.</div>
+                    </div>
+                    <input type="hidden" id="correctionShipping" value="<?php echo number_format((float)$o->shipping, 2, '.', ''); ?>">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-brand">Guardar corrección</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if ($canCorrectDelivered): ?>
+<div class="modal fade" id="returnItemsModal" tabindex="-1" aria-hidden="true" data-currency="<?php echo html_escape(app_setting('currency_symbol', '₡')); ?>">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form id="returnItemsForm" class="d-flex flex-column" style="min-height:0;" data-url="<?php echo base_url('orders/admin_return_items/' . $o->id); ?>">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-arrow-return-left me-2"></i>Devolución de productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning py-2 small">
+                        <i class="bi bi-exclamation-triangle me-1"></i>Solo el administrador puede registrar devoluciones. Las unidades devueltas se eliminan del pedido y se reponen en el inventario.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-end" style="width:80px;">Cant.</th>
+                                    <th class="text-end" style="width:120px;">Precio</th>
+                                    <th class="text-end" style="width:120px;">Devolver</th>
+                                    <th class="text-end" style="width:110px;">Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($o->items as $item): ?>
+                                    <tr data-price="<?php echo (float)$item->unit_price; ?>">
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input return-item-check" type="checkbox" id="return_<?php echo (int)$item->id; ?>" data-qty="<?php echo max(1, (int)$item->quantity); ?>" data-target="return_qty_<?php echo (int)$item->id; ?>">
+                                                <label class="form-check-label fw-semibold" for="return_<?php echo (int)$item->id; ?>"><?php echo html_escape($item->item_name); ?></label>
+                                            </div>
+                                            <?php if ($item->item_sku): ?><small class="text-muted-2 ms-4"><code><?php echo html_escape($item->item_sku); ?></code></small><?php endif; ?>
+                                        </td>
+                                        <td class="text-end"><?php echo number_format((int)$item->quantity); ?></td>
+                                        <td class="text-end"><?php echo money($item->unit_price); ?></td>
+                                        <td class="text-end">
+                                            <input type="number" class="form-control form-control-sm text-end return-item-qty" id="return_qty_<?php echo (int)$item->id; ?>" name="return_qty[<?php echo (int)$item->id; ?>]" min="1" max="<?php echo max(1, (int)$item->quantity); ?>" value="<?php echo max(1, (int)$item->quantity); ?>" disabled>
+                                        </td>
+                                        <td class="text-end return-item-amount"><?php echo money(0); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span class="text-muted-2">Total a devolver</span>
+                        <span class="fw-bold" id="returnItemsTotal"><?php echo money(0); ?></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Registrar devolución</button>
                 </div>
             </form>
         </div>

@@ -125,13 +125,15 @@ class Order_service
 		}
 
 		$totals = $this->calculate_totals($items, isset($order['discount']) ? $order['discount'] : $current->discount);
+		$shipping = round((float)$current->shipping, 2);
+		$newTotal = round($totals['total'] + $shipping, 2);
 
 		$orderData = array_merge($order, array(
 			'subtotal' => $totals['subtotal'],
 			'discount' => $totals['discount'],
-			'total' => $totals['total'],
+			'total' => $newTotal,
 			'paid_amount' => $current->paid_amount,
-			'balance_amount' => max(0, round($totals['total'] - (float)$current->paid_amount, 2)),
+			'balance_amount' => max(0, round($newTotal - (float)$current->paid_amount, 2)),
 			'updated_by' => $userId,
 			'updated_at' => date('Y-m-d H:i:s'),
 		));
@@ -161,6 +163,168 @@ class Order_service
 		));
 
 		return array('success' => true, 'id' => $orderId, 'error' => null);
+	}
+
+	/**
+	 * Registra la devolución post venta de uno o varios productos de un pedido
+	 * entregado. Repone el inventario y recalcula los totales del pedido.
+	 *
+	 * @param int $orderId
+	 * @param array $returns [item_id => cantidad]
+	 * @param int $userId
+	 * @return array ['success' => bool, 'error' => string|null, 'data' => array]
+	 */
+	public function return_items($orderId, $returns, $userId)
+	{
+		$ci =& get_instance();
+		$order = $ci->db->where('id', $orderId)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			return array('success' => false, 'error' => 'El pedido no existe.', 'data' => null);
+		}
+		if ($order->status !== 'entregado') {
+			return array('success' => false, 'error' => 'Solo se pueden devolver productos de pedidos entregados.', 'data' => null);
+		}
+
+		$items = $ci->db->where('order_id', $orderId)->order_by('id')->get('store_order_items')->result();
+		if (empty($items)) {
+			return array('success' => false, 'error' => 'El pedido no tiene productos.', 'data' => null);
+		}
+		$byId = array();
+		foreach ($items as $item) {
+			$byId[(int)$item->id] = $item;
+		}
+
+		$toRestore = array();
+		$toDelete = array();
+		$toUpdate = array();
+		$returned = array();
+		$returnedValue = 0.0;
+
+		foreach ((array)$returns as $itemId => $qty) {
+			$itemId = (int)$itemId;
+			if (!isset($byId[$itemId])) {
+				continue;
+			}
+			$qty = (int)$qty;
+			if ($qty <= 0) {
+				continue;
+			}
+			$item = $byId[$itemId];
+			$lineQty = max(1, (int)$item->quantity);
+			if ($qty > $lineQty) {
+				$qty = $lineQty;
+			}
+			$unitPrice = (float)$item->unit_price;
+			$toRestore[] = array(
+				'product_id' => (int)$item->product_id,
+				'quantity' => $qty,
+			);
+			if ($qty >= $lineQty) {
+				$toDelete[] = $itemId;
+			} else {
+				$newQty = $lineQty - $qty;
+				$toUpdate[$itemId] = array(
+					'quantity' => $newQty,
+					'line_total' => round($newQty * $unitPrice, 2),
+				);
+			}
+			$lineValue = round($qty * $unitPrice, 2);
+			$returnedValue += $lineValue;
+			$returned[] = array(
+				'item_id' => $itemId,
+				'item_name' => $item->item_name,
+				'quantity' => $qty,
+				'unit_price' => $unitPrice,
+				'line_total' => $lineValue,
+			);
+		}
+
+		if (empty($returned)) {
+			return array('success' => false, 'error' => 'Seleccione al menos un producto y una cantidad válida para devolver.', 'data' => null);
+		}
+
+		$newSubtotal = 0.0;
+		foreach ($items as $item) {
+			$itemId = (int)$item->id;
+			$remaining = max(1, (int)$item->quantity);
+			if (in_array($itemId, $toDelete, true)) {
+				$remaining = 0;
+			} elseif (isset($toUpdate[$itemId])) {
+				$remaining = $toUpdate[$itemId]['quantity'];
+			}
+			$newSubtotal += $remaining * (float)$item->unit_price;
+		}
+		$newSubtotal = round($newSubtotal, 2);
+		$newDiscount = min((float)$order->discount, $newSubtotal);
+		$newDiscount = max(0, round($newDiscount, 2));
+		$shipping = round((float)$order->shipping, 2);
+		$newTotal = round($newSubtotal + $shipping - $newDiscount, 2);
+		$paid = round((float)$order->paid_amount, 2);
+		$newBalance = max(0, round($newTotal - $paid, 2));
+		if ($newBalance <= 0.01) {
+			$paymentStatus = 'pagado';
+		} elseif ($paid > 0) {
+			$paymentStatus = 'parcial';
+		} else {
+			$paymentStatus = 'pendiente';
+		}
+
+		$ci->db->trans_start();
+
+		foreach ($toDelete as $itemId) {
+			$ci->db->where('id', $itemId)->where('order_id', $orderId)->delete('store_order_items');
+		}
+		foreach ($toUpdate as $itemId => $row) {
+			$ci->db->where('id', $itemId)->where('order_id', $orderId)->update('store_order_items', array(
+				'quantity' => $row['quantity'],
+				'line_total' => $row['line_total'],
+			));
+		}
+
+		$ci->load->model('Inventory_model', 'inventory_model');
+		$ci->inventory_model->restore_for_return($orderId, $toRestore, $userId);
+
+		$ci->db->where('id', $orderId)->update('store_orders', array(
+			'subtotal' => $newSubtotal,
+			'discount' => $newDiscount,
+			'total' => $newTotal,
+			'balance_amount' => $newBalance,
+			'payment_status' => $paymentStatus,
+			'updated_by' => $userId,
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
+
+		$ci->db->trans_complete();
+
+		if (!$ci->db->trans_status()) {
+			return array('success' => false, 'error' => 'No fue posible registrar la devolución.', 'data' => null);
+		}
+
+		$ci->audit_service->log('order.delivered_return', 'pedidos', 'orders', $orderId, array(
+			'order_number' => $order->order_number,
+			'returned' => $returned,
+			'returned_value' => round($returnedValue, 2),
+			'subtotal_to' => $newSubtotal,
+			'discount_to' => $newDiscount,
+			'total_to' => $newTotal,
+			'shipping' => $shipping,
+			'balance_to' => $newBalance,
+		));
+
+		return array(
+			'success' => true,
+			'error' => null,
+			'data' => array(
+				'returned' => $returned,
+				'returned_value' => round($returnedValue, 2),
+				'subtotal' => $newSubtotal,
+				'discount' => $newDiscount,
+				'total' => $newTotal,
+				'balance_amount' => $newBalance,
+				'payment_status' => $paymentStatus,
+				'shipping' => $shipping,
+			),
+		);
 	}
 
 	/**
