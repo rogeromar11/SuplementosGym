@@ -134,6 +134,8 @@ $to = min($total, $page * $per_page);
                         <th>Fecha</th>
                         <th>Origen</th>
                         <th>Cliente</th>
+                        <th>Producto</th>
+                        <th class="text-end">Cant.</th>
                         <th>Teléfono</th>
                         <th>Zona</th>
                         <th>Bodega</th>
@@ -158,6 +160,8 @@ $to = min($total, $page * $per_page);
                                 <?php else: ?><span class="badge text-bg-secondary">Manual</span><?php endif; ?>
                             </td>
                             <td><?php echo html_escape($row->customer_name); ?></td>
+                            <td><?php echo html_escape($row->item_name ?: '—'); ?></td>
+                            <td class="text-end"><?php echo $row->item_quantity !== null ? number_format((int)$row->item_quantity) : '—'; ?></td>
                             <td><?php echo html_escape($row->customer_phone); ?></td>
                             <td><?php echo html_escape($row->delivery_zone ?: '—'); ?></td>
                             <td><?php echo html_escape($row->warehouse_name ?: '—'); ?></td>
@@ -181,7 +185,7 @@ $to = min($total, $page * $per_page);
 
 <?php if ($total > 0): ?>
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
-    <div class="text-muted-2 small">Mostrando <?php echo $from; ?>–<?php echo $to; ?> de <?php echo $total; ?> pedidos</div>
+    <div class="text-muted-2 small">Mostrando <?php echo $from; ?>–<?php echo $to; ?> de <?php echo $total; ?> resultados (un registro por producto)</div>
     <?php if ($pages > 1): ?>
     <nav aria-label="Paginación de pedidos">
         <ul class="pagination mb-0">

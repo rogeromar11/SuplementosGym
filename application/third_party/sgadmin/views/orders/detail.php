@@ -6,6 +6,13 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
 $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), true) && has_permission('pedidos.editar');
 $isAdmin = $this->ion_auth->is_admin();
 $canCorrectDelivered = $o->status === 'entregado' && $isAdmin;
+$hasReceipt = false;
+foreach ((array)$o->attachments as $att) {
+    if ($att->type === 'comprobante_pago') {
+        $hasReceipt = true;
+        break;
+    }
+}
 ?>
 <div class="sg-page-header">
     <div>
@@ -328,10 +335,10 @@ $canCorrectDelivered = $o->status === 'entregado' && $isAdmin;
 </div>
 
 <?php if ($canEditPaymentNote): ?>
-<div class="modal fade" id="paymentNoteModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="paymentNoteModal" tabindex="-1" aria-hidden="true" data-balance="<?php echo number_format((float)$o->balance_amount, 2, '.', ''); ?>" data-has-receipt="<?php echo $hasReceipt ? 1 : 0; ?>">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="paymentNoteForm" data-url="<?php echo base_url('orders/update_payment_note/' . $o->id); ?>">
+            <form id="paymentNoteForm" enctype="multipart/form-data" data-url="<?php echo base_url('orders/update_payment_note/' . $o->id); ?>">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Forma de pago y nota</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -341,9 +348,29 @@ $canCorrectDelivered = $o->status === 'entregado' && $isAdmin;
                         <label class="form-label" for="paymentNoteMethod">Forma de pago</label>
                         <select class="form-select" id="paymentNoteMethod" name="payment_method_id" required>
                             <?php foreach ($paymentMethods as $pm): ?>
-                                <option value="<?php echo (int)$pm->id; ?>" <?php echo (int)$o->payment_method_id === (int)$pm->id ? 'selected' : ''; ?>><?php echo html_escape($pm->name); ?></option>
+                                <option value="<?php echo (int)$pm->id; ?>" data-code="<?php echo html_escape($pm->code); ?>" <?php echo (int)$o->payment_method_id === (int)$pm->id ? 'selected' : ''; ?>><?php echo html_escape($pm->name); ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+                    <div class="mb-3" id="paymentNotePaidBlock">
+                        <div class="form-check" id="paymentNotePaidWrap">
+                            <input class="form-check-input" type="checkbox" id="paymentNotePaid" name="paid_before_delivery" value="1">
+                            <label class="form-check-label" for="paymentNotePaid">El cliente ya pagó</label>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label" for="paymentNoteReceipt">Comprobante de pago</label>
+                            <input type="file" class="form-control" id="paymentNoteReceipt" name="payment_receipt" accept="image/jpeg,image/png,image/webp,application/pdf">
+                            <div class="form-text">Adjunte el comprobante cuando el pago sea diferente de efectivo.</div>
+                            <?php if ($hasReceipt): ?>
+                                <div class="form-text text-success"><i class="bi bi-check-circle me-1"></i>Ya existe un comprobante adjunto.</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="alert alert-secondary py-2 mb-3 small" id="paymentNoteCashInfo" style="display:none;">
+                        <i class="bi bi-cash-coin me-1"></i>El efectivo lo cobra el mensajero al entregar el pedido.
+                    </div>
+                    <div class="alert alert-success py-2 mb-3 small" id="paymentNotePrepaidInfo" style="display:none;">
+                        <i class="bi bi-check-circle me-1"></i>Este pedido ya está pagado. Puede adjuntar o reemplazar el comprobante.
                     </div>
                     <div class="mb-0">
                         <label class="form-label" for="paymentNoteNotes">Nota del pedido</label>

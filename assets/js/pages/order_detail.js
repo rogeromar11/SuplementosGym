@@ -149,6 +149,26 @@ $(document).ready(function () {
     // Forma de pago y nota del pedido (editable solo hasta antes de la entrega)
     var paymentNoteForm = document.getElementById('paymentNoteForm');
     if (paymentNoteForm) {
+        var paymentNoteModalEl = document.getElementById('paymentNoteModal');
+        var updatePaymentNotePaid = function () {
+            var code = $('#paymentNoteMethod').find('option:selected').data('code');
+            var isCash = code === 'efectivo';
+            var balance = parseFloat($(paymentNoteModalEl).data('balance')) || 0;
+            var isPrepaid = balance <= 0.01;
+            $('#paymentNotePaidBlock').toggle(!isCash);
+            $('#paymentNoteCashInfo').toggle(isCash);
+            $('#paymentNotePrepaidInfo').toggle(!isCash && isPrepaid);
+            $('#paymentNotePaidWrap').toggle(!isCash && !isPrepaid);
+            if (isCash) {
+                $('#paymentNotePaid').prop('checked', false);
+                $('#paymentNoteReceipt').val('');
+            }
+        };
+        if (paymentNoteModalEl) {
+            $(paymentNoteModalEl).on('shown.bs.modal', updatePaymentNotePaid);
+        }
+        $('#paymentNoteMethod').on('change', updatePaymentNotePaid);
+
         paymentNoteForm.addEventListener('submit', function (e) {
             e.preventDefault();
             var method = $('#paymentNoteMethod').val();
@@ -156,21 +176,38 @@ $(document).ready(function () {
                 sgms.toast('error', 'Atención', 'Seleccione una forma de pago.');
                 return;
             }
+            var code = $('#paymentNoteMethod').find('option:selected').data('code');
+            var isCash = code === 'efectivo';
+            var paid = $('#paymentNotePaid').is(':checked');
+            var hasReceipt = paymentNoteModalEl && String($(paymentNoteModalEl).data('has-receipt')) === '1';
+            var fileInput = document.getElementById('paymentNoteReceipt');
+            var hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+            if (paid && isCash) {
+                sgms.toast('error', 'Atención', 'Para efectivo, el pago se registra al entregar.');
+                return;
+            }
+            if (paid && !isCash && !hasReceipt && !hasFile) {
+                sgms.toast('error', 'Atención', 'Adjunte el comprobante de pago para marcar el pedido como pagado.');
+                return;
+            }
+            if (isCash && hasFile) {
+                sgms.toast('error', 'Atención', 'El comprobante solo aplica a pagos diferentes de efectivo.');
+                return;
+            }
+            var formData = new FormData(paymentNoteForm);
             sgms.loading('Guardando...');
             $.ajax({
                 url: $(paymentNoteForm).data('url'),
                 type: 'POST',
-                data: {
-                    payment_method_id: method,
-                    notes: $('#paymentNoteNotes').val()
-                },
+                data: formData,
+                processData: false,
+                contentType: false,
                 dataType: 'json'
             }).done(function (res) {
                 sgms.stopLoading();
                 if (res.success) {
-                    var modalEl = document.getElementById('paymentNoteModal');
-                    if (modalEl) {
-                        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    if (paymentNoteModalEl) {
+                        bootstrap.Modal.getOrCreateInstance(paymentNoteModalEl).hide();
                     }
                     sgms.toast('success', 'Correcto', res.message);
                     setTimeout(function () { window.location.reload(); }, 700);

@@ -569,6 +569,29 @@ class Orders extends Authenticated_Controller
 		$notes = trim((string)$this->input->post('notes'));
 		$notes = $notes === '' ? null : $notes;
 
+		$paidBefore = (bool)$this->input->post('paid_before_delivery');
+		$isCash = ((string)$method->code === 'efectivo');
+		$balance = round((float)$order->balance_amount, 2);
+		$hasFile = !empty($_FILES['payment_receipt']['name']);
+		$hasReceipt = $this->db->where('order_id', $order->id)
+			->where('type', 'comprobante_pago')
+			->count_all_results('attachments') > 0;
+
+		if ($paidBefore && $isCash) {
+			$this->json_response(false, 'Para efectivo, el pago se registra cuando el mensajero entrega el pedido.');
+			return;
+		}
+		if ($isCash && $hasFile) {
+			$this->json_response(false, 'El comprobante de pago solo aplica a pagos diferentes de efectivo.');
+			return;
+		}
+
+		$needsPayment = $paidBefore && !$isCash && $balance > 0.01;
+		if ($needsPayment && !$hasFile && !$hasReceipt) {
+			$this->json_response(false, 'Adjunte el comprobante de pago para marcar el pedido como pagado.');
+			return;
+		}
+
 		$this->db->trans_start();
 		$this->db->where('id', $order->id)->update('store_orders', array(
 			'payment_method_id' => (int)$method->id,
@@ -576,6 +599,35 @@ class Orders extends Authenticated_Controller
 			'updated_by' => $this->currentUser->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		));
+
+		if ($hasFile) {
+			$attId = $this->order_service->store_payment_receipt($order->id, $this->currentUser->id, $_FILES['payment_receipt']);
+			if (!$attId) {
+				$this->db->trans_rollback();
+				$this->json_response(false, 'El comprobante no es válido. Use una imagen (JPG, PNG, WEBP) o PDF de máximo ' . (int)app_setting('evidence_max_size_mb', 8) . ' MB.');
+				return;
+			}
+		}
+
+		if ($needsPayment) {
+			$this->load->library('Payment_service');
+			$paymentResult = $this->payment_service->register_payment(
+				$order->id,
+				(int)$method->id,
+				$balance,
+				$this->currentUser->id,
+				array(
+					'reference' => 'PAGO-ANTICIPADO-' . $order->id . '-' . date('YmdHis'),
+					'notes' => 'Pago registrado desde forma de pago y nota.',
+				)
+			);
+			if (!$paymentResult['success']) {
+				$this->db->trans_rollback();
+				$this->json_response(false, $paymentResult['error']);
+				return;
+			}
+		}
+
 		$this->db->trans_complete();
 
 		if (!$this->db->trans_status()) {
@@ -583,18 +635,36 @@ class Orders extends Authenticated_Controller
 			return;
 		}
 
+		$updated = $this->db->where('id', $order->id)->get('store_orders')->row();
+
 		$this->audit_service->log('order.payment_note_update', 'pedidos', 'orders', $order->id, array(
 			'order_number' => $order->order_number,
 			'payment_method_id' => (int)$method->id,
 			'payment_method' => $method->name,
 			'notes' => $notes,
 			'status' => $order->status,
+			'paid_before_delivery' => $paidBefore,
+			'payment_registered' => $needsPayment,
+			'payment_amount' => $needsPayment ? $balance : null,
+			'receipt_attached' => $hasFile,
 		));
 
-		$this->json_response(true, 'Forma de pago y nota actualizadas.', array(
+		$message = 'Forma de pago y nota actualizadas.';
+		if ($needsPayment) {
+			$message .= ' Pago registrado.';
+		}
+		if ($hasFile) {
+			$message .= ' Comprobante adjuntado.';
+		}
+
+		$this->json_response(true, $message, array(
 			'payment_method_id' => (int)$method->id,
 			'payment_method' => $method->name,
 			'notes' => $notes,
+			'paid_amount' => (float)$updated->paid_amount,
+			'balance_amount' => (float)$updated->balance_amount,
+			'payment_status' => $updated->payment_status,
+			'receipt_attached' => $hasFile || $hasReceipt,
 		));
 	}
 

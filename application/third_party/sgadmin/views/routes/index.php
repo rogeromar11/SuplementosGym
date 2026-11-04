@@ -41,9 +41,13 @@
 <div class="card sg-card mb-3">
     <div class="sg-card-body">
         <form method="get" action="<?php echo base_url('routes'); ?>" class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label" for="date">Fecha</label>
-                <input type="date" class="form-control" id="date" name="date" value="<?php echo html_escape($date); ?>">
+            <div class="col-md-2">
+                <label class="form-label" for="date_from">Desde</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="<?php echo html_escape($dateFrom); ?>">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="date_to">Hasta</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="<?php echo html_escape($dateTo); ?>">
             </div>
             <div class="col-md-2">
                 <label class="form-label" for="shift_id">Turno</label>
@@ -83,9 +87,9 @@
                     <option value="cancelada" <?php echo ($this->input->get('status') === 'cancelada') ? 'selected' : ''; ?>>Cancelada</option>
                 </select>
             </div>
-            <div class="col-md-1 d-flex gap-2">
-                <button type="submit" class="btn btn-brand"><i class="bi bi-funnel"></i></button>
-                <a href="<?php echo base_url('routes'); ?>" class="btn btn-light"><i class="bi bi-x-lg"></i></a>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-brand flex-fill"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                <a href="<?php echo base_url('routes'); ?>" class="btn btn-light" title="Limpiar"><i class="bi bi-x-lg"></i></a>
             </div>
         </form>
     </div>
@@ -97,7 +101,7 @@
             <div class="card sg-card">
                 <div class="sg-card-body text-center py-5">
                     <i class="bi bi-signpost fs-1 text-muted-2 d-block mb-2"></i>
-                    <p class="text-muted-2 mb-0">No hay rutas para esta fecha.</p>
+                    <p class="text-muted-2 mb-0">No hay rutas para este rango de fechas.</p>
                     <?php if (has_permission('rutas.crear')): ?>
                         <a href="<?php echo base_url('routes/create'); ?>" class="btn btn-brand mt-3">Crear la primera ruta</a>
                     <?php endif; ?>

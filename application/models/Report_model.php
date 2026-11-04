@@ -318,14 +318,21 @@ class Report_model extends CI_Model
 	 * Aplica las condiciones del reporte de pedidos (sin select/limit).
 	 *
 	 * @param array $f
+	 * @param bool $joinItems Une los productos del pedido: una fila por producto
 	 */
-	private function _orders_apply_filters($f)
+	private function _orders_apply_filters($f, $joinItems = false)
 	{
 		$this->db->from('store_orders o')
 			->join('warehouses w', 'w.id = o.warehouse_id', 'left')
 			->join('users u', 'u.id = o.seller_user_id', 'left')
 			->join('payment_methods pm', 'pm.id = o.payment_method_id', 'left')
 			->where('o.country_id', current_country_id());
+
+		// LEFT JOIN: los pedidos sin productos (p.ej. devueltos por completo)
+		// siguen apareciendo una vez con el producto vacio.
+		if ($joinItems) {
+			$this->db->join('store_order_items oi', 'oi.order_id = o.id', 'left');
+		}
 
 		if (!empty($f['date_from'])) {
 			$this->db->where('DATE(o.created_at) >=', $f['date_from']);
@@ -360,6 +367,8 @@ class Report_model extends CI_Model
 
 	/**
 	 * Reporte de pedidos (web y manuales) con filtros, paginado.
+	 * Una fila por producto del pedido: un pedido con varios productos
+	 * aparece varias veces (el resto de los datos se repite).
 	 *
 	 * @param array $f date_from, date_to, status, origin, warehouse_id,
 	 *               seller_user_id, payment_method_id, search
@@ -371,6 +380,7 @@ class Report_model extends CI_Model
 	{
 		$this->db->select('o.id, o.order_number, o.created_at, o.origin, o.status,
 				o.customer_name, o.customer_phone, o.delivery_zone,
+				oi.item_name, oi.quantity AS item_quantity,
 				w.name AS warehouse_name,
 				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
 				pm.name AS payment_name,
@@ -386,9 +396,9 @@ class Report_model extends CI_Model
 				COALESCE((SELECT SUM(da.extra_expense) FROM delivery_attempts da WHERE da.order_id = o.id), 0) AS extra_expenses,
 				o.total, o.paid_amount, o.balance_amount, o.payment_status', false);
 
-		$this->_orders_apply_filters($f);
+		$this->_orders_apply_filters($f, true);
 
-		$this->db->order_by('o.created_at', 'DESC')->order_by('o.id', 'DESC');
+		$this->db->order_by('o.created_at', 'DESC')->order_by('o.id', 'DESC')->order_by('oi.id', 'ASC');
 		if ($limit !== null) {
 			$this->db->limit((int) $limit, (int) $offset);
 		}
@@ -396,14 +406,14 @@ class Report_model extends CI_Model
 	}
 
 	/**
-	 * Total de pedidos que cumplen los filtros (para paginacion).
+	 * Total de filas (productos de pedidos) que cumplen los filtros.
 	 *
 	 * @param array $f
 	 * @return int
 	 */
 	public function orders_count($f = array())
 	{
-		$this->_orders_apply_filters($f);
+		$this->_orders_apply_filters($f, true);
 		return (int) $this->db->count_all_results();
 	}
 

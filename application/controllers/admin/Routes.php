@@ -20,9 +20,35 @@ class Routes extends Authenticated_Controller
 	{
 		$this->require_permission('rutas.ver');
 
-		$date = $this->input->get('date') ?: date('Y-m-d');
+		// Rango de fechas del filtro; por defecto hoy.
+		$today = date('Y-m-d');
+		$dateFrom = trim((string)$this->input->get('date_from'));
+		$dateTo = trim((string)$this->input->get('date_to'));
+
+		// Compatibilidad con enlaces de fecha unica (?date=YYYY-MM-DD)
+		if ($dateFrom === '' && $dateTo === '') {
+			$single = trim((string)$this->input->get('date'));
+			if ($this->_valid_filter_date($single)) {
+				$dateFrom = $single;
+				$dateTo = $single;
+			}
+		}
+
+		if (!$this->_valid_filter_date($dateFrom)) {
+			$dateFrom = $today;
+		}
+		if (!$this->_valid_filter_date($dateTo)) {
+			$dateTo = $today;
+		}
+		if ($dateFrom > $dateTo) {
+			$tmp = $dateFrom;
+			$dateFrom = $dateTo;
+			$dateTo = $tmp;
+		}
+
 		$f = array(
-			'route_date' => $date,
+			'date_from' => $dateFrom,
+			'date_to' => $dateTo,
 			'shift_id' => $this->input->get('shift_id'),
 			'warehouse_id' => $this->input->get('warehouse_id'),
 			'courier_user_id' => $this->input->get('courier_user_id'),
@@ -32,7 +58,8 @@ class Routes extends Authenticated_Controller
 		$this->data['pageTitle'] = 'Rutas';
 		$this->data['breadcrumbs'] = array(array('label' => 'Rutas'));
 		$this->data['routes'] = $this->Route_model->search($f);
-		$this->data['date'] = $date;
+		$this->data['dateFrom'] = $dateFrom;
+		$this->data['dateTo'] = $dateTo;
 
 		// Rutas de dias anteriores que quedaron sin finalizar (en progreso)
 		// o que nunca se iniciaron (planificadas)
@@ -92,9 +119,9 @@ class Routes extends Authenticated_Controller
 				if ($result['success']) {
 					$this->session->set_flashdata('success', true);
 					$this->session->set_flashdata('message', 'Ruta ' . $data['route_number'] . ' creada.');
-					redirect('routes/detail/' . $result['id']);
-				}
-				$this->data['message'] = $result['error'];
+				redirect('routes/detail/' . $result['id']);
+			}
+			$this->data['message'] = $result['error'];
 			}
 		}
 
@@ -201,6 +228,22 @@ class Routes extends Authenticated_Controller
 		}
 		$result = $this->route_service->delete_route((int)$id, $this->currentUser->id);
 		$this->json_response($result['success'], $result['error'] ?: 'Ruta eliminada.');
+	}
+
+	/**
+	 * Valida el formato de una fecha del filtro (YYYY-MM-DD).
+	 *
+	 * @param string $date
+	 * @return bool
+	 */
+	private function _valid_filter_date($date)
+	{
+		$date = trim((string)$date);
+		if ($date === '') {
+			return false;
+		}
+		$parsed = DateTime::createFromFormat('Y-m-d', $date);
+		return $parsed && $parsed->format('Y-m-d') === $date;
 	}
 }
 
