@@ -6,7 +6,12 @@ class Store_auth extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->lang->load('auth');
+		// Forzar espanol en mensajes y validaciones de autenticacion.
+		$this->config->set_item('language', 'spanish');
+		// Mensajes de autenticacion y validacion en espanol.
+		$this->lang->load('auth', 'spanish');
+		$this->lang->load('ion_auth', 'spanish');
+		$this->lang->load('form_validation', 'spanish');
 	}
 
 	public function login()
@@ -125,7 +130,7 @@ class Store_auth extends MY_Controller
 					$this->ion_auth->forgotten_password($identity);
 				}
 
-				$this->session->set_flashdata('store_success', 'Si el correo esta registrado, recibiras las instrucciones para restablecer tu acceso.');
+				$this->session->set_flashdata('store_success', 'Si el correo está registrado, recibirás las instrucciones para restablecer tu acceso.');
 				redirect('ingresar');
 			}
 			else

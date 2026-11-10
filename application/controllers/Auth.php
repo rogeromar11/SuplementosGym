@@ -12,13 +12,18 @@ class Auth extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		// Forzar espanol en mensajes y validaciones de autenticacion.
+		$this->config->set_item('language', 'spanish');
 		$this->load->database();
 		$this->load->library(['ion_auth', 'form_validation']);
 		$this->load->helper(['url', 'language']);
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
-		$this->lang->load('auth');
+		// Mensajes de autenticacion en espanol (login, bloqueo, recuperacion).
+		$this->lang->load('auth', 'spanish');
+		$this->lang->load('ion_auth', 'spanish');
+		$this->lang->load('form_validation', 'spanish');
 	}
 
 	/**
@@ -35,7 +40,7 @@ class Auth extends CI_Controller
 		else if (!$this->ion_auth->is_admin()) // remove this elseif if you want to enable this for non-admins
 		{
 			// redirect them to the home page because they must be an administrator to view this
-			show_error('You must be an administrator to view this page.');
+			show_error('Debe ser administrador para ver esta página.');
 		}
 		else
 		{
@@ -135,7 +140,7 @@ class Auth extends CI_Controller
 	 */
 	public function logout()
 	{
-		$this->data['title'] = "Logout";
+		$this->data['title'] = "Cerrar sesión";
 
 		// log the user out
 		$this->ion_auth->logout();
@@ -455,7 +460,7 @@ class Auth extends CI_Controller
 		if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
 		{
 			// redirect them to the home page because they must be an administrator to view this
-			show_error('You must be an administrator to view this page.');
+			show_error('Debe ser administrador para ver esta página.');
 		}
 
 		$id = (int)$id;

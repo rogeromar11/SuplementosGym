@@ -19,7 +19,7 @@
         <input class="form-control" type="email" id="identity" name="identity" value="<?php echo html_escape(set_value('identity')); ?>" autocomplete="email" required>
       </div>
       <div class="form-group">
-        <label for="password">contraseña</label>
+        <label for="password">Contraseña</label>
         <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
       </div>
       <div class="form-check mb-3">
@@ -30,7 +30,7 @@
     </form>
 
     <div class="auth-links">
-      <a href="<?php echo base_url('recuperar'); ?>">¿¿Olvidaste tu contraseña??</a><br>
+      <a href="<?php echo base_url('recuperar'); ?>">¿Olvidaste tu contraseña?</a><br>
       <span>¿No tienes cuenta? <a href="<?php echo base_url('registro'); ?>">Crear cuenta</a></span>
     </div>
   </div>

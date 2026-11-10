@@ -12,6 +12,8 @@ class Auth extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		// Mensajes de autenticacion y validacion en espanol.
+		$this->config->set_item('language', 'spanish');
 		$this->load->add_package_path(APPPATH . 'third_party/sgadmin');
 		$this->load->database();
 		// Zona horaria de la sesion de MySQL (Costa Rica / El Salvador, UTC-6)
@@ -21,7 +23,7 @@ class Auth extends CI_Controller
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
-		$this->lang->load('auth');
+		$this->lang->load('auth', 'spanish');
 	}
 
 	/**
@@ -241,7 +243,7 @@ class Auth extends CI_Controller
 	 */
 	public function logout()
 	{
-		$this->data['title'] = "Logout";
+		$this->data['title'] = "Cerrar sesión";
 
 		// log the user out
 		$this->ion_auth->logout();
@@ -585,7 +587,7 @@ class Auth extends CI_Controller
 		if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
 		{
 			// redirect them to the home page because they must be an administrator to view this
-			show_error('You must be an administrator to view this page.');
+			show_error('Debe ser administrador para ver esta página.');
 		}
 
 		$id = (int)$id;

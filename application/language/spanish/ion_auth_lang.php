@@ -38,11 +38,11 @@ $lang['activation_email_unsuccessful']          = 'No se ha podido enviar el ema
 $lang['deactivate_current_user_unsuccessful']= 'No se puede desactivar usted mismo';
 
 // Login / Logout
-$lang['login_successful']                       = 'Sesión iniciada con éxito';
-$lang['login_unsuccessful']                     = 'No se ha podido iniciar sesión';
-$lang['login_unsuccessful_not_active']          = 'Cuenta inactiva';
-$lang['login_timeout']                          = 'Temporalmente bloqueado. Vuelva a intentarlo luego.';
-$lang['logout_successful']                      = 'Sesión finalizada con éxito';
+$lang['login_successful']                       = 'Sesión iniciada correctamente.';
+$lang['login_unsuccessful']                     = 'Usuario o contraseña incorrectos.';
+$lang['login_unsuccessful_not_active']          = 'La cuenta está inactiva.';
+$lang['login_timeout']                          = 'Cuenta bloqueada temporalmente. Intente de nuevo en 1 minuto.';
+$lang['logout_successful']                      = 'Sesión finalizada correctamente.';
 
 // Account Changes
 $lang['update_successful']                      = 'Información de la cuenta actualizada con éxito';

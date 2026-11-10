@@ -1,6 +1,12 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 $totals = array('orders' => 0, 'sold' => 0, 'collected' => 0, 'balance' => 0);
+$lastOrderId = null;
 foreach ($rows as $row) {
+    // Una fila por producto: los totales se cuentan una vez por pedido.
+    if ($row->id === $lastOrderId) {
+        continue;
+    }
+    $lastOrderId = $row->id;
     $totals['orders']++;
     if ($row->status !== 'cancelado') {
         $totals['sold'] += (float)$row->total;
@@ -55,6 +61,8 @@ foreach ($rows as $row) {
                 <th>Fecha</th>
                 <th>Origen</th>
                 <th>Cliente</th>
+                <th>Producto</th>
+                <th class="num">Cant.</th>
                 <th>Teléfono</th>
                 <th>Zona</th>
                 <th>Bodega</th>
@@ -76,6 +84,8 @@ foreach ($rows as $row) {
                     <td><?php echo fmt_datetime($row->created_at); ?></td>
                     <td><?php echo $row->origin === 'web' ? 'Web' : 'Manual'; ?></td>
                     <td><?php echo html_escape($row->customer_name); ?></td>
+                    <td><?php echo html_escape($row->item_name ?: '-'); ?></td>
+                    <td class="num"><?php echo $row->item_quantity !== null ? (int)$row->item_quantity : '-'; ?></td>
                     <td><?php echo html_escape($row->customer_phone); ?></td>
                     <td><?php echo html_escape($row->delivery_zone); ?></td>
                     <td><?php echo html_escape($row->warehouse_name); ?></td>
