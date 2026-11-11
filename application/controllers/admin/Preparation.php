@@ -36,26 +36,22 @@ class Preparation extends Authenticated_Controller
 		$this->data['pageTitle'] = 'Preparación';
 		$this->data['breadcrumbs'] = array(array('label' => 'Preparación'));
 
-		$this->db->select('o.*, w.name AS warehouse_name')
+		$this->db->select('o.*, w.name AS warehouse_name, COALESCE(o.rescheduled_delivery_date, o.requested_delivery_date) AS delivery_date', false)
 			->from('store_orders o')
 			->join('warehouses w', 'w.id = o.warehouse_id', 'left');
 		$this->db->where('o.country_id', current_country_id());
-		$this->db->group_start();
-		$this->db->where_in('o.status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion'));
-		$this->db->or_group_start()->where('o.status', 'preparado');
-		$preparedDateSql = 'EXISTS (SELECT 1 FROM warehouse_preparation_history wph'
-			. ' WHERE wph.order_id = o.id AND wph.to_status = "preparado"'
-			. ' AND DATE(wph.created_at) >= ' . $this->db->escape($dateFrom)
-			. ' AND DATE(wph.created_at) <= ' . $this->db->escape($dateTo) . ')';
-		$this->db->where($preparedDateSql, null, false)->group_end();
-		$this->db->group_end();
+		$this->db->where_in('o.status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion', 'preparado', 'reprogramado'));
+		$deliveryDateSql = 'DATE(COALESCE(o.rescheduled_delivery_date, o.requested_delivery_date)) BETWEEN '
+			. $this->db->escape($dateFrom) . ' AND ' . $this->db->escape($dateTo);
+		$this->db->where($deliveryDateSql, null, false);
 		if ($warehouseId) {
 			$this->db->where('o.warehouse_id', $warehouseId);
 		}
 		if ($search) {
 			$this->db->group_start()->like('o.order_number', $search)->or_like('o.customer_name', $search)->group_end();
 		}
-		$this->db->order_by('FIELD(o.status, "en_preparacion", "pendiente_preparacion", "registrado", "preparado")', '', false)
+		$this->db->order_by('delivery_date', 'ASC')
+			->order_by('FIELD(o.status, "en_preparacion", "pendiente_preparacion", "registrado", "reprogramado", "preparado")', '', false)
 			->order_by('o.created_at', 'ASC');
 		$this->data['queue'] = $this->db->get()->result();
 
@@ -66,14 +62,15 @@ class Preparation extends Authenticated_Controller
 			'overdue' => $this->_count_overdue(),
 		);
 
-		// Pedidos pendientes de preparar de dias anteriores (posibles olvidados)
-		$this->data['overdueOrders'] = $this->db->select('o.id, o.order_number, o.customer_name, o.status, o.created_at, o.total, w.name AS warehouse_name')
+		// Pedidos con fecha de entrega atrasada (posibles olvidados)
+		$overdueDateSql = 'DATE(COALESCE(o.rescheduled_delivery_date, o.requested_delivery_date)) < ' . $this->db->escape(date('Y-m-d'));
+		$this->data['overdueOrders'] = $this->db->select('o.id, o.order_number, o.customer_name, o.status, COALESCE(o.rescheduled_delivery_date, o.requested_delivery_date) AS delivery_date, o.total, w.name AS warehouse_name', false)
 			->from('store_orders o')
 			->join('warehouses w', 'w.id = o.warehouse_id', 'left')
 			->where('o.country_id', current_country_id())
-			->where_in('o.status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion'))
-			->where('DATE(o.created_at) <', date('Y-m-d'))
-			->order_by('o.created_at', 'ASC')
+			->where_in('o.status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion', 'reprogramado'))
+			->where($overdueDateSql, null, false)
+			->order_by('delivery_date', 'ASC')
 			->limit(50)
 			->get()->result();
 		$this->data['warehouses'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('name')->get('warehouses')->result();
@@ -85,16 +82,17 @@ class Preparation extends Authenticated_Controller
 	}
 
 	/**
-	 * Cuenta pedidos pendientes de preparar con fecha de creacion anterior a hoy.
+	 * Cuenta pedidos pendientes de preparar con fecha de entrega anterior a hoy.
 	 *
 	 * @return int
 	 */
 	private function _count_overdue()
 	{
+		$overdueDateSql = 'DATE(COALESCE(rescheduled_delivery_date, requested_delivery_date)) < ' . $this->db->escape(date('Y-m-d'));
 		return (int)$this->db->from('store_orders')
 			->where('country_id', current_country_id())
-			->where_in('status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion'))
-			->where('DATE(created_at) <', date('Y-m-d'))
+			->where_in('status', array('confirmado', 'registrado', 'pendiente_preparacion', 'en_preparacion', 'reprogramado'))
+			->where($overdueDateSql, null, false)
 			->count_all_results();
 	}
 

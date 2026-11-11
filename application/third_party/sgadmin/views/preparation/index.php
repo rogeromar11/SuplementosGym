@@ -34,7 +34,7 @@
     <div class="col-6 col-md-4 col-lg-3">
         <div class="card sg-card sg-stat" style="border-left-color:#DC2626;">
             <div class="card-body">
-                <div class="sg-stat-label">Atrasados (días anteriores)</div>
+                <div class="sg-stat-label">Entregas atrasadas</div>
                 <div class="sg-stat-value <?php echo (int)$counters['overdue'] > 0 ? 'text-danger' : ''; ?>"><?php echo (int)$counters['overdue']; ?></div>
             </div>
         </div>
@@ -44,20 +44,20 @@
 <?php if (!empty($overdueOrders)): ?>
 <div class="alert alert-warning">
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <strong><i class="bi bi-exclamation-triangle me-1"></i>Pedidos pendientes de días anteriores</strong>
+        <strong><i class="bi bi-exclamation-triangle me-1"></i>Pedidos con entrega atrasada</strong>
         <span class="badge text-bg-danger"><?php echo (int)$counters['overdue']; ?></span>
     </div>
     <div class="table-responsive" style="max-height:260px;">
         <table class="table table-sm table-hover align-middle mb-0 bg-white">
-            <thead><tr><th>Pedido</th><th>Cliente</th><th>Bodega</th><th>Registrado</th><th class="text-end">Atraso</th></tr></thead>
+            <thead><tr><th>Pedido</th><th>Cliente</th><th>Bodega</th><th>Entrega</th><th class="text-end">Atraso</th></tr></thead>
             <tbody>
                 <?php foreach ($overdueOrders as $o): ?>
-                    <?php $days = (int)floor((time() - strtotime($o->created_at)) / 86400); ?>
+                    <?php $days = (int)floor((strtotime(date('Y-m-d')) - strtotime($o->delivery_date)) / 86400); ?>
                     <tr>
                         <td><a href="<?php echo base_url('orders/detail/' . $o->id . '?back=' . urlencode(current_path_query())); ?>" class="fw-semibold"><code><?php echo html_escape($o->order_number); ?></code></a></td>
                         <td><?php echo html_escape($o->customer_name); ?></td>
                         <td><?php echo html_escape($o->warehouse_name ?: '—'); ?></td>
-                        <td><?php echo fmt_datetime($o->created_at); ?></td>
+                        <td><?php echo fmt_date($o->delivery_date); ?></td>
                         <td class="text-end"><span class="badge text-bg-danger"><?php echo $days > 0 ? $days . ' día(s)' : 'Hoy'; ?></span></td>
                     </tr>
                 <?php endforeach; ?>
@@ -87,11 +87,11 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="date_from">Preparados desde</label>
+                <label class="form-label" for="date_from">Entrega desde</label>
                 <input type="date" class="form-control" id="date_from" name="date_from" value="<?php echo html_escape($dateFrom); ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label" for="date_to">Hasta</label>
+                <label class="form-label" for="date_to">Entrega hasta</label>
                 <input type="date" class="form-control" id="date_to" name="date_to" value="<?php echo html_escape($dateTo); ?>">
             </div>
             <div class="col-md-4 d-flex gap-2">
@@ -122,10 +122,18 @@
                         <div>
                             <a href="<?php echo base_url('orders/detail/' . $o->id . '?back=' . urlencode(current_path_query())); ?>" class="fw-bold"><code><?php echo html_escape($o->order_number); ?></code></a>
                             <div class="fw-semibold"><?php echo html_escape($o->customer_name); ?></div>
-                            <div class="small text-muted-2"><?php echo fmt_datetime($o->created_at); ?></div>
+                            <div class="small text-muted-2">
+                                <i class="bi bi-calendar-event me-1"></i>Entrega: <?php echo $o->delivery_date ? fmt_date($o->delivery_date) : 'Sin fecha'; ?>
+                                <?php if ($o->rescheduled_delivery_date): ?>
+                                    <span class="badge text-bg-warning ms-1">Reprogramada</span>
+                                    <?php if ($o->requested_delivery_date): ?>
+                                        <span class="ms-1">(solicitada <?php echo fmt_date($o->requested_delivery_date); ?>)</span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <?php echo order_status_badge($o->status); ?>
-                        <?php if (substr($o->created_at, 0, 10) < date('Y-m-d')): ?>
+                        <?php if ($o->delivery_date && $o->delivery_date < date('Y-m-d')): ?>
                             <span class="badge text-bg-danger">Atrasado</span>
                         <?php endif; ?>
                     </div>
