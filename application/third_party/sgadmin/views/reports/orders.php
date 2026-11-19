@@ -136,6 +136,8 @@ $to = min($total, $page * $per_page);
                         <th>Cliente</th>
                         <th>Producto</th>
                         <th class="text-end">Cant.</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-end">Subtotal</th>
                         <th>Teléfono</th>
                         <th>Zona</th>
                         <th>Bodega</th>
@@ -145,7 +147,7 @@ $to = min($total, $page * $per_page);
                         <th>Mensajero</th>
                         <th class="text-end">Otros gastos</th>
                         <th>Estado</th>
-                        <th class="text-end">Total</th>
+                        <th class="text-end">Total pedido</th>
                         <th class="text-end">Pagado</th>
                         <th class="text-end">Saldo</th>
                     </tr>
@@ -162,6 +164,8 @@ $to = min($total, $page * $per_page);
                             <td><?php echo html_escape($row->customer_name); ?></td>
                             <td><?php echo html_escape($row->item_name ?: '—'); ?></td>
                             <td class="text-end"><?php echo $row->item_quantity !== null ? number_format((int)$row->item_quantity) : '—'; ?></td>
+                            <td class="text-end"><?php echo $row->item_unit_price !== null ? money($row->item_unit_price) : '—'; ?></td>
+                            <td class="text-end fw-semibold"><?php echo $row->item_line_total !== null ? money($row->item_line_total) : '—'; ?></td>
                             <td><?php echo html_escape($row->customer_phone); ?></td>
                             <td><?php echo html_escape($row->delivery_zone ?: '—'); ?></td>
                             <td><?php echo html_escape($row->warehouse_name ?: '—'); ?></td>

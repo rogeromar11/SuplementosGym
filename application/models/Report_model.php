@@ -381,6 +381,7 @@ class Report_model extends CI_Model
 		$this->db->select('o.id, o.order_number, o.created_at, o.origin, o.status,
 				o.customer_name, o.customer_phone, o.delivery_zone,
 				oi.item_name, oi.quantity AS item_quantity,
+				oi.unit_price AS item_unit_price, oi.line_total AS item_line_total,
 				w.name AS warehouse_name,
 				CONCAT(u.first_name, " ", u.last_name) AS seller_name,
 				pm.name AS payment_name,

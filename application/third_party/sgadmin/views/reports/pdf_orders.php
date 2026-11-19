@@ -63,6 +63,8 @@ foreach ($rows as $row) {
                 <th>Cliente</th>
                 <th>Producto</th>
                 <th class="num">Cant.</th>
+                <th class="num">Precio</th>
+                <th class="num">Subtotal</th>
                 <th>Teléfono</th>
                 <th>Zona</th>
                 <th>Bodega</th>
@@ -72,7 +74,7 @@ foreach ($rows as $row) {
                 <th>Mensajero</th>
                 <th class="num">Otros gastos</th>
                 <th>Estado</th>
-                <th class="num">Total</th>
+                <th class="num">Total pedido</th>
                 <th class="num">Pagado</th>
                 <th class="num">Saldo</th>
             </tr>
@@ -86,6 +88,8 @@ foreach ($rows as $row) {
                     <td><?php echo html_escape($row->customer_name); ?></td>
                     <td><?php echo html_escape($row->item_name ?: '-'); ?></td>
                     <td class="num"><?php echo $row->item_quantity !== null ? (int)$row->item_quantity : '-'; ?></td>
+                    <td class="num"><?php echo $row->item_unit_price !== null ? number_format((float)$row->item_unit_price, 2) : '-'; ?></td>
+                    <td class="num"><?php echo $row->item_line_total !== null ? number_format((float)$row->item_line_total, 2) : '-'; ?></td>
                     <td><?php echo html_escape($row->customer_phone); ?></td>
                     <td><?php echo html_escape($row->delivery_zone); ?></td>
                     <td><?php echo html_escape($row->warehouse_name); ?></td>
