@@ -199,7 +199,7 @@ class Route_model extends CI_Model
 			->where('o.country_id', current_country_id())
 			->where('NOT EXISTS (SELECT 1 FROM route_orders ro WHERE ro.order_id = o.id AND ro.active_key = 1)', null, false)
 			->group_start()
-			->where('o.status', 'preparado')
+			->where_in('o.status', array('preparado', 'no_entregado'))
 			->or_group_start()
 				->where('o.status', 'reprogramado')
 				->where('o.rescheduled_delivery_date', $date)

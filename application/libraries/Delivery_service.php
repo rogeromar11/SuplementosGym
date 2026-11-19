@@ -290,15 +290,17 @@ class Delivery_service
 			$ci->db->where('id', $attachmentId)->update('attachments', array('delivery_attempt_id' => $attemptId));
 		}
 
+		// Se libera de la ruta de inmediato (active_key NULL) para que pueda
+		// reasignarse sin esperar a que finalice la ruta.
 		$ci->db->where('id', $routeOrderId)->update('route_orders', array(
 			'route_status' => 'no_entregado',
+			'active_key' => null,
 			'completed_at' => date('Y-m-d H:i:s'),
 			'updated_at' => date('Y-m-d H:i:s'),
 		));
 
 		if ($reschedule) {
-			// Reprogramado: retirar de ruta activa, dejar disponible y guardar nueva fecha
-			$ci->db->where('id', $routeOrderId)->update('route_orders', array('active_key' => null));
+			// Reprogramado: guardar nueva fecha, dejar disponible
 			$ci->db->where('id', $ro->order_id)->update('store_orders', array(
 				'status' => 'reprogramado',
 				'rescheduled_delivery_date' => $rescheduledDate,

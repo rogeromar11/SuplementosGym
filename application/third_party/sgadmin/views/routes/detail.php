@@ -167,7 +167,7 @@ $canAddOrders = in_array($r->status, array('borrador', 'planificada', 'en_progre
                             <tbody>
                                 <?php foreach ($availableOrders as $ao): ?>
                                     <tr class="available-order-row" data-search="<?php echo html_escape(mb_strtolower(trim($ao->order_number . ' ' . $ao->customer_name . ' ' . $ao->delivery_zone), 'UTF-8')); ?>">
-                                        <td><code><?php echo html_escape($ao->order_number); ?></code> <?php if ((int)$ao->is_parcel === 1): ?><span class="badge text-bg-info">Encomienda</span><?php endif; ?> <?php if ($ao->status === 'reprogramado'): ?><span class="badge text-bg-warning">Reprogramado</span><?php endif; ?></td>
+                                        <td><code><?php echo html_escape($ao->order_number); ?></code> <?php if ((int)$ao->is_parcel === 1): ?><span class="badge text-bg-info">Encomienda</span><?php endif; ?> <?php if ($ao->status === 'reprogramado'): ?><span class="badge text-bg-warning">Reprogramado</span><?php endif; ?> <?php if ($ao->status === 'no_entregado'): ?><span class="badge text-bg-danger">No entregado</span><?php endif; ?></td>
                                         <td>
                                             <div class="fw-semibold"><?php echo html_escape($ao->customer_name); ?></div>
                                             <div class="small text-muted-2"><?php echo html_escape(mb_substr($ao->delivery_address, 0, 40)); ?></div>

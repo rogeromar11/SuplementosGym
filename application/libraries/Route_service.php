@@ -108,12 +108,12 @@ class Route_service
 		if (!$order || !$route) {
 			return array('success' => false, 'error' => 'Pedido o ruta no existen.');
 		}
-		$statusOk = ($order->status === 'preparado')
+		$statusOk = in_array($order->status, array('preparado', 'no_entregado'), true)
 			|| ($order->status === 'reprogramado' && $order->rescheduled_delivery_date === $route->route_date);
 		if (!$statusOk) {
-			return array('success' => false, 'error' => 'Solo se pueden asignar pedidos preparados o reprogramados para la fecha de la ruta.');
+			return array('success' => false, 'error' => 'Solo se pueden asignar pedidos preparados, no entregados o reprogramados para la fecha de la ruta.');
 		}
-		if (in_array($order->status, array('cancelado', 'entregado', 'no_entregado'), true)) {
+		if (in_array($order->status, array('cancelado', 'entregado'), true)) {
 			return array('success' => false, 'error' => 'El pedido no puede asignarse a una ruta.');
 		}
 		if (!in_array($route->status, array('borrador', 'planificada', 'en_progreso'), true)) {
