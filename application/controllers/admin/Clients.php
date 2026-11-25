@@ -266,6 +266,19 @@ class Clients extends Authenticated_Controller
 			return $this->json_response(false, 'El nombre del cliente es obligatorio.');
 		}
 
+		// Alerta de posible duplicado por nombre (sin distinguir mayusculas).
+		if (!$client && !$this->input->post('confirm_duplicate')) {
+			$existing = $this->Client_model->find_by_name($name);
+			if ($existing) {
+				return $this->json_response(false, 'Ya existe un cliente con el mismo nombre: ' . $existing->name . ' (' . $existing->code . '). ¿Desea crear otro de todas formas?', array(
+					'duplicate_name' => true,
+					'existing_id' => (int)$existing->id,
+					'existing_code' => $existing->code,
+					'existing_name' => $existing->name,
+				));
+			}
+		}
+
 		$code = mb_strtoupper(trim((string)$this->input->post('code')), 'UTF-8');
 		if ($code === '') {
 			$code = $client ? $client->code : $this->next_code();

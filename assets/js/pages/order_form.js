@@ -170,6 +170,26 @@ $(document).ready(function () {
         setupSelect2($row);
     }
 
+    var clientTypeMap = {
+        excelente: { label: 'Excelente', color: 'success' },
+        bueno: { label: 'Bueno', color: 'primary' },
+        normal: { label: 'Normal', color: 'secondary' },
+        malo: { label: 'Malo', color: 'danger' }
+    };
+
+    function setClientTypeBadge(type) {
+        var $badge = $('#clientTypeBadge');
+        var info = clientTypeMap[type];
+        if (!info) {
+            $badge.hide().text('');
+            return;
+        }
+        $badge.removeClass('text-bg-success text-bg-primary text-bg-secondary text-bg-danger')
+            .addClass('text-bg-' + info.color)
+            .text(info.label)
+            .show();
+    }
+
     function setupCustomerSelect2() {
         var $select = $('#customer_name');
         var $hidden = $('#customer_name_value');
@@ -208,6 +228,7 @@ $(document).ready(function () {
     $select.on('select2:select', function (e) {
         var d = e.params.data;
         $hidden.val(d.name || d.text || '');
+        setClientTypeBadge(d.client_type || null);
         if (d.phone) {
             $('#customer_phone').val(d.phone).trigger('blur');
         }
@@ -228,11 +249,13 @@ $(document).ready(function () {
     });
         $select.on('select2:clear', function () {
             $hidden.val('');
+            setClientTypeBadge(null);
         });
     }
 
     $('#itemsTable tbody .item-row').each(function () { setupRow($(this)); });
     setupCustomerSelect2();
+    setClientTypeBadge(C.initialClientType || null);
 
     $('.btn-add-product-row').on('click', function () {
         var html = '<tr class="item-row" data-is-manual="0">' +

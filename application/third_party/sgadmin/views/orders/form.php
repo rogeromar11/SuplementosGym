@@ -33,7 +33,7 @@ unset($item);
                     <?php endif; ?>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label" for="customer_name">Nombre del cliente *</label>
+                            <label class="form-label" for="customer_name">Nombre del cliente * <span id="clientTypeBadge" class="badge ms-1" style="display:none;"></span></label>
                             <select class="form-select" id="customer_name" data-placeholder="Buscar cliente..." aria-describedby="customerNameHint">
                                 <option value="">Buscar cliente...</option>
                                 <?php if ($isEdit && $o->customer_name): ?>
@@ -241,6 +241,7 @@ unset($item);
 window.sgmsOrderForm = {
     searchUrl: '<?php echo base_url('orders/product_search'); ?>',
     clientSearchUrl: '<?php echo base_url('orders/client_search'); ?>',
+    initialClientType: <?php echo json_encode($initialClientType ?? null); ?>,
     stockUrl: '<?php echo base_url('orders/product_stock'); ?>',
     parseMapUrl: '<?php echo base_url('orders/parse_map'); ?>',
     geocodeUrl: '<?php echo base_url('orders/geocode_address'); ?>',

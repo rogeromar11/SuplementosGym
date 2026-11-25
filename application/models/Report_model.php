@@ -294,7 +294,7 @@ class Report_model extends CI_Model
 			->join('store_order_items oi', 'oi.order_id = o.id', 'inner')
 			->join('products p', 'p.id = oi.product_id', 'left')
 			->where('o.country_id', current_country_id())
-			->where('o.status !=', 'cancelado');
+			->where_not_in('o.status', array('cancelado', 'devuelto'));
 
 		if (!empty($f['date_from'])) {
 			$this->db->where('DATE(o.created_at) >=', $f['date_from']);
@@ -429,9 +429,9 @@ class Report_model extends CI_Model
 		$this->db->select('COUNT(*) AS total_orders,
 				COALESCE(SUM(o.status = "entregado"), 0) AS delivered,
 				COALESCE(SUM(o.status = "no_entregado"), 0) AS not_delivered,
-				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.total ELSE 0 END), 0) AS sold,
-				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.paid_amount ELSE 0 END), 0) AS collected,
-				COALESCE(SUM(CASE WHEN o.status <> "cancelado" THEN o.balance_amount ELSE 0 END), 0) AS balance,
+				COALESCE(SUM(CASE WHEN o.status NOT IN ("cancelado","devuelto") THEN o.total ELSE 0 END), 0) AS sold,
+				COALESCE(SUM(CASE WHEN o.status NOT IN ("cancelado","devuelto") THEN o.paid_amount ELSE 0 END), 0) AS collected,
+				COALESCE(SUM(CASE WHEN o.status NOT IN ("cancelado","devuelto") THEN o.balance_amount ELSE 0 END), 0) AS balance,
 				COALESCE(SUM((SELECT COALESCE(SUM(da.extra_expense), 0) FROM delivery_attempts da WHERE da.order_id = o.id)), 0) AS expenses', false);
 
 		$this->_orders_apply_filters($f);

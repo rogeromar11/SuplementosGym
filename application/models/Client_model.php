@@ -61,6 +61,27 @@ class Client_model extends MY_Model
 	}
 
 	/**
+	 * Busca un cliente por nombre sin distinguir mayusculas/minusculas.
+	 *
+	 * @param string $name
+	 * @param int|null $ignoreId
+	 * @return object|null
+	 */
+	public function find_by_name($name, $ignoreId = null)
+	{
+		$name = mb_strtolower(trim((string)$name), 'UTF-8');
+		if ($name === '') {
+			return null;
+		}
+		$this->db->where('country_id', current_country_id())
+			->where('LOWER(name) = ' . $this->db->escape($name), null, false);
+		if ($ignoreId !== null) {
+			$this->db->where('id !=', (int)$ignoreId);
+		}
+		return $this->db->order_by('id', 'ASC')->limit(1)->get($this->table)->row();
+	}
+
+	/**
 	 * Genera el siguiente código de cliente para un país (CLI-0001).
 	 *
 	 * @param int|null $countryId

@@ -217,6 +217,7 @@ if (!function_exists('order_status_label')) {
 			'no_entregado' => 'No entregado',
 			'reprogramado' => 'Reprogramado',
 			'cancelado' => 'Cancelado',
+			'devuelto' => 'Devuelto',
 		);
 		return isset($map[$status]) ? $map[$status] : $status;
 	}
@@ -235,6 +236,10 @@ function order_status_badge($status)
 	if ($status === 'preparado') {
 		return '<span class="badge" style="background:#7C3AED;color:#FFFFFF;">' . html_escape(order_status_label($status)) . '</span>';
 	}
+	// Devuelto usa un color vino para distinguirlo de No entregado/Cancelado
+	if ($status === 'devuelto') {
+		return '<span class="badge" style="background:#7B1E3A;color:#FFFFFF;">' . html_escape(order_status_label($status)) . '</span>';
+	}
 	$colors = array(
 		'registrado' => 'secondary',
 		'confirmado' => 'info',
@@ -251,6 +256,35 @@ function order_status_badge($status)
 	$color = isset($colors[$status]) ? $colors[$status] : 'secondary';
 	return '<span class="badge text-bg-' . $color . '">' . html_escape(order_status_label($status)) . '</span>';
 }
+}
+
+if (!function_exists('client_type_label')) {
+	function client_type_label($type)
+	{
+		$map = array(
+			'excelente' => 'Excelente',
+			'bueno' => 'Bueno',
+			'normal' => 'Normal',
+			'malo' => 'Malo',
+		);
+		return isset($map[$type]) ? $map[$type] : '';
+	}
+}
+
+if (!function_exists('client_type_badge')) {
+	function client_type_badge($type)
+	{
+		$colors = array(
+			'excelente' => 'success',
+			'bueno' => 'primary',
+			'normal' => 'secondary',
+			'malo' => 'danger',
+		);
+		if (!isset($colors[$type])) {
+			return '';
+		}
+		return '<span class="badge text-bg-' . $colors[$type] . '">' . html_escape(client_type_label($type)) . '</span>';
+	}
 }
 
 if (!function_exists('route_status_label')) {

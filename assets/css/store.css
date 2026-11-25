@@ -280,6 +280,7 @@ textarea.form-control { min-height: 0; padding-top: .7rem; }
 .status-pendiente, .status-en_verificacion { background: rgba(255,201,74,.16); color: var(--gold); }
 .status-pagado, .status-confirmado, .status-entregado { background: rgba(29,168,81,.18); color: #9BE7B8; }
 .status-cancelado { background: rgba(230,46,46,.18); color: #FF9B9B; }
+.status-devuelto { background: rgba(123,30,58,.22); color: #F0B8C8; }
 .status-preparando, .status-enviado { background: rgba(90,150,255,.18); color: #A9C4FF; }
 
 /* ---------- toast / modal ---------- */

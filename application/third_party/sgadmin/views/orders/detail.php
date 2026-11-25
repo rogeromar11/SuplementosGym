@@ -6,6 +6,7 @@ $canDelete = in_array($o->status, array('registrado', 'pendiente_preparacion', '
 $canEditPaymentNote = !in_array($o->status, array('entregado', 'cancelado'), true) && has_permission('pedidos.editar');
 $isAdmin = $this->ion_auth->is_admin();
 $canCorrectDelivered = $o->status === 'entregado' && $isAdmin;
+$canReturn = $o->status === 'no_entregado' && $isAdmin;
 $hasReceipt = false;
 foreach ((array)$o->attachments as $att) {
     if ($att->type === 'comprobante_pago') {
@@ -28,6 +29,9 @@ foreach ((array)$o->attachments as $att) {
         <?php endif; ?>
         <?php if ($o->status === 'reprogramado' && has_permission('pedidos.editar')): ?>
             <button type="button" class="btn btn-outline-warning btn-update-rescheduled-date" data-url="<?php echo base_url('orders/update_rescheduled_date/' . $o->id); ?>" data-date="<?php echo html_escape($o->rescheduled_delivery_date); ?>"><i class="bi bi-calendar-event me-1"></i>Cambiar fecha</button>
+        <?php endif; ?>
+        <?php if ($canReturn): ?>
+            <button type="button" class="btn btn-outline-warning btn-return-order" data-url="<?php echo base_url('orders/return_not_delivered/' . $o->id); ?>"><i class="bi bi-arrow-return-left me-1"></i>Devolver pedido</button>
         <?php endif; ?>
         <?php if ($canCancel): ?>
             <button type="button" class="btn btn-outline-danger btn-cancel-order" data-url="<?php echo base_url('orders/cancel/' . $o->id); ?>"><i class="bi bi-x-circle me-1"></i>Anular</button>
@@ -57,7 +61,7 @@ foreach ((array)$o->attachments as $att) {
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="small text-muted-2">Cliente</div>
-                        <div class="fw-semibold"><?php echo html_escape($o->customer_name); ?></div>
+                        <div class="fw-semibold"><?php echo html_escape($o->customer_name); ?> <?php echo client_type_badge(isset($clientType) ? $clientType : null); ?></div>
                     </div>
                     <div class="col-md-6">
                         <div class="small text-muted-2">Teléfono</div>

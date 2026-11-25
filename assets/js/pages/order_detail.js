@@ -113,6 +113,31 @@ $(document).ready(function () {
         });
     });
 
+    // Devolver pedido no entregado: repone inventario y deja estado "Devuelto"
+    $('.btn-return-order').on('click', function () {
+        var btn = $(this);
+        sgms.confirm('Se devolverán los productos al inventario y el pedido quedará en estado "Devuelto". ¿Continuar?').then(function (result) {
+            if (!result.isConfirmed) return;
+            sgms.loading('Registrando devolución...');
+            $.ajax({
+                url: btn.data('url'),
+                type: 'POST',
+                dataType: 'json'
+            }).done(function (res) {
+                sgms.stopLoading();
+                if (res.success) {
+                    sgms.toast('success', 'Correcto', res.message);
+                    setTimeout(function () { window.location.reload(); }, 900);
+                } else {
+                    sgms.toast('error', 'Error', res.message);
+                }
+            }).fail(function (xhr) {
+                sgms.stopLoading();
+                sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'No fue posible devolver el pedido.');
+            });
+        });
+    });
+
     // Comprobante de pago en pedidos entregados (solo administrador)
     $('.btn-add-receipt').on('click', function () {
         $('#receiptFileInput').trigger('click');

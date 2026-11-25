@@ -328,6 +328,96 @@ class Order_service
 	}
 
 	/**
+	 * Devuelve un pedido no entregado: repone los productos al inventario y
+	 * deja el pedido en estado "devuelto" como registro.
+	 *
+	 * @param int $orderId
+	 * @param int $userId
+	 * @return array ['success'=>bool,'error'=>string|null,'data'=>array|null]
+	 */
+	public function return_not_delivered($orderId, $userId)
+	{
+		$ci =& get_instance();
+		$order = $ci->db->where('id', $orderId)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			return array('success' => false, 'error' => 'El pedido no existe.', 'data' => null);
+		}
+		if ($order->status !== 'no_entregado') {
+			return array('success' => false, 'error' => 'Solo se pueden devolver pedidos en estado No entregado.', 'data' => null);
+		}
+
+		$items = $ci->db->where('order_id', $orderId)->get('store_order_items')->result();
+		$restore = array();
+		$totalQty = 0;
+		foreach ($items as $item) {
+			$qty = max(1, (int)$item->quantity);
+			$restore[] = array(
+				'product_id' => (int)$item->product_id,
+				'quantity' => $qty,
+			);
+			$totalQty += $qty;
+		}
+
+		// Rutas activas donde todavia pudiera estar el pedido (casos antiguos).
+		$activeRoutes = $ci->db->select('route_id')->where('order_id', $orderId)->where('active_key', 1)->get('route_orders')->result();
+		$routeIds = array();
+		foreach ($activeRoutes as $ar) {
+			$routeIds[(int)$ar->route_id] = true;
+		}
+
+		$ci->load->model('Inventory_model', 'inventory_model');
+		$ci->db->trans_start();
+
+		$ci->inventory_model->restore_for_return($orderId, $restore, $userId, 'Devolución pedido no entregado');
+
+		$ci->db->where('id', $orderId)->update('store_orders', array(
+			'status' => 'devuelto',
+			'updated_by' => $userId,
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
+
+		if (!empty($routeIds)) {
+			$ci->db->where('order_id', $orderId)->where('active_key', 1)->update('route_orders', array(
+				'active_key' => null,
+				'updated_at' => date('Y-m-d H:i:s'),
+			));
+		}
+
+		$this->record_status_change($orderId, 'no_entregado', 'devuelto', $userId, 'Pedido no entregado: productos devueltos al inventario.');
+
+		$ci->db->trans_complete();
+
+		if (!$ci->db->trans_status()) {
+			return array('success' => false, 'error' => 'No fue posible registrar la devolución del pedido.', 'data' => null);
+		}
+
+		// Si la devolucion libera la ultima entrega de una ruta, finalizarla.
+		if (!empty($routeIds)) {
+			$ci->load->library('Route_service');
+			foreach (array_keys($routeIds) as $routeId) {
+				$ci->route_service->auto_finish_if_complete((int)$routeId, $userId);
+			}
+		}
+
+		$ci->audit_service->log('order.returned_not_delivered', 'pedidos', 'orders', $orderId, array(
+			'order_number' => $order->order_number,
+			'items' => $restore,
+			'total_quantity' => $totalQty,
+			'routes' => array_keys($routeIds),
+		));
+
+		return array(
+			'success' => true,
+			'error' => null,
+			'data' => array(
+				'status' => 'devuelto',
+				'items_returned' => count($restore),
+				'total_quantity' => $totalQty,
+			),
+		);
+	}
+
+	/**
 	 * Cambia el estado de un pedido con auditoria e historial.
 	 *
 	 * @param int $orderId
@@ -543,7 +633,7 @@ class Order_service
 		if (!$order) {
 			return array('success' => false, 'error' => 'El pedido no existe.');
 		}
-		if (in_array($order->status, array('asignado_ruta', 'en_ruta', 'entregado'), true)) {
+		if (in_array($order->status, array('asignado_ruta', 'en_ruta', 'entregado', 'devuelto'), true)) {
 			return array('success' => false, 'error' => 'El pedido no puede eliminarse en su estado actual.');
 		}
 		$active = $ci->db->where('order_id', $orderId)->where('active_key', 1)->get('route_orders')->row();

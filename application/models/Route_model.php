@@ -230,6 +230,7 @@ class Route_model extends CI_Model
 			->where('ro.route_id', $routeId)
 			->where('ro.active_key', null)
 			->where('ro.route_status', 'no_entregado')
+			->where('o.status !=', 'devuelto')
 			->order_by('o.order_number', 'ASC')
 			->get()->result();
 	}

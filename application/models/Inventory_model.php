@@ -81,7 +81,7 @@ class Inventory_model extends CI_Model
 	 * @param int|null $user_id
 	 * @return bool
 	 */
-	public function restore_for_return($order_id, $lines, $user_id = NULL)
+	public function restore_for_return($order_id, $lines, $user_id = NULL, $reason = 'Devolución post venta')
 	{
 		foreach ((array)$lines as $line)
 		{
@@ -114,7 +114,7 @@ class Inventory_model extends CI_Model
 				'quantity' => $quantity,
 				'previous_qty' => $previous,
 				'new_qty' => $new,
-				'reason' => 'Devolución post venta',
+				'reason' => $reason,
 				'created_by' => $user_id,
 			));
 		}

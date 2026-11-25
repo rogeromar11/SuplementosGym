@@ -68,6 +68,7 @@ class Reports extends Authenticated_Controller
 			'no_entregado' => 'No entregado',
 			'reprogramado' => 'Reprogramado',
 			'cancelado' => 'Cancelado',
+			'devuelto' => 'Devuelto',
 		);
 	}
 

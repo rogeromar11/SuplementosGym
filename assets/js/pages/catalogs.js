@@ -96,14 +96,13 @@ $(document).ready(function () {
         modal.show();
     });
 
-    $('#catalogForm').on('submit', function (e) {
-        e.preventDefault();
+    function saveCatalog(data, allowDuplicate) {
+        var payload = data + (allowDuplicate ? '&confirm_duplicate=1' : '');
         sgms.loading('Guardando...');
-        var data = $(this).serialize();
         $.ajax({
             url: cfg.saveEndpoint,
             type: 'POST',
-            data: data,
+            data: payload,
             dataType: 'json'
         }).done(function (res) {
             sgms.stopLoading();
@@ -111,13 +110,29 @@ $(document).ready(function () {
                 modal.hide();
                 sgms.toast('success', 'Correcto', res.message);
                 setTimeout(function () { window.location.reload(); }, 800);
-            } else {
-                sgms.toast('error', 'Error', res.message);
+                return;
             }
+            if (!allowDuplicate && res.data && res.data.duplicate_name) {
+                sgms.confirm(res.message, {
+                    title: 'Cliente duplicado',
+                    confirmText: 'Crear de todas formas'
+                }).then(function (r) {
+                    if (r.isConfirmed) {
+                        saveCatalog($('#catalogForm').serialize(), true);
+                    }
+                });
+                return;
+            }
+            sgms.toast('error', 'Error', res.message);
         }).fail(function (xhr) {
             sgms.stopLoading();
             sgms.toast('error', 'Error', xhr.responseJSON ? xhr.responseJSON.message : 'No fue posible guardar.');
         });
+    }
+
+    $('#catalogForm').on('submit', function (e) {
+        e.preventDefault();
+        saveCatalog($(this).serialize(), false);
     });
 
     $('.btn-delete-item').on('click', function () {

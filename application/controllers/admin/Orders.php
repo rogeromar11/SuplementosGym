@@ -52,6 +52,7 @@ class Orders extends Authenticated_Controller
 			'no_entregado' => 'No entregado',
 			'reprogramado' => 'Reprogramado',
 			'cancelado' => 'Cancelado',
+			'devuelto' => 'Devuelto',
 		);
 		$this->data['warehouses'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('name')->get('warehouses')->result();
 		$this->data['sellers'] = $this->db->select('u.id, u.first_name, u.last_name')->from('users u')
@@ -97,6 +98,7 @@ class Orders extends Authenticated_Controller
 			array('label' => $isEdit ? 'Editar pedido' : 'Nuevo pedido'),
 		);
 		$this->data['order'] = $order;
+		$this->data['initialClientType'] = $isEdit ? $this->_client_type($order->client_id) : null;
 		$this->data['warehouses'] = $this->Warehouse_model->options();
 		$this->data['defaultWarehouse'] = $isEdit ? null : $this->Warehouse_model->default_warehouse();
 		$this->data['paymentMethods'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('payment_methods')->result();
@@ -294,6 +296,7 @@ class Orders extends Authenticated_Controller
 			array('label' => $order->order_number),
 		);
 		$this->data['order'] = $order;
+		$this->data['clientType'] = $this->_client_type($order->client_id);
 		$this->data['paymentMethods'] = $this->db->where('country_id', current_country_id())->where('is_active', 1)->order_by('sort_order')->get('payment_methods')->result();
 		$this->data['pageScripts'] = array('assets/js/pages/order_detail.js');
 
@@ -313,6 +316,21 @@ class Orders extends Authenticated_Controller
 		$this->data['order'] = $order;
 
 		$this->render_print('orders/print', $this->data);
+	}
+
+	/**
+	 * Obtiene el tipo de cliente del catalogo para un pedido.
+	 *
+	 * @param int|null $clientId
+	 * @return string|null
+	 */
+	private function _client_type($clientId)
+	{
+		if (!$clientId) {
+			return null;
+		}
+		$client = $this->Client_model->find_for_country($clientId);
+		return $client ? $client->client_type : null;
 	}
 
 	/**
@@ -403,7 +421,7 @@ class Orders extends Authenticated_Controller
 	public function client_search()
 	{
 		$term = $this->input->get('term');
-		$this->db->select('id, code, name, phone, phone2, zone, address, delivery_type')
+		$this->db->select('id, code, name, phone, phone2, zone, address, delivery_type, client_type')
 			->from('clients')
 			->where('country_id', current_country_id())
 			->where('is_active', 1)
@@ -427,6 +445,7 @@ class Orders extends Authenticated_Controller
 				'zone' => $c->zone,
 				'address' => $c->address,
 				'delivery_type' => $c->delivery_type,
+				'client_type' => $c->client_type,
 			);
 		}
 		$this->json_response(true, '', array('results' => $results));
@@ -550,7 +569,7 @@ class Orders extends Authenticated_Controller
 			$this->json_response(false, 'El pedido no existe.', null, null, 404);
 			return;
 		}
-		if (in_array($order->status, array('entregado', 'cancelado'), true)) {
+		if (in_array($order->status, array('entregado', 'cancelado', 'devuelto'), true)) {
 			$motivo = $order->status === 'entregado' ? 'ya fue entregado' : 'fue anulado';
 			$this->json_response(false, 'La forma de pago y la nota no pueden modificarse porque el pedido ' . $motivo . '.');
 			return;
@@ -864,6 +883,38 @@ class Orders extends Authenticated_Controller
 	}
 
 	/**
+	 * AJAX: devuelve un pedido no entregado (solo administrador).
+	 * Repone los productos al inventario y deja el pedido en estado "devuelto".
+	 */
+	public function return_not_delivered($id)
+	{
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
+		if (!$this->ion_auth->is_admin()) {
+			$this->json_response(false, 'Solo el administrador puede devolver pedidos no entregados.', null, null, 403);
+			return;
+		}
+
+		$order = $this->db->where('id', $id)->where('country_id', current_country_id())->get('store_orders')->row();
+		if (!$order) {
+			$this->json_response(false, 'El pedido no existe.', null, null, 404);
+			return;
+		}
+		if ($order->status !== 'no_entregado') {
+			$this->json_response(false, 'Solo se pueden devolver pedidos en estado No entregado.');
+			return;
+		}
+
+		$result = $this->order_service->return_not_delivered($order->id, $this->currentUser->id);
+		$this->json_response(
+			$result['success'],
+			$result['success'] ? 'Pedido devuelto. Productos reintegrados al inventario.' : $result['error'],
+			$result['success'] ? $result['data'] : null
+		);
+	}
+
+	/**
 	 * AJAX: anula (cancela) un pedido.
 	 */
 	public function cancel($id)
@@ -877,7 +928,7 @@ class Orders extends Authenticated_Controller
 			$this->json_response(false, 'El pedido no existe.', null, null, 404);
 			return;
 		}
-		if (in_array($order->status, array('entregado', 'cancelado', 'en_ruta'), true)) {
+		if (in_array($order->status, array('entregado', 'cancelado', 'en_ruta', 'devuelto'), true)) {
 			$this->json_response(false, 'El pedido no puede anularse en su estado actual.');
 			return;
 		}
